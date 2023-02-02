@@ -95,6 +95,7 @@ const Registration = () => {
           <FormInput
             label={'Пароль'}
             isInvalid={!!errors?.password}
+            isPassword
             register={
               register('password', {
                 required: 'Обязательное поле.',
@@ -107,6 +108,7 @@ const Registration = () => {
           <FormInput
             label={'Пароль (еще раз)'}
             isInvalid={!!errors?.password_repeat}
+            isPassword
             register={
               register('password_repeat', {
                 required: 'Обязательное поле.'

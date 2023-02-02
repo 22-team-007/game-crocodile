@@ -47,6 +47,7 @@ const Login = () => {
         <FormInput
           label={'Пароль'}
           isInvalid={!!errors?.password}
+          isPassword
           register={
             register('password', {
               required: 'Обязательное поле.',
