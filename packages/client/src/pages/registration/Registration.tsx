@@ -15,12 +15,21 @@ const Registration = () => {
 
   const onSubmitHandler = (data: RegistrationData) => {
     console.log(data)
+    fetch('https://ya-praktikum.tech/api/v2/auth/signup', {
+      'headers': {
+        'content-type': 'application/json'
+      },
+      'body': JSON.stringify(data),
+      'method': 'POST',
+      'mode': 'cors',
+      'credentials': 'include'
+    })
   }
 
   return (
     <>
       <Container className='vh-100 d-flex justify-content-center align-items-center'>
-        <Form style={{ width: '300px'}} noValidate onSubmit={handleSubmit(onSubmitHandler)}>
+        <Form style={{ width: '300px' }} noValidate onSubmit={handleSubmit(onSubmitHandler)}>
           <h3 className='text-center'>Регистрация</h3>
 
           <FormInput
@@ -29,7 +38,7 @@ const Registration = () => {
             register={
               register('email', {
                 required: 'Обязательное поле.',
-                pattern: validation.email.regExp!,
+                pattern: validation.email.regExp!
               })
             }
             errorMsg={errors?.email?.message}
@@ -41,7 +50,7 @@ const Registration = () => {
             register={
               register('login', {
                 required: 'Обязательное поле.',
-                pattern: validation.login.regExp!,
+                pattern: validation.login.regExp!
               })
             }
             errorMsg={errors?.login?.message}
@@ -53,7 +62,7 @@ const Registration = () => {
             register={
               register('first_name', {
                 required: 'Обязательное поле.',
-                pattern: validation.first_name.regExp!,
+                pattern: validation.first_name.regExp!
               })
             }
             errorMsg={errors?.first_name?.message}
@@ -65,7 +74,7 @@ const Registration = () => {
             register={
               register('second_name', {
                 required: 'Обязательное поле.',
-                pattern: validation.second_name.regExp!,
+                pattern: validation.second_name.regExp!
               })
             }
             errorMsg={errors?.second_name?.message}
@@ -77,7 +86,7 @@ const Registration = () => {
             register={
               register('phone', {
                 required: 'Обязательное поле.',
-                pattern: validation.phone.regExp!,
+                pattern: validation.phone.regExp!
               })
             }
             errorMsg={errors?.phone?.message}
@@ -89,7 +98,7 @@ const Registration = () => {
             register={
               register('password', {
                 required: 'Обязательное поле.',
-                pattern: validation.password.regExp!,
+                pattern: validation.password.regExp!
               })
             }
             errorMsg={errors?.password?.message}

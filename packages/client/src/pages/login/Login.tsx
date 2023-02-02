@@ -13,8 +13,18 @@ const Login = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()
 
+  // Временно реализовал запрос здесь т.к пока что нет у нас обертки для запросов
   const onSubmitHandler = (data: LoginData) => {
     console.log(data)
+    fetch('https://ya-praktikum.tech/api/v2/auth/signin', {
+      'headers': {
+        'content-type': 'application/json'
+      },
+      'body': JSON.stringify(data),
+      'method': 'POST',
+      'mode': 'cors',
+      'credentials': 'include'
+    })
   }
 
   return (
