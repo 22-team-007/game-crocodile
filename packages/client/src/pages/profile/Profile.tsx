@@ -32,7 +32,7 @@ function Profile() {
       })
     })
   }, [])
-  const setValue = (k: string, v: any) => {
+  const setValue = (k: string, v: string) => {
     setFields({ ...fields, [k]: v })
   }
   const editField = (e: ChangeEvent<HTMLInputElement>) => {
