@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
-import './App.css'
-import ProfilePage from './pages/profile/Profile'
+import { useEffect } from 'react';
+import './App.css';
+import ProfilePage from './pages/profile/Profile';
 
 function App() {
   useEffect(() => {
@@ -15,6 +15,7 @@ function App() {
   }, [])
   return (
     <div className="App">
+      Вот тут будет жить ваше приложение :)
       <ProfilePage />
     </div>
   )
