@@ -1,5 +1,5 @@
 // React
-import { FC } from 'react'
+import { FC, memo, useId } from 'react'
 // React-Hook-Form
 import { UseFormRegisterReturn } from 'react-hook-form';
 // Bootstrap components
@@ -35,8 +35,11 @@ const FormInput: FC<FormInputProps> = ({
   label,
   isPassword,
   }) => {
+
+  const controlId = useId();
+
   return (
-    <Form.Group>
+    <Form.Group controlId={controlId}>
       <Form.Label className='mb-0 mx-1'>{label}</Form.Label>
       <Form.Control
         {...register}
@@ -49,4 +52,4 @@ const FormInput: FC<FormInputProps> = ({
   )
 }
 
-export default FormInput
+export default memo(FormInput)
