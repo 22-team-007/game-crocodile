@@ -1,21 +1,16 @@
-import React, { useMemo, useEffect, useState, ChangeEvent } from 'react'
-import { Button, Form, Image, Card, Row, Col, Container } from 'react-bootstrap'
+import { useMemo, useEffect, useState, ChangeEvent, MouseEvent } from 'react'
+import { Button, Form, Card, Row, Col, Container } from 'react-bootstrap'
+import Avatar from '../../components/Avatar'
 
 function Profile() {
-  const selectAvatar = (e: ChangeEvent<HTMLInputElement>) => {
-    //upload by API
-    fetch(`/`).then(() => {
-      setValue(e.target.id, `https://thispersondoesnotexist.com/image?q=${new Date().getTime()}`)
-    })
-  }
-  const editSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const editSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     //save api
     fetch(`/`).then(() => {
       setPage('ProfileShow')
     })
   }
-  const passwordSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const passwordSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     //save api
     fetch(`/`).then(() => {
@@ -113,14 +108,7 @@ function Profile() {
       </Card.Header>
       <Card.Body>
         <Row>
-          <Col xs="12" md="6" lg="4">
-            <Form.Group controlId="avatar" className="mb-3">
-              <Form.Label className="avatar-edit">
-                <Image src={fields.avatar} style={{  }} />
-                <Form.Control onChange={selectAvatar} type="file" accept="image/*"/>
-              </Form.Label>
-            </Form.Group>
-          </Col>
+          <Col xs="12" md="6" lg="4"><Avatar src={fields.avatar} setValue={setValue}/></Col>
           <Col xs="12" md="6" lg="8">{switchPage}</Col>
         </Row>
       </Card.Body>
