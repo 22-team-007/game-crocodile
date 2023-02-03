@@ -10,6 +10,7 @@ function Profile() {
       setPage('ProfileShow')
     })
   }
+
   const passwordSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     //save api
@@ -17,7 +18,9 @@ function Profile() {
       setPage('ProfileEdit')
     })
   }
-  const [fields, setFields] = useState({} as Record<string, string>)
+
+  const [fields, setFields] = useState<Record<string, string>>({})
+
   useEffect(() => {
     //load by API
     fetch(`/`).then(() => {
@@ -32,15 +35,19 @@ function Profile() {
       })
     })
   }, [])
+
   const setValue = (k: string, v: string) => {
     setFields({ ...fields, [k]: v })
   }
+
   const editField = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     //check value
     setValue(e.target.id, e.target.value)
   }
+
   const [page, setPage] = useState('ProfileShow')
+
   const switchPage = useMemo(() => {
     const fieldsInput: Field[] = [
       { label: 'Имя', type: 'text', name: 'first_name', value: fields.first_name },
@@ -84,6 +91,7 @@ function Profile() {
         })
     }
   }, [page, fields])
+
   const switchButton = useMemo(() => {
     switch (page) {
       case 'ProfileEdit':
@@ -101,6 +109,7 @@ function Profile() {
         return (<Button variant="primary" type="button" onClick={() => setPage('ProfileEdit')}>Изменить</Button>)
     }
   }, [page, fields])
+
   return <Container style={{ maxWidth: '960px' }}>
     <Card>
       <Card.Header>
