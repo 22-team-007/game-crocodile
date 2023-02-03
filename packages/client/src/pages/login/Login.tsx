@@ -58,7 +58,7 @@ const Login = () => {
         />
 
         <Button className='w-100 mt-3' type='submit'>Войти</Button>
-        <Button className='w-100' size={'sm'} variant='link'>Нет аккаунта?</Button>
+        <Button className='w-100' size='sm' variant='link'>Нет аккаунта?</Button>
       </Form>
     </Container>
   )
