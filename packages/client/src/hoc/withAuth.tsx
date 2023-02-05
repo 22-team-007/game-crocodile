@@ -1,8 +1,8 @@
-import React from 'react'
+import type { ComponentType } from 'react'
 
 export default function WithAuth<P extends object, T extends object>(
-  PrivatComponent: React.ComponentType<P>,
-  RedirectComponent: React.ComponentType<T>
+  PrivatComponent: ComponentType<P>,
+  RedirectComponent: ComponentType<T>
 ): React.ComponentType {
   // @ts-ignore  @typescript-eslint/no-explicit-any
   return function (props: any) {

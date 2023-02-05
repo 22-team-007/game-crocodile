@@ -1,10 +1,14 @@
 import { Outlet } from 'react-router-dom'
-import { useEffect } from 'react'
+// components
+import { Container, Navbar, Nav } from 'react-bootstrap'
+import { NavLink, Link } from 'react-router-dom'
+// styles
 import './App.css'
-import { Container } from 'react-bootstrap/'
-import { NavLink } from 'react-router-dom'
 
-export function appLoader() {
+export async function appLoader() {
+  // проверить зарегестрирован ли пользователь
+  // await fakeNetwork()
+
   return null
 }
 export function appAction() {
@@ -12,17 +16,6 @@ export function appAction() {
 }
 
 function App() {
-  useEffect(() => {
-    const fetchServerData = async () => {
-      const url = `http://localhost:${__SERVER_PORT__}`
-      const response = await fetch(url)
-      const data = await response.json()
-      console.log(data)
-    }
-
-    fetchServerData()
-  }, [])
-
   type getClassCbk =
     | ((props: { isActive: boolean; isPending: boolean }) => string | undefined)
     | undefined
@@ -34,55 +27,65 @@ function App() {
 
   return (
     <div className="App">
-      <Container className="d-flex justify-content-center align-items-center">
-        <ul className="nav nav-tabs">
-          <li className="nav-item">
-            <NavLink className={isActive} to="/">
-              Home
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink className={isActive} to="/login">
-              login
-            </NavLink>
-          </li>
-          <li className="nav-item ">
-            <NavLink className={isActive} to="/registration">
-              registration
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink className={isActive} to="/game">
-              game
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink className={isActive} to="/profile">
-              profile
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink className={isActive} to="/leaderboard">
-              leaderboard
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink className={isActive} to="/forum">
-              forum
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink className={isActive} to="/404">
-              404
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink className={isActive} to="/500">
-              500
-            </NavLink>
-          </li>
-        </ul>
-      </Container>
+      <Navbar bg="light" className="nav nav-tabs">
+        <Container>
+          <Navbar.Brand>
+            <Link to="/">Crocodile</Link>
+          </Navbar.Brand>
+          <Navbar.Collapse id="basic-navbar-nav">
+            {/* <Nav className="me-auto"> */}
+            <ul className="nav nav-tabs">
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/">
+                  Home
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/login">
+                  login
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/registration">
+                  registration
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/game">
+                  game
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/profile">
+                  profile
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/leaderboard">
+                  leaderboard
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/forum">
+                  forum
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/404">
+                  404
+                </NavLink>
+              </li>
+              <li className="list-group-item">
+                <NavLink className={isActive} to="/500">
+                  500
+                </NavLink>
+              </li>
+            </ul>
+            {/* </Nav> */}
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+
       {<Outlet />}
     </div>
   )

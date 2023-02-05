@@ -1,12 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+// components
 import App, { appLoader, appAction } from './App'
 import ErrorPage from './pages/error/Error'
 // import Login from './pages/login/Login'
 // import Registration from './pages/registration/Registration'
 import Game from './pages/game/Game'
+// hoc for private pages
 import WithAuth from './hoc/withAuth'
+// styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
 
