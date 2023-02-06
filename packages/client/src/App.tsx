@@ -41,42 +41,42 @@ function App() {
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/login">
+                <NavLink className={isActive} to="login">
                   login
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/registration">
+                <NavLink className={isActive} to="registration">
                   registration
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/game">
+                <NavLink className={isActive} to="game">
                   game
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/profile">
+                <NavLink className={isActive} to="profile">
                   profile
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/leaderboard">
+                <NavLink className={isActive} to="leaderboard">
                   leaderboard
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/forum">
+                <NavLink className={isActive} to="forum">
                   forum
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/404">
+                <NavLink className={isActive} to="404">
                   404
                 </NavLink>
               </li>
               <li className="list-group-item">
-                <NavLink className={isActive} to="/500">
+                <NavLink className={isActive} to="500">
                   500
                 </NavLink>
               </li>

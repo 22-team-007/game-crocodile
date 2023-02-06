@@ -39,26 +39,26 @@ const ProfilePage = WithAuth(Profile, Login)
 
 enum Routes {
   Index = '/',
-  Login = '/login',
-  Register = '/registration',
-  Game = '/game',
-  Profile = '/profile',
-  Leaderboard = '/leaderboard',
-  Forum = '/forum',
-  E404 = '/404',
-  E500 = '/500',
+  Login = 'login',
+  Register = 'registration',
+  Game = 'game',
+  Profile = 'profile',
+  Leaderboard = 'leaderboard',
+  Forum = 'forum',
+  E404 = '404',
+  E500 = '500',
 }
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: Routes.Index,
     element: <App />,
     errorElement: <ErrorPage />,
     loader: appLoader,
     action: appAction,
     children: [
       {
-        path: Routes.Index,
+        index: true,
         element: <MainPage />,
       },
       {
