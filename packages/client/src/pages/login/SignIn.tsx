@@ -7,9 +7,9 @@ import FormInput from '../../components/FormInput'
 // Bootstrap components
 import { Button, Container, Form } from 'react-bootstrap'
 // Utils
-import { validation } from '../../utils/validation'
+import validation from '../../utils'
 
-const Login = () => {
+const SignIn = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()
 
@@ -64,4 +64,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default SignIn
