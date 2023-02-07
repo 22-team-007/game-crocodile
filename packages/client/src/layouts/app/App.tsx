@@ -3,13 +3,6 @@ import { Container, Navbar } from 'react-bootstrap'
 import { NavLink, Link } from 'react-router-dom'
 import { LINKS } from './constants'
 
-export async function appLoader() {
-  // проверить зарегестрирован ли пользователь
-  // await fakeNetwork()
-
-  return null
-}
-
 function App() {
   return (
     <div className="App">
