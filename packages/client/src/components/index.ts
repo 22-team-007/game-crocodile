@@ -1,4 +1,4 @@
-import Avatar from "./Avatar";
+import FormInput from "./FormInput";
 export {
-    Avatar
+    FormInput
 }
