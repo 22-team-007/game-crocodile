@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
+import { Game } from './pages'
+
 import './App.css'
-import Game from './pages/game/Game'
 
 function App() {
   useEffect(() => {
@@ -13,6 +14,7 @@ function App() {
 
     fetchServerData()
   }, [])
+
   return (
     <div className="App">
       Вот тут будет жить ваше приложение :)
