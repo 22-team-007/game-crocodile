@@ -1,6 +1,6 @@
-import App from './App'
-import { render, screen } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
+import { render, screen } from '@testing-library/react'
+import App from './App'
 
 // @ts-ignore
 global.fetch = jest.fn(() =>
@@ -15,5 +15,5 @@ test('Example test', async () => {
   )
 
   const dogImages = screen.getAllByRole('link')
-  expect(dogImages).toHaveLength(10)
+  expect(dogImages).toHaveLength(8)
 })

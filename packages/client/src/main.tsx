@@ -1,53 +1,38 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
-import App, { appLoader, appAction } from './App'
+import App, { appLoader } from './layouts/app/App'
+import StartPage from './pages/startPage/StartPage'
 import ErrorPage from './pages/error/Error'
-// import Login from './pages/login/Login'
-// import Registration from './pages/registration/Registration'
+import Login from './pages/login/Login'
+import Registration from './pages/registration/Registration'
+import LeaderBoard from './pages/leaderBoard/LeaderBoard'
 import Game from './pages/game/Game'
+import Profile from './pages/Profile/profile'
+import Forum from './pages/forum/Forum'
 // hoc for private pages
 import WithAuth from './hoc/withAuth'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './index.css'
 
-function Login() {
-  return <h1>Login page</h1>
-}
-
-function Registration() {
-  return <h1>Registation page</h1>
-}
-
-function LeaderBoard() {
-  return <h1>Leader Board</h1>
-}
-
-function Profile() {
-  return <h1>Profile</h1>
-}
-
-function Forum() {
-  return <h1>Forum</h1>
-}
-
-// приватные страницы
-const MainPage = WithAuth(Game, Login)
-const ProfilePage = WithAuth(Profile, Login)
-
-enum Routes {
+export enum Routes {
   Index = '/',
-  Login = 'login',
-  Register = 'registration',
+  Login = 'signin',
+  Register = 'signup',
+  Logout = 'signout',
   Game = 'game',
   Profile = 'profile',
-  Leaderboard = 'leaderboard',
+  Leaderboard = 'liders',
   Forum = 'forum',
   E404 = '404',
   E500 = '500',
 }
+
+// приватные страницы
+const LoginPage = WithAuth(Login, '/' + Routes.Game, true)
+const ProfilePage = WithAuth(Profile, '/' + Routes.Login, false)
+const GamePage = WithAuth(Game, '/' + Routes.Login, false)
 
 const router = createBrowserRouter([
   {
@@ -55,19 +40,18 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     loader: appLoader,
-    action: appAction,
     children: [
       {
         index: true,
-        element: <MainPage />,
+        element: <StartPage />,
       },
       {
         path: Routes.Login,
-        element: <MainPage />,
+        element: <LoginPage />,
       },
       {
         path: Routes.Game,
-        element: <MainPage />,
+        element: <GamePage />,
       },
       {
         path: Routes.Register,
@@ -86,14 +70,21 @@ const router = createBrowserRouter([
         element: <Forum />,
       },
       {
-        path: Routes.E404,
-        element: <ErrorPage />,
-      },
-      {
-        path: Routes.E500,
-        element: <ErrorPage />,
+        path: Routes.Logout,
+        loader: () => {
+          console.log('We sending our logout request to server')
+          return redirect('/')
+        },
       },
     ],
+  },
+  {
+    path: Routes.E404,
+    element: <ErrorPage />,
+  },
+  {
+    path: Routes.E500,
+    element: <ErrorPage />,
   },
 ])
 

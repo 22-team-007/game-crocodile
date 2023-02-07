@@ -1,20 +1,28 @@
 import type { ComponentType } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
-export default function WithAuth<P extends object, T extends object>(
-  PrivatComponent: ComponentType<P>,
-  RedirectComponent: ComponentType<T>
-): React.ComponentType {
-  // @ts-ignore  @typescript-eslint/no-explicit-any
-  return function (props: any) {
-    let login: string | null = localStorage.getItem('login')
+export default function WithAuth<P extends object>(
+  PrivateComponent: ComponentType<P>,
+  pathRedirect = '/signin',
+  riderectIfUser = false
+): React.ComponentType | any {
+  return function HOC(props: any) {
+    const navigate = useNavigate()
 
-    // пока рандомно определим зарагестрировался ли пользователь
-    login = Math.random() > 0.5 ? 'nameOfuser' : null
+    useEffect(() => {
+      if (typeof riderectIfUser !== 'boolean') {
+        riderectIfUser = false
+      }
 
-    return login ? (
-      <PrivatComponent {...props} />
-    ) : (
-      <RedirectComponent {...props} />
-    )
+      // пока пользователь захардкожен
+      const login = true
+
+      if (login === riderectIfUser) {
+        navigate(pathRedirect)
+      }
+    })
+
+    return <PrivateComponent {...props} />
   }
 }

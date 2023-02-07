@@ -7,17 +7,15 @@ type ErrorResponse = {
   message?: string
 }
 
-export default function ErrorPage() {
-  let error = (useRouteError() as ErrorResponse) || undefined
+const DEFAULT_ERROR = {
+  data: null,
+  status: 404,
+  statusText: 'Что-то пошло не так',
+  message: 'Что-то пошло не так',
+}
 
-  if (error === undefined) {
-    error = {
-      data: null,
-      status: 200,
-      statusText: 'Ok',
-      message: 'Ok',
-    }
-  }
+export default function ErrorPage() {
+  const error = (useRouteError() || DEFAULT_ERROR) as ErrorResponse
 
   const errMsg =
     error.status === 404
