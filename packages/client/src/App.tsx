@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
+
+import { ProfilePage } from './pages';
+
 import './App.css';
-import ProfilePage from './pages/profile/Profile';
 
 function App() {
   useEffect(() => {

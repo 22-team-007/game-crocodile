@@ -1,16 +1,20 @@
 .avatar-edit{
     background-color: black;
     position: relative;
-    input[type="file"]{
+
+    input[type="file"] {
         display: none;
     }
-    img{
+
+    img {
         max-width: 100%;
     }
+
     &:hover {
         img{
             opacity: 0.5;
         }
+    
         &::after{
             position: absolute;
             width: 100%;
