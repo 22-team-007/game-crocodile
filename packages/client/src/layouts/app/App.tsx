@@ -1,32 +1,29 @@
 import { Outlet } from 'react-router-dom'
-import { Container, Navbar } from 'react-bootstrap'
+import { Container, Navbar, Nav } from 'react-bootstrap'
 import { NavLink, Link } from 'react-router-dom'
+
 import { LINKS } from './constants'
+
+import "./app.scss"
 
 function App() {
   return (
     <div className="App">
-      <Navbar bg="light" className="nav nav-tabs">
+      <Navbar fixed="top" bg="light">
         <Container>
-          <Navbar.Brand>
-            <Link to="/">Crocodile</Link>
-          </Navbar.Brand>
+          <NavLink className="navbar-brand" to="/">Крокодил</NavLink>
           <Navbar.Collapse id="basic-navbar-nav">
-            <ul className="nav nav-tabs">
+            <Nav className="justify-content-end flex-grow-1">
               {LINKS.map(link => (
-                <li className="list-group-item" key={link.path}>
-                  {' '}
-                  <NavLink className="nav-link" to={link.path}>
-                    {' '}
-                    {link.title}{' '}
-                  </NavLink>{' '}
-                </li>
+                <NavLink className="nav-link" key={link.path} to={link.path}>{link.title}</NavLink>
               ))}
-            </ul>
+            </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Outlet />
+      <Container>
+        <Outlet/>
+      </Container>
     </div>
   )
 }

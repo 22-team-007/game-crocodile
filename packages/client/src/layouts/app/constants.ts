@@ -4,6 +4,6 @@ export const LINKS = [
   { title: 'Выход', path: 'signout' },
   { title: 'Профиль', path: 'profile' },
   { title: 'Игра', path: 'game' },
-  { title: 'Лидеры', path: 'liders' },
+  { title: 'Лидеры', path: 'leaders' },
   { title: 'Форум', path: 'forum' },
 ]
