@@ -34,6 +34,28 @@ const ForumMessages: FC<ForumThemesProps> = () => {
             <b>3</b>
           </div>
         </ListGroup.Item>
+        <ListGroup.Item
+          as="li"
+          className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center left">
+            <Image
+              width={30}
+              height={30}
+              rounded={true}
+              src="https://place-hold.it/30x30/000"
+              alt="theme-image"
+            />
+            <div className="d-flex flex-column">
+              <span>Обсуждение темы 2</span>
+              <div>
+                user2 <small>(15 минут назад)</small>
+              </div>
+            </div>
+          </div>
+          <div className="right">
+            <b>1</b>
+          </div>
+        </ListGroup.Item>
       </ListGroup>
     </>
   )
