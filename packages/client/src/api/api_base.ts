@@ -26,6 +26,8 @@ export default class ApiBase {
         accept: 'application/json',
         'Content-Type': 'application/json'
       },
+      mode: "cors",
+      credentials: "include",
       ...params,
       method
     })

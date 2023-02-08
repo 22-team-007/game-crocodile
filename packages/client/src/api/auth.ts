@@ -14,7 +14,7 @@ export default class Auth extends ApiBase implements AuthAPIType {
 
   public async signIn (params:SignInParams):Promise<UserType> {
     const r:Response = await this.POST('/api/v2/auth/signin', { body: JSON.stringify(params) })
-    await r.json()
+    await r.text()
     return await this.user()
   }
 
