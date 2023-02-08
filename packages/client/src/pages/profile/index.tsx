@@ -1,5 +1,5 @@
-import { useMemo, useEffect, useState, ChangeEvent, ChangeEventHandler, MouseEvent, FormEvent } from 'react'
-import { Button, Form, Card, Row, Col, Container } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
+import { Button, Card, Row, Col, Container } from 'react-bootstrap'
 
 import { Avatar, FormEdit, FormShow, FormPassword } from './components'
 
@@ -34,22 +34,6 @@ const Profile = () => {
     setFields({ ...fields, [k]: v })
   }
 
-  let profileForm = <FormShow fields={fields}/>;
-  let changeButton = <Button variant="danger" type="button" onClick={() => setPage(Pages.Show)}>Отмена</Button>;
-  
-  if(page === Pages.Edit)
-    profileForm = <FormEdit { ...{
-      fields,
-      close: (f:ProfileParams)=>{
-        setFields(f);
-        setPage(Pages.Show)
-      }
-    } }/>;
-  else if(page === Pages.Password)
-    profileForm = <FormPassword close={()=>{ setPage(Pages.Show)} } />;
-  else
-    changeButton = <Button variant="success" type="button" onClick={() => setPage(Pages.Edit)}>Изменить</Button>
-  
   return <Container style={{ maxWidth: '960px' }}>
     <Card>
       <Card.Header>
@@ -58,12 +42,20 @@ const Profile = () => {
       <Card.Body>
         <Row>
           <Col xs="12" md="6" lg="4"><Avatar src={fields.avatar} setValue={setValue}/></Col>
-          <Col xs="12" md="6" lg="8">{profileForm}</Col>
+          <Col xs="12" md="6" lg="8">
+            {page === Pages.Show && <FormShow fields={fields}/>}
+            {page === Pages.Password && <FormPassword close={()=>{ setPage(Pages.Show)} } />}
+            {page === Pages.Edit && <FormEdit fields={fields} close={(f:ProfileParams)=>{
+              setFields(f);
+              setPage(Pages.Show);
+            }}/>}
+          </Col>
         </Row>
       </Card.Body>
       <Card.Footer className="text-end">
         <Button className="me-1" type="button" onClick={() => setPage(Pages.Password)}>Сменить пароль</Button>
-        {changeButton}
+        {page === Pages.Show && <Button variant="success" type="button" onClick={() => setPage(Pages.Edit)}>Изменить</Button>}
+        {page !== Pages.Show && <Button variant="danger" type="button" onClick={() => setPage(Pages.Show)}>Отмена</Button>}
       </Card.Footer>
     </Card>
   </Container>
