@@ -9,7 +9,7 @@ import { Button, Container, Form } from 'react-bootstrap'
 // Utils
 import { validation } from '../../utils'
 
-const SignIn = () => {
+const Login = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()
 
@@ -64,4 +64,4 @@ const SignIn = () => {
   )
 }
 
-export default SignIn
+export default Login

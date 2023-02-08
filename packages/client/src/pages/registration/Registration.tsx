@@ -7,7 +7,7 @@ import FormInput from '../../components/FormInput'
 // Bootstrap components
 import { Button, Container, Form } from 'react-bootstrap'
 // Utils
-import { validation } from '../../utils/validation'
+import { validation } from '../../utils'
 
 const Registration = () => {
 
