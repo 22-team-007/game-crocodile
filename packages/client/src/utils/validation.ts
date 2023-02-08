@@ -1,4 +1,6 @@
-export const validation: Record<string, { regExp?: RegExp, message: string, errMessage: string }> = {
+type ValidationKey = 'email' | 'login' | 'first_name' | 'display_name' | 'second_name' | 'phone' | 'password' | 'newPassword' | 'oldPassword' | 'repeatPassword'
+
+export const validation: Record<ValidationKey, { regExp?: RegExp, message: string, errMessage: string }> = {
   email: {
     regExp: /^[a-zA-Z0-9_-]+[@][a-zA-Z]+[.][a-zA-Z]+/,
     message:

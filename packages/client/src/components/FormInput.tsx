@@ -47,7 +47,7 @@ const FormInput: FC<FormInputProps> = ({
         type={isPassword ? 'password' : 'text'}
         placeholder={placeholder || label}
       />
-      <Form.Control.Feedback className={'mt-0'} type='invalid'>{errorMsg}</Form.Control.Feedback>
+      <Form.Control.Feedback className='mt-0' type='invalid'>{errorMsg}</Form.Control.Feedback>
     </Form.Group>
   )
 }
