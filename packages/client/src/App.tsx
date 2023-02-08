@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { Forum } from './pages'
+
 import './App.css'
 
 function App() {
@@ -12,7 +14,12 @@ function App() {
 
     fetchServerData()
   }, [])
-  return <div className="App">Вот тут будет жить ваше приложение :)</div>
+
+  return (
+    <div className="App">
+      <Forum />
+    </div>
+  )
 }
 
 export default App
