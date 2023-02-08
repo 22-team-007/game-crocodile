@@ -4,11 +4,12 @@ import { Container, ListGroup, Image } from 'react-bootstrap'
 import './styles.scss'
 import Arrow from '../../assets/arrow.svg'
 
+const mockMessages = ['message 1', 'message 2', 'message 3', 'message 4']
+const mockPlayers = ['player 1', 'player 2', 'player 3', 'player 4']
+
 const Game = () => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const mockMessages = ['message 1', 'message 2', 'message 3', 'message 4']
-  const mockPlayers = ['player 1', 'player 2', 'player 3', 'player 4']
   const [message, setMessage] = useState('')
 
   const mouseDownHandler = () => {
@@ -35,8 +36,8 @@ const Game = () => {
           <div className="leader-board">
             <h5 className="text-center">Раунд 8 из 15</h5>
             <ListGroup variant="flush" className="leader-board_wrap">
-              {mockPlayers.map((player, index) => (
-                <ListGroup.Item key={index} className="d-flex justify-content-between text-white no-border">
+              {mockPlayers.map(player => (
+                <ListGroup.Item key={player} className="d-flex justify-content-between text-white no-border">
                   <span>
                     <Image
                       src={'https://via.placeholder.com/30/FFA500'}
