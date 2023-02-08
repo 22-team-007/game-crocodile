@@ -1,5 +1,8 @@
 // React-Hook-Form
 import { useForm } from 'react-hook-form'
+// Router
+import { NavLink } from 'react-router-dom'
+import { Routes } from '../../main'
 // interfaces
 import { LoginData } from '../../types/interfaces'
 // components
@@ -58,7 +61,9 @@ const Login = () => {
         />
 
         <Button className='w-100 mt-3' type='submit'>Войти</Button>
-        <Button className='w-100' size='sm' variant='link'>Нет аккаунта?</Button>
+        <NavLink to={`/${Routes.Register}`}>
+          <Button className='w-100' size='sm' variant='link'>Нет аккаунта?</Button>
+        </NavLink>
       </Form>
     </Container>
   )
