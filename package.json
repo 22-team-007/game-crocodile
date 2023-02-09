@@ -22,5 +22,10 @@
   "devDependencies": {
     "@evilmartians/lefthook": "^1.1.1",
     "lerna": "^5.4.3"
+  },
+  "dependencies": {
+    "bootstrap": "^5.2.3",
+    "react-bootstrap": "^2.7.0",
+    "react-hook-form": "^7.43.1"
   }
 }
