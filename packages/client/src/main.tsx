@@ -7,7 +7,7 @@ import StartPage from './pages/startPage/StartPage'
 import ErrorPage from './pages/error/Error'
 import Login from './pages/login/Login'
 import Registration from './pages/registration/Registration'
-import LeaderBoard from './pages/leaderBoard/LeaderBoard'
+import LeaderBoard, { leaderBoardLoader } from './pages/leaderBoard/LeaderBoard'
 import Game from './pages/game/Game'
 import Profile from './pages/profile/Profile'
 import Forum from './pages/forum/Forum'
@@ -26,11 +26,6 @@ export enum Routes {
   E404 = '404',
   E500 = '500',
 }
-
-// приватные страницы
-// const LoginPage = WithAuth(Login, `/${Routes.Game}`)
-// const ProfilePage = WithAuth(Profile, `/${Routes.Login}`)
-// const GamePage = WithAuth(Game, `/${Routes.Login}`)
 
 const router = createBrowserRouter([
   {
@@ -61,6 +56,7 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Leaderboard,
+        loader: leaderBoardLoader,
         element: <LeaderBoard />,
       },
       {
