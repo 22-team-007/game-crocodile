@@ -39,7 +39,7 @@ declare type GameType = {
     content: string
   }
 }
-declare type LeaderbordType = {
-  userId: number,
+declare type LeaderType = {
+  id: number,
   score: number
 }
