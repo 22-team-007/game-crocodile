@@ -1,4 +1,7 @@
 import ProfilePage from './profile';
+import Game from './game'
+
 export {
-    ProfilePage
+    ProfilePage,
+    Game
 }
