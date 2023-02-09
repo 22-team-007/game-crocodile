@@ -14,10 +14,6 @@ const Game = () => {
   const brush = useRef<Brush>()
   const [message, setMessage] = useState('')
 
-  const mouseDownHandler = () => {
-    console.log('test')
-  }
-
   useEffect(() => {
     brush.current = new Brush(canvasRef.current!)
   }, [])
@@ -37,7 +33,6 @@ const Game = () => {
         <div className="drawing">
           <Form.Control type="color" onChange={changeColor}/>
           <canvas
-            onMouseDown={mouseDownHandler}
             ref={canvasRef}
             width={650}
             height={600}
