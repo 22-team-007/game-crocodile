@@ -1,0 +1,32 @@
+.avatar-edit{
+    background-color: black;
+    position: relative;
+
+    input[type="file"] {
+        display: none;
+    }
+
+    img {
+        max-width: 100%;
+    }
+
+    &:hover {
+        img{
+            opacity: 0.5;
+        }
+    
+        &::after{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding-top: calc(50% - 6pt);
+            display: block;
+            color: white;
+            content: "Изменить";
+            text-align: center;
+            background: none;
+            margin-top: -100%;
+            font-size: 12pt;
+        }
+    }
+}
