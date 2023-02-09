@@ -5,7 +5,7 @@ import Login from './login/Login';
 import StartPage from './startPage/StartPage';
 import ErrorPage from './error/Error';
 import LeaderBoard from './leaderBoard/LeaderBoard';
-import Forum from './forum/Forum';
+import Forum from './forum';
 
 export {
   StartPage,
