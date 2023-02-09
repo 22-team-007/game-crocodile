@@ -4,14 +4,7 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
-import StartPage from './pages/startPage/StartPage'
-import ErrorPage from './pages/error/Error'
-import Login from './pages/login/Login'
-import LeaderBoard from './pages/leaderBoard/LeaderBoard'
-import Game from './pages/game/Game'
-import Profile from './pages/profile/Profile'
-import Forum from './pages/forum/Forum'
-import Registration from './pages/registration/Registration'
+import { StartPage, ErrorPage, ProfilePage, Login, LeaderBoard, Game, Forum, Registration } from './pages'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -21,7 +14,7 @@ export enum Routes {
   Register = 'signup',
   Logout = 'signout',
   Game = 'game',
-  Profile = 'profile',
+  Profile = 'ProfilePage',
   Leaderboard = 'liders',
   Forum = 'forum',
   E404 = '404',
@@ -58,7 +51,7 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Profile,
-        element: <Profile />,
+        element: <ProfilePage />,
       },
       {
         path: Routes.Leaderboard,
