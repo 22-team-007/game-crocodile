@@ -7,11 +7,11 @@ import App from './layouts/app/App'
 import StartPage from './pages/startPage/StartPage'
 import ErrorPage from './pages/error/Error'
 import Login from './pages/login/Login'
-import Registration from './pages/registration/Registration'
 import LeaderBoard from './pages/leaderBoard/LeaderBoard'
 import Game from './pages/game/Game'
 import Profile from './pages/profile/Profile'
 import Forum from './pages/forum/Forum'
+import Registration from './pages/registration/Registration'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
