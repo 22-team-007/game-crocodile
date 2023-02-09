@@ -14,7 +14,7 @@ export enum Routes {
   Register = 'signup',
   Logout = 'signout',
   Game = 'game',
-  Profile = 'ProfilePage',
+  Profile = 'profile',
   Leaderboard = 'liders',
   Forum = 'forum',
   E404 = '404',
