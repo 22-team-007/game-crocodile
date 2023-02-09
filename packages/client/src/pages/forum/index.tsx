@@ -25,28 +25,10 @@ const Forum = () => {
     <Container className="forum-container">
       <Tabs defaultActiveKey="themes" className="mb-3">
         <Tab eventKey="themes" title="Список тем">
-          <ForumThemes chats={mockTopics} />
-        </Tab>
-
-        <Tab eventKey="messages" title="Список сообщений в теме">
-          <ForumMessages messages={mockMessages} selectedChat={1} userId={1} />
-        </Tab>
-
-        <Tab eventKey="createComment" title="Форма написания комменатрия">
-          <Form>
-            <Form.Group className="mb-3" controlId="comment">
-              <Form.Label>Оставьте свой комментарий</Form.Label>
-              <Form.Control as="textarea" placeholder="Ваше сообщение" />
-            </Form.Group>
-            <Button variant="primary">Отправить</Button>
-          </Form>
-        </Tab>
-
-        <Tab eventKey="createTopic" title="Форма создания темы">
           <Button variant="primary" onClick={handleShow}>
             Создать новую тему
           </Button>
-
+          <ForumThemes chats={mockTopics} />
           <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
               <Modal.Title>Введите название темы</Modal.Title>
@@ -68,6 +50,17 @@ const Forum = () => {
               </Form>
             </Modal.Body>
           </Modal>
+        </Tab>
+
+        <Tab eventKey="messages" title="Список сообщений в теме">
+          <ForumMessages messages={mockMessages} selectedChat={1} userId={1} />
+          <Form>
+            <Form.Group className="mb-3" controlId="comment">
+              <Form.Label>Оставьте свой комментарий</Form.Label>
+              <Form.Control as="textarea" placeholder="Ваше сообщение" />
+            </Form.Group>
+            <Button variant="primary">Отправить</Button>
+          </Form>
         </Tab>
       </Tabs>
     </Container>
