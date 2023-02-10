@@ -7,7 +7,6 @@ import ApiLB from '../../api/leaderbord'
 import ApiUsers from '../../api/users'
 import ApiRes from '../../api/resources'
 import './style.scss'
-import Leaderbord from '../../api/leaderbord'
 
 export async function leaderBoardLoader() {
   let leaders: IsLeader[] | LeaderType[]
