@@ -2,9 +2,11 @@ import { useState } from 'react'
 import ForumMessages from '../../components/ForumMessages'
 import ForumThemes from '../../components/ForumThemes'
 import { Container, Tabs, Tab, Form, Button, Modal } from 'react-bootstrap'
+import withErrorBoundary from '../../hoc/withErrorBoundary'
 
 import { mockTopics, mockMessages } from './mockData'
 import './styles.scss'
+
 
 const Forum = () => {
   const [show, setShow] = useState(false)
@@ -66,4 +68,4 @@ const Forum = () => {
     </Container>
   )
 }
-export default Forum
+export default withErrorBoundary(Forum)
