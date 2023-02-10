@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react'
-import { Container, ListGroup, Image } from 'react-bootstrap'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { Container, ListGroup, Image, Form } from 'react-bootstrap'
 
 import './styles.scss'
 import Arrow from '../../assets/arrow.svg'
+import Brush from '../../utils/tools/Brush'
 
 const mockMessages = ['message 1', 'message 2', 'message 3', 'message 4']
 const mockPlayers = ['player 1', 'player 2', 'player 3', 'player 4']
@@ -10,13 +11,19 @@ const mockPlayers = ['player 1', 'player 2', 'player 3', 'player 4']
 const Game = () => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const brush = useRef<Brush>()
   const [message, setMessage] = useState('')
 
-  const mouseDownHandler = () => {
-    console.log(canvasRef.current)
+  useEffect(() => {
+    brush.current = new Brush(canvasRef.current!)
+  }, [])
+
+  const changeColor = (e: ChangeEvent<HTMLInputElement>) => {
+    brush.current!.strokeColor = e.target.value
+    brush.current!.fillColor = e.target.value
   }
 
-  const messageHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const messageHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value)
   }
 
@@ -24,11 +31,11 @@ const Game = () => {
     <Container className="game-container">
       <div className="game-wrapper">
         <div className="drawing">
+          <Form.Control type="color" onChange={changeColor}/>
           <canvas
-            onMouseDown={mouseDownHandler}
             ref={canvasRef}
             width={650}
-            height={650}
+            height={600}
           />
         </div>
 
