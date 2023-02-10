@@ -1,43 +1,24 @@
 import { useLoaderData } from 'react-router-dom'
 import { Row, Col } from 'react-bootstrap'
-import { Leader, IsLeader } from './components/Leader'
+import { Leader } from './components/Leader'
 import { TopLeader } from './components/TopLeader'
+import { TopUser } from '../../interfaces/interfaces'
 
-import ApiLB from '../../api/leaderbord'
-import ApiUsers from '../../api/users'
-import ApiRes from '../../api/resources'
+import { leadersData } from './data'
+
 import './style.scss'
 
 export async function leaderBoardLoader() {
-  let leaders: IsLeader[] | LeaderType[]
-
-  // create api
-  const apiLB = new ApiLB()
-  const apiUsers = new ApiUsers()
-  const apiRes = new ApiRes()
-
-  // get list of all leaders
-  leaders = await apiLB.all()
-
-  // get users by id
-  leaders = await Promise.all(
-    leaders.map(async leader => {
-      // now user id is hardcoded, because bd store fake id
-      const user = await apiUsers.get(leader.id)
-
-      user.avatar = apiRes.url(user.avatar)
-      return { ...user, ...leader }
-    })
-  )
+  const leaders: TopUser[] = leadersData
 
   return leaders
 }
 
 const LeaderBoard = () => {
-  let leaders: IsLeader[]
+  let leaders: TopUser[]
 
   try {
-    leaders = useLoaderData() as IsLeader[]
+    leaders = useLoaderData() as TopUser[]
   } catch (error) {
     // something wrowg probably component invoke without router
     console.log(error)
@@ -54,9 +35,9 @@ const LeaderBoard = () => {
     )
   }
 
-  const Sortedleaders = leaders.sort((a: IsLeader, b: IsLeader) =>
+  const Sortedleaders = leaders.sort((a: TopUser, b: TopUser) =>
     a.score > b.score ? -1 : 1
-  ) as IsLeader[]
+  ) as TopUser[]
 
   // get first 3 and other leaders
   const supLeads = Sortedleaders.slice(0, 3)

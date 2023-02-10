@@ -1,11 +1,8 @@
 import { FC } from 'react'
-import { Leader, IsLeader } from './Leader'
+import { Leader } from './Leader'
+import { TopLeaderProp } from '../../../interfaces/interfaces'
 
-interface IsTopLeader extends IsLeader {
-  title: string
-}
-
-export const TopLeader: FC<IsTopLeader> = props => {
+export const TopLeader: FC<TopLeaderProp> = props => {
   const { title, ...other } = props
 
   return (

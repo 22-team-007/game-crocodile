@@ -1,11 +1,5 @@
 import { FC } from 'react'
-
-export interface LeaderProps extends UserType {
-  getValues<T>(): T
-  score: number
-}
-
-export type IsLeader = Required<LeaderProps>
+import { LeaderProps } from '../../../interfaces/interfaces'
 
 export const Leader: FC<LeaderProps> = props => {
   const { display_name, score, avatar, login } = props

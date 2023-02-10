@@ -20,7 +20,7 @@ declare type SignUpParams = SignInParams & {
 }
 declare type UserType = Omit<SignUpParams, 'password'> & {
   id: number
-  display_name?: string
+  display_name?: string | null
   avatar?: string
 }
 declare type ProfileParams = Omit<UserType, 'id'>
@@ -29,9 +29,4 @@ declare type PasswordParams = {
   oldPassword: string
   newPassword: string
   repeatPassword?: string
-}
-
-declare type LeaderType = {
-  id: number
-  score: number
 }
