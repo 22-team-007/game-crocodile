@@ -4,7 +4,17 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
-import { StartPage, ErrorPage, ProfilePage, Login, LeaderBoard, Game, Forum, Registration } from './pages'
+import {
+  StartPage,
+  ErrorPage,
+  ProfilePage,
+  Login,
+  LeaderBoard,
+  leaderBoardLoader,
+  Game,
+  Forum,
+  Registration,
+} from './pages'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -55,6 +65,7 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Leaderboard,
+        loader: leaderBoardLoader,
         element: <LeaderBoard />,
       },
       {
