@@ -2809,7 +2809,10 @@
     "react-bootstrap" "^2.7.0"
     "react-dom" "^18.2.0"
     "react-hook-form" "^7.43.0"
+<<<<<<< HEAD
     "react-router-dom" "^6.8.0"
+=======
+>>>>>>> dev
     "sass" "^1.58.0"
 
 "cliui@^7.0.2":
@@ -6564,7 +6567,13 @@
     "loose-envify" "^1.1.0"
     "scheduler" "^0.23.0"
 
+<<<<<<< HEAD
 "react-hook-form@^7.43.0":
+=======
+"react-hook-form@^7.43.0", "react-hook-form@^7.43.1":
+  "integrity" "sha512-+s3+s8LLytRMriwwuSqeLStVjRXFGxgjjx2jED7Z+wz1J/88vpxieRQGvJVvzrzVxshZ0BRuocFERb779m2kNg=="
+  "resolved" "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.43.1.tgz"
+>>>>>>> dev
   "version" "7.43.1"
 
 "react-is@^16.13.1":
@@ -6597,7 +6606,11 @@
   "resolved" "https://registry.npmjs.org/react-refresh/-/react-refresh-0.14.0.tgz"
   "version" "0.14.0"
 
+<<<<<<< HEAD
 "react-router-dom@^6.8.0", "react-router-dom@^6.8.1":
+=======
+"react-router-dom@^6.8.0":
+>>>>>>> dev
   "integrity" "sha512-67EXNfkQgf34P7+PSb6VlBuaacGhkKn3kpE51+P6zYSG2kiRoumXEL6e27zTa9+PGF2MNXbgIUHTVlleLbIcHQ=="
   "resolved" "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.8.1.tgz"
   "version" "6.8.1"

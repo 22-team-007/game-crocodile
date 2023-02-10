@@ -1,0 +1,33 @@
+.forum-container {
+  margin-top: 20px;
+}
+
+.forum-themes {
+  .list-group-item {
+    cursor: pointer;
+  }
+
+  .left {
+    img {
+      margin-right: 10px;
+    }
+  }
+}
+
+.theme-messages {
+  .right {
+    white-space: nowrap;
+  }
+
+  .message-text {
+    padding: 0 1rem;
+    margin-left: 1rem;
+    max-width: 90%;
+    border-left: 1px solid #eee;
+  }
+
+  .message-number {
+    font-size: 0.875em;
+    color: #808080;
+  }
+}

@@ -1,18 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
-import {
-  Registration,
-  LeaderBoard,
-  StartPage,
-  ErrorPage,
-  Profile,
-  Login,
-  Forum,
-  Game,
-} from './pages'
+import { StartPage, ErrorPage, Profile, Login, LeaderBoard, Game, Forum, Registration } from './pages'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
