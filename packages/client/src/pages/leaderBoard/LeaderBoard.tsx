@@ -48,30 +48,24 @@ const LeaderBoard = () => {
       <h1 className="mt-4 text-center text-uppercase">Лидеры игры</h1>
       <Row className="mt-5">
         <Col className="mb-4 mb-md-5 col-md-12 d-flex justify-content-center">
-          {supLeads[0] ? (
+          {supLeads[0] && (
             <div className="grand-place">
               <TopLeader {...supLeads[0]} title="Первое место" />
             </div>
-          ) : (
-            ''
           )}
         </Col>
         <Col className="mb-4 col-md-6 d-flex justify-content-center">
-          {supLeads[1] ? (
+          {supLeads[1] && (
             <div className="grand-place">
               <TopLeader {...supLeads[1]} title="Второе место" />
             </div>
-          ) : (
-            ''
           )}
         </Col>
         <Col className="mb-4 col-md-6 d-flex justify-content-center">
-          {supLeads[2] ? (
+          {supLeads[2] && (
             <div className="grand-place">
               <TopLeader {...supLeads[2]} title="Третье место" />
             </div>
-          ) : (
-            ''
           )}
         </Col>
       </Row>
