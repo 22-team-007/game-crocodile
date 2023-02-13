@@ -1,19 +1,20 @@
-import Registration from './registration/Registration'
-import LeaderBoard from './leaderBoard/LeaderBoard'
-import StartPage from './startPage/StartPage'
-import Profile from './profile/Profile'
-import ErrorPage from './error/Error'
-import Login from './login/Login'
-import Forum from './forum/Forum'
+import Profile from './profile/Profile';
 import Game from './game/Game'
+import Registration from './registration/Registration';
+import Login from './login/Login';
+import StartPage from './startPage/StartPage';
+import ErrorPage from './error/Error';
+import LeaderBoard, {leaderBoardLoader} from './leaderBoard/LeaderBoard';
+import Forum from './forum/Forum';
 
 export {
   Registration,
-  LeaderBoard,
   StartPage,
   ErrorPage,
   Profile,
   Login,
-  Forum,
+  LeaderBoard,
+  leaderBoardLoader,
   Game,
+  Forum,
 }

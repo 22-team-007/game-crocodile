@@ -2,7 +2,7 @@ export interface GetUser {
   id: number
   first_name: string
   second_name: string
-  display_name: string
+  display_name: string | null
   login: string
   email: string
   phone: string
@@ -46,4 +46,14 @@ export interface ForumMessagesProps {
 
 export interface ForumThemesProps {
   chats: ChatInfo[]
+}
+
+export interface LeaderProps extends GetUser {
+  score: number
+}
+
+export type TopUser = Required<LeaderProps>
+
+export interface TopLeaderProp extends TopUser {
+  title: string
 }
