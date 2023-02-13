@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Container, Navbar, Nav } from 'react-bootstrap'
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 import { LINKS } from './constants'
 
