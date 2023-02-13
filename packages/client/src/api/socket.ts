@@ -81,7 +81,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
   }
 
   public getMessages (content:number) {
-    this.send(JSON.stringify({ content: `${content}`, type: 'get old' }))
+    this.send(JSON.stringify({ content, type: 'get old' }))
   }
 
   public on(event: string, handler: (res?: string | MessageContent) => void) {
