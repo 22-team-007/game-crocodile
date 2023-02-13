@@ -5,6 +5,7 @@ import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
 import { StartPage, ErrorPage, Profile, Login, LeaderBoard, Game, Forum, Registration } from './pages'
+import api from './api';
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -80,14 +81,18 @@ const router = createBrowserRouter([
   },
 ])
 
-import api from './api';
-
 api.auth.signIn({
-  login:"ZinovNA",
-  password:"123qwertY@"
+  login:"Gosha",
+  password:"123Gosha"
 }).then(v=>{
-  console.log('vvv',v);
-  api.auth.logOut()
+  api.games.socketConnect(v.id,421).then(socket=>{
+    socket.addEventListener("coordinates",console.log);
+    socket.addEventListener("text",console.log);
+    setInterval(()=>{
+      socket.sendCoordinates([[1,2],[4,5]],'#000000')
+      socket.sendMessage('Арбуз')
+    },1000)
+  })
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
