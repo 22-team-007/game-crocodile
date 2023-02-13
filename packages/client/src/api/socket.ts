@@ -3,19 +3,15 @@ type SocketAPIType = {
   sendCoordinates: (coordinates:[x:number,y:number][], color:string) => void,
   sendImage: (content:string) => void,
   getMessages: (content:string) => void,
-  on: (event: string, handler: (res?: string | MessageContent) => void) => void
-}
-type MessageContent = {
-  type: string,
-  content: string | [x:number,y:number][],
-  color?: string
+  on: (event: string, handler: (res?: string | Content) => void) => void
 }
 type Content = {
+  type: string,
   chat_id?: number,
   time?: string,
-  type: string,
   user_id?: string,
-  content?: string | MessageContent,
+  color?: string
+  content?: string | [x:number,y:number][] | Content,
   file?: ResourceType
 }
 export default class Socket extends WebSocket implements SocketAPIType {
@@ -37,44 +33,35 @@ export default class Socket extends WebSocket implements SocketAPIType {
     super.addEventListener('message', this.handler);
   }
 
-  private emit(type:string, detail?: string | MessageContent) {
-    if(type==='message' && detail && typeof detail === 'object')
-      type = detail.type;
-    this.dispatchEvent(new CustomEvent(type, { detail }))
+  private emit(c:Content) {
+    if(c.type==='message' && c.content && typeof c.content === 'object')
+      c = {...c, ...c.content} as Content;
+    this.dispatchEvent(new CustomEvent(c.type, { detail: c }))
   }
 
   private handler(event:MessageEvent){
     const res: Content | Content[] = JSON.parse(event.data);
     if (res && typeof res === 'object') {
-      if (Array.isArray(res)) {
-        res.reverse().forEach((m:Content) => {
-          this.emit(m.type, m.content)
-        });
-      } else {
-        this.emit(res.type, res.content)
-      }
+      if (Array.isArray(res))
+        res.reverse().forEach(this.emit);
+      else
+        this.emit(res)
     }
   }
 
-  public sendMessage (text:string) {
+  public sendContent (type:string, content: Omit<Content, "type">) {
     this.send(JSON.stringify({
       type: 'message',
-      content: {
-        type: "text",
-        content: text
-      }
+      content: { type, ...content }
     }))
   }
 
+  public sendMessage (text:string) {
+    this.sendContent("text", { content: text })
+  }
+
   public sendCoordinates (coordinates:[x:number,y:number][], color:string) {
-    this.send(JSON.stringify({
-      type: 'message',
-      content: {
-        type: "coordinates",
-        content: coordinates,
-        color
-      }
-    }))
+    this.sendContent("coordinates", { content: coordinates, color })
   }
 
   public sendImage (content:string) {
@@ -85,7 +72,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
     this.send(JSON.stringify({ content, type: 'get old' }))
   }
 
-  public on(event: string, handler: (res?: string | MessageContent) => void) {
+  public on(event: string, handler: (res?: string | Content) => void) {
     super.addEventListener(event, (e:Event)=>{
       handler((e as CustomEvent).detail);
     });

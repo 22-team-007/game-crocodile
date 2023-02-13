@@ -86,8 +86,8 @@ api.auth.signIn({
   password:"123Gosha"
 }).then(v=>{
   api.games.socketConnect(v.id,421).then(socket=>{
-    socket.addEventListener("coordinates",console.log);
-    socket.addEventListener("text",console.log);
+    socket.on("coordinates",console.log);
+    socket.on("text",console.log);
     setInterval(()=>{
       socket.sendCoordinates([[1,2],[4,5]],'#000000')
       socket.sendMessage('Арбуз')
