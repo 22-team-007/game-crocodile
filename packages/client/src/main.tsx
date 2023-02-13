@@ -5,6 +5,7 @@ import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
 import { StartPage, ErrorPage, Profile, Login, LeaderBoard, leaderBoardLoader, Game, Forum, Registration } from './pages'
+import api from './api';
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -81,16 +82,13 @@ const router = createBrowserRouter([
   },
 ])
 
-import api from './api';
-
 api.auth.signIn({
   login:"ZinovNA",
   password:"123qwertY@"
-}).then(v=>{
-  console.log('vvv',v);
-  api.auth.logOut()
-})
-
+}).then(console.log)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(console.log, console.error).catch(console.error);
+}
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <RouterProvider router={router} />
