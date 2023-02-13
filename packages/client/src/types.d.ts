@@ -30,21 +30,6 @@ declare type PasswordParams = {
   newPassword: string,
   repeatPassword?: string,
 }
-declare type SignInParams = {
-  login: string,
-  password: string,
-}
-declare type SignUpParams = SignInParams & {
-  first_name: string,
-  second_name: string,
-  email: string,
-  phone: string,
-}
-declare type UserType =  Omit<SignUpParams, "password"> & {
-  id: number,
-  display_name?: string,
-  avatar?: string,
-}
 declare type ResourceType = {
   id: number,
   user_id: number,
