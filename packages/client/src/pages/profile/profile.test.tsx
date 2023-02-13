@@ -1,7 +1,7 @@
-import App from './App'
+import ProfilePage from './Profile'
 import { render, screen } from '@testing-library/react'
 
-const appContent = 'Вот тут будет жить ваше приложение :)'
+const appContent = 'Профиль'
 
 // @ts-ignore
 global.fetch = jest.fn(() =>
@@ -9,6 +9,6 @@ global.fetch = jest.fn(() =>
 )
 
 test('Example test', async () => {
-  render(<App />)
+  render(<ProfilePage />)
   expect(screen.getByText(appContent)).toBeDefined()
 })
