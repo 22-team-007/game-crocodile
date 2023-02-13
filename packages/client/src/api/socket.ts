@@ -1,10 +1,3 @@
-type SocketAPIType = {
-  sendMessage: (text:string) => void,
-  sendCoordinates: (coordinates:[x:number,y:number][], color:string) => void,
-  sendImage: (content:string) => void,
-  getMessages: (content:string) => void,
-  on: (event: string, handler: (res?: string | Content) => void) => void
-}
 type Content = {
   type: string,
   chat_id?: number,
@@ -14,6 +7,16 @@ type Content = {
   content?: string | [x:number,y:number][] | Content,
   file?: ResourceType
 }
+
+type SocketAPIType = {
+  sendContent: (type:string, content: Omit<Content, "type">) => void,
+  sendMessage: (text:string) => void,
+  sendCoordinates: (coordinates:[x:number,y:number][], color:string) => void,
+  sendImage: (content:string) => void,
+  getMessages: (content:string) => void,
+  on: (event: string, handler: (res?: string | Content) => void) => void
+}
+
 export default class Socket extends WebSocket implements SocketAPIType {
   protected static instance:Socket;
 
