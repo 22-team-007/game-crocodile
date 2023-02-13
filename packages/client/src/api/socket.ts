@@ -1,7 +1,8 @@
 type SocketAPIType = {
   sendMessage: (text:string) => void,
   sendCoordinates: (coordinates:[x:number,y:number][], color:string) => void,
-  sendImage: (content:number) => void,
+  sendImage: (content:string) => void,
+  getMessages: (content:string) => void,
   on: (event: string, handler: (res?: string | MessageContent) => void) => void
 }
 type MessageContent = {
@@ -76,11 +77,11 @@ export default class Socket extends WebSocket implements SocketAPIType {
     }))
   }
 
-  public sendImage (content:number) {
+  public sendImage (content:string) {
     this.send(JSON.stringify({ content, type: 'file' }))
   }
 
-  public getMessages (content:number) {
+  public getMessages (content:string) {
     this.send(JSON.stringify({ content, type: 'get old' }))
   }
 
