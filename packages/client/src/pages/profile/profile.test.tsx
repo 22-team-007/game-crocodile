@@ -1,4 +1,4 @@
-import ProfilePage from '.'
+import ProfilePage from './Profile'
 import { render, screen } from '@testing-library/react'
 
 const appContent = 'Профиль'

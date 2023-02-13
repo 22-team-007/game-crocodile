@@ -15,7 +15,7 @@ export default class Brush extends Tool {
     this.canvas.onmouseleave = this.mouseUpHandler.bind(this)
   }
 
-  mouseUpHandler(e: MouseEvent) {
+  mouseUpHandler() {
     this.mouseDown = false
   }
 
