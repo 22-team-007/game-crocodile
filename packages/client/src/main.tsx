@@ -86,8 +86,9 @@ api.auth.signIn({
   login:"ZinovNA",
   password:"123qwertY@"
 }).then(console.log)
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then(console.log, console.error).catch(console.error);
+  navigator.serviceWorker.register('/sw.js')
 }
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
