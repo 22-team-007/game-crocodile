@@ -1,4 +1,4 @@
-import ProfilePage from './Profile'
+import { ProfileComp } from './Profile'
 import { render, screen } from '@testing-library/react'
 
 const appContent = 'Профиль'
@@ -9,6 +9,6 @@ global.fetch = jest.fn(() =>
 )
 
 test('Example test', async () => {
-  render(<ProfilePage />)
+  render(<ProfileComp />)
   expect(screen.getByText(appContent)).toBeDefined()
 })

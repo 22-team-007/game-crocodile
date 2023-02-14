@@ -4,7 +4,21 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
-import { StartPage, ErrorPage, Profile, Login, LeaderBoard, leaderBoardLoader, Game, Forum, Registration } from './pages'
+
+import {
+  StartPage,
+  ErrorPage,
+  Profile,
+  Login,
+  LeaderBoard,
+  leaderBoardLoader,
+  Game,
+  Forum,
+  Registration,
+  Page,
+} from './pages'
+
+import api from './api'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -21,46 +35,80 @@ export enum Routes {
   E500 = '500',
 }
 
-// приватные страницы
-// const LoginPage = WithAuth(Login, `/${Routes.Game}`)
-// const ProfilePage = WithAuth(Profile, `/${Routes.Login}`)
-// const GamePage = WithAuth(Game, `/${Routes.Login}`)
+const userLoader = async () => {
+  let { id } = await api.auth.user()
+
+  if (typeof id === 'undefined') {
+    id = 0
+  }
+
+  localStorage.setItem('userId', String(id))
+  return null
+}
 
 const router = createBrowserRouter([
   {
     path: Routes.Index,
     element: <App />,
     errorElement: <ErrorPage />,
-    loader: undefined,
+    loader: userLoader,
     children: [
       {
         index: true,
-        element: <StartPage />,
+        element: (
+          <Page title="Крокодил - Главная страница">
+            <StartPage />
+          </Page>
+        ),
       },
       {
         path: Routes.Login,
-        element: <Login />,
+        element: (
+          <Page title="Крокодил - Вход">
+            <Login />
+          </Page>
+        ),
       },
       {
         path: Routes.Game,
-        element: <Game />,
+        element: (
+          <Page title="Крокодил - Игра">
+            <Game />
+          </Page>
+        ),
       },
       {
         path: Routes.Register,
-        element: <Registration />,
+        element: (
+          <Page title="Крокодил - Регистрация">
+            <Registration />
+          </Page>
+        ),
       },
       {
         path: Routes.Profile,
-        element: <Profile />,
+        element: (
+          <Page title="Крокодил - Профиль">
+            <Profile />
+          </Page>
+        ),
       },
       {
         path: Routes.Leaderboard,
         loader: leaderBoardLoader,
-        element: <LeaderBoard />,
+        element: (
+          <Page title="Крокодил - Лидеры">
+            <LeaderBoard />
+          </Page>
+        ),
       },
       {
         path: Routes.Forum,
-        element: <Forum />,
+        element: (
+          <Page title="Крокодил - Форум">
+            <Forum />
+          </Page>
+        ),
       },
       {
         path: Routes.Logout,
@@ -73,23 +121,22 @@ const router = createBrowserRouter([
   },
   {
     path: Routes.E404,
-    element: <ErrorPage />,
+    element: (
+      <Page title="Ошибка - 404">
+        <ErrorPage />
+      </Page>
+    ),
   },
   {
     path: Routes.E500,
-    element: <ErrorPage />,
+    element: (
+      <Page title="Ошибка - 500">
+        <ErrorPage />
+      </Page>
+    ),
   },
 ])
 
-import api from './api';
-
-api.auth.signIn({
-  login:"ZinovNA",
-  password:"123qwertY@"
-}).then(v=>{
-  console.log('vvv',v);
-  api.auth.logOut()
-})
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
