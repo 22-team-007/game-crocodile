@@ -136,10 +136,7 @@ const router = createBrowserRouter([
 ])
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .register('/sw.js')
-    .then(console.log, console.error)
-    .catch(console.error)
+  navigator.serviceWorker.register('/sw.js')
 }
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

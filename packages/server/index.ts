@@ -1,6 +1,7 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import words from './words'
 dotenv.config()
 const packagesPath = `${process.env.INIT_CWD}/packages`;
 
@@ -18,6 +19,9 @@ app.get('/assets/:page', (req, res) => {
 })
 app.get('/', (_, res) => {
   res.sendFile(`${packagesPath}/client/dist/index.html`)
+})
+app.get('/get/word', (_, res) => {
+  res.send(words[Math.floor(Math.random() * words.length)])
 })
 app.get('/:page', (req, res) => {
   if(fs.existsSync(`${packagesPath}/client/dist/${req.params.page}`))
