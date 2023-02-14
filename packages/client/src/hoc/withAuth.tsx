@@ -3,12 +3,23 @@ import { Navigate } from 'react-router-dom'
 
 export default function WithAuth<P extends object>(
   PrivateComponent: ComponentType<P>,
-  redirectTo = '/signin'
+  redirectTo = '/signin',
+  invertRule = false
 ): React.ComponentType | any {
   return function HOC(props: any) {
-    const login = Math.random() < 0.5
+    let userId = localStorage.getItem('userId')
 
-    return login ? (
+    if (userId === '0') {
+      userId = null
+    }
+
+    let isLogin = userId !== null
+
+    if (invertRule) {
+      isLogin = !isLogin
+    }
+
+    return isLogin ? (
       <PrivateComponent {...props} />
     ) : (
       <Navigate to={redirectTo} />

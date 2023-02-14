@@ -6,6 +6,7 @@ import StartPage from './startPage/StartPage';
 import ErrorPage from './error/Error';
 import LeaderBoard, {leaderBoardLoader} from './leaderBoard/LeaderBoard';
 import Forum from './forum/Forum';
+import Page from './page/page'
 
 export {
   Registration,
@@ -17,4 +18,5 @@ export {
   leaderBoardLoader,
   Game,
   Forum,
+  Page,
 }
