@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Container, Navbar, Nav } from 'react-bootstrap'
 import { NavLink, Outlet } from 'react-router-dom'
 import { LINKS } from './constants'
@@ -11,6 +12,10 @@ const App = () => {
     userId = null
   }
 
+  const availableLinks = useMemo(() => LINKS.filter(link => !((link.showUnregOnly && userId !== null) ||
+  (link.private && userId === null))),
+  [userId])
+
   return (
     <div className="App">
       <Navbar fixed="top" bg="light">
@@ -20,20 +25,11 @@ const App = () => {
           </NavLink>
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="justify-content-end flex-grow-1">
-              {LINKS.map(link => {
-                if (
-                  (link.showUnregOnly && userId !== null) ||
-                  (link.private && userId === null)
-                ) {
-                  return
-                }
-
-                return (
+              {availableLinks.map(link => (
                   <NavLink className="nav-link" key={link.path} to={link.path}>
                     {link.title}
                   </NavLink>
-                )
-              })}
+              ))}
             </Nav>
           </Navbar.Collapse>
         </Container>

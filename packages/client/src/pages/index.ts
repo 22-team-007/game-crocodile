@@ -1,4 +1,4 @@
-import Profile from './profile/Profile';
+import Profile, {PrivateProfile} from './profile/Profile';
 import Game from './game/Game'
 import Registration from './registration/Registration';
 import Login from './login/Login';
@@ -13,6 +13,7 @@ export {
   StartPage,
   ErrorPage,
   Profile,
+  PrivateProfile,
   Login,
   LeaderBoard,
   leaderBoardLoader,

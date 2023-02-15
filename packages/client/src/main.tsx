@@ -9,6 +9,7 @@ import {
   StartPage,
   ErrorPage,
   Profile,
+  PrivateProfile,
   Login,
   LeaderBoard,
   leaderBoardLoader,
@@ -29,6 +30,7 @@ export enum Routes {
   Logout = 'signout',
   Game = 'game',
   Profile = 'profile',
+  ProfileId = 'profile/:profileId',
   Leaderboard = 'leaders',
   Forum = 'forum',
   E404 = '404',
@@ -87,6 +89,15 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Profile,
+        element: (
+          <Page title="Крокодил - Профиль">
+            <PrivateProfile />
+          </Page>
+        ),
+      },
+      {
+        path: Routes.ProfileId,
+        loader: undefined,
         element: (
           <Page title="Крокодил - Профиль">
             <Profile />

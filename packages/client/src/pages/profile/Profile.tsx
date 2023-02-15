@@ -13,7 +13,7 @@ enum Pages {
   Edit = 'ProfileEdit',
 }
 
-export const ProfileComp = () => {
+const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
 
@@ -63,4 +63,5 @@ export const ProfileComp = () => {
   </Container>
 }
 
-export default withAuth(ProfileComp)
+export const PrivateProfile = withAuth(Profile)
+export default Profile
