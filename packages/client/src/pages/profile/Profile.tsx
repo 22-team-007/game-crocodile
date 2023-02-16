@@ -3,6 +3,8 @@ import { Button, Card, Row, Col, Container } from 'react-bootstrap'
 
 import { Avatar, FormEdit, FormShow, FormPassword } from './components'
 
+import withAuth from '../../hoc/withAuth'
+
 import "./profile.scss"
 
 enum Pages {
@@ -61,4 +63,5 @@ const Profile = () => {
   </Container>
 }
 
+export const PrivateProfile = withAuth(Profile)
 export default Profile

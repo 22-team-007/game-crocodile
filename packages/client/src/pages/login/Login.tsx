@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 // Router
 import { NavLink } from 'react-router-dom'
 import { Routes } from '../../main'
+import WithAuth from '../../hoc/withAuth'
 // interfaces
 import { LoginData } from '../../types/interfaces'
 // components
@@ -69,4 +70,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default WithAuth(Login, '/game', true)
