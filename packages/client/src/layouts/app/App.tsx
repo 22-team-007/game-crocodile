@@ -1,28 +1,41 @@
-import { Outlet } from 'react-router-dom'
+import { useMemo } from 'react'
 import { Container, Navbar, Nav } from 'react-bootstrap'
-import { NavLink } from 'react-router-dom'
-
+import { NavLink, Outlet } from 'react-router-dom'
 import { LINKS } from './constants'
 
-import "./app.scss"
+import './app.scss'
 
-function App() {
+const App = () => {
+  let userId = localStorage.getItem('userId')
+
+  if (userId === '0') {
+    userId = null
+  }
+
+  const availableLinks = useMemo(() => LINKS.filter(link => !((link.showUnregOnly && userId !== null) ||
+  (link.private && userId === null))),
+  [userId])
+
   return (
     <div className="App">
       <Navbar fixed="top" bg="light">
         <Container>
-          <NavLink className="navbar-brand" to="/">Крокодил</NavLink>
+          <NavLink className="navbar-brand" to="/">
+            Крокодил
+          </NavLink>
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="justify-content-end flex-grow-1">
-              {LINKS.map(link => (
-                <NavLink className="nav-link" key={link.path} to={link.path}>{link.title}</NavLink>
+              {availableLinks.map(link => (
+                  <NavLink className="nav-link" key={link.path} to={link.path}>
+                    {link.title}
+                  </NavLink>
               ))}
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
       <Container>
-        <Outlet/>
+        <Outlet />
       </Container>
     </div>
   )
