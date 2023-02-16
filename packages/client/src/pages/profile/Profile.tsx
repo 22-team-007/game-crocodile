@@ -13,7 +13,7 @@ enum Pages {
   Edit = 'ProfileEdit',
 }
 
-const Profile = () => {
+export const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
 
