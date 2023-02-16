@@ -4,10 +4,12 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
+
 import {
   StartPage,
   ErrorPage,
   Profile,
+  PrivateProfile,
   Login,
   LeaderBoard,
   leaderBoardLoader,
@@ -16,6 +18,7 @@ import {
   Registration,
   Page,
 } from './pages'
+
 import api from './api'
 // styles
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -27,6 +30,7 @@ export enum Routes {
   Logout = 'signout',
   Game = 'game',
   Profile = 'profile',
+  ProfileId = 'profile/:profileId',
   Leaderboard = 'leaders',
   Forum = 'forum',
   E404 = '404',
@@ -85,6 +89,15 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Profile,
+        element: (
+          <Page title="Крокодил - Профиль">
+            <PrivateProfile />
+          </Page>
+        ),
+      },
+      {
+        path: Routes.ProfileId,
+        loader: undefined,
         element: (
           <Page title="Крокодил - Профиль">
             <Profile />
