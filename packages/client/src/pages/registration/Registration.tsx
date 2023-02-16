@@ -11,22 +11,14 @@ import FormInput from '../../components/FormInput'
 import { Button, Container, Form } from 'react-bootstrap'
 // Utils
 import { validation } from '../../utils'
+import api from '../../api'
 
 const Registration = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegistrationData>()
 
   const onSubmitHandler = (data: RegistrationData) => {
-    console.log(data)
-    fetch('https://ya-praktikum.tech/api/v2/auth/signup', {
-      'headers': {
-        'content-type': 'application/json'
-      },
-      'body': JSON.stringify(data),
-      'method': 'POST',
-      'mode': 'cors',
-      'credentials': 'include'
-    })
+    api.auth.signUp(data)
   }
 
   return (

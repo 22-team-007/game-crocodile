@@ -81,15 +81,15 @@ const router = createBrowserRouter([
   },
 ])
 
-import api from './api';
-
-api.auth.signIn({
-  login:"ZinovNA",
-  password:"123qwertY@"
-}).then(v=>{
-  console.log('vvv',v);
-  api.auth.logOut()
-})
+// import api from './api';
+//
+// api.auth.signIn({
+//   login:"ZinovNA",
+//   password:"123qwertY@"
+// }).then(v=>{
+//   console.log('vvv',v);
+//   api.auth.logOut()
+// })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
