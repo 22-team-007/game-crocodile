@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
-
 import {
   StartPage,
   ErrorPage,
@@ -148,6 +147,19 @@ const router = createBrowserRouter([
   },
 ])
 
+api.auth.signIn({
+  login:"Gosha",
+  password:"123Gosha"
+}).then(v=>{
+  api.games.socketConnect(v.id,421).then(socket=>{
+    socket.on("coordinates",console.log);
+    socket.on("text",console.log);
+    setInterval(()=>{
+      socket.sendCoordinates([[1,2],[4,5]],'#000000')
+      socket.sendMessage('Арбуз')
+    },1000)
+  })
+})
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
 }

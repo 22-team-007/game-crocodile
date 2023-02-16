@@ -1,4 +1,6 @@
 import ApiBase from './api_base'
+import Socket from './socket'
+
 type GameAPIType = {
   get: (offset:number,title:string|undefined,archive:boolean) => Promise<GameType[]>,
   create: (title:string) => Promise<string>,
@@ -9,7 +11,7 @@ type GameAPIType = {
   avatar: (chatId:string,file:File) => Promise<GameType>,
   includeUser: (chatId:number,users:number[]) => Promise<string>,
   excludeUser: (chatId:number,users:number[]) => Promise<string>,
-  token: (chatId:number) => Promise<string>,
+  socketConnect: (userId:number,chatId:number) => Promise<Socket>,
 }
 export default class Games extends ApiBase implements GameAPIType {
   public async get (offset = 0,title?:string,archive = false):Promise<GameType[]> {
@@ -60,9 +62,9 @@ export default class Games extends ApiBase implements GameAPIType {
     return await r.text()
   }
 
-  public async token (chatId:number):Promise<string> {
+  public async socketConnect (userId:number,chatId:number):Promise<Socket> {
     const r = await this.POST(`/api/v2/chats/token/${chatId}`)
     const a = await r.json()
-    return a[0].token
+    return Socket.connect(userId,chatId,a.token);
   }
 }
