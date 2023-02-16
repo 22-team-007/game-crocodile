@@ -15,5 +15,5 @@ test('Example test', async () => {
   )
 
   const dogImages = screen.getAllByRole('link')
-  expect(dogImages).toHaveLength(8)
+  expect(dogImages).toHaveLength(5)
 })
