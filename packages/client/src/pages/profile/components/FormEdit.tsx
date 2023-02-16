@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import { useForm } from 'react-hook-form'
+import { FieldError, useForm } from 'react-hook-form'
 import FormInput from '../../../components/FormInput'
 import { validation } from '../../../utils'
 import api from '../../../api'
@@ -10,12 +10,23 @@ type FormEditProps = {
   close: (fields: ProfileParams) => void
 }
 
+interface FormParams {
+  first_name: string;
+  second_name: string;
+  display_name: string;
+  login: string;
+  email: string;
+  phone: string;
+}
+
 const FormEdit: FC<FormEditProps>  = ({fields, close}) => {
 
-  const { register, handleSubmit, formState: { errors } } = useForm<ProfileParams>({defaultValues: fields})
+  const { register, handleSubmit, formState: { errors } } = useForm<FormParams>({
+    defaultValues: fields
+  })
 
   const onSubmitEditHandler = (data: ProfileParams) => {
-    api.users.profile(data as UserType).then(() => close())
+    api.users.profile(data as UserType).then(() => close(data))
   }
 
   return <Form noValidate onSubmit={handleSubmit(onSubmitEditHandler)}>
