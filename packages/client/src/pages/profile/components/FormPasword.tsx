@@ -1,71 +1,65 @@
-import { useState, ChangeEvent, FormEvent, FC } from 'react'
+import { FC } from 'react'
 import { Button, Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
+import api from '../../../api'
+import { validation } from '../../../utils'
+import FormInput from '../../../components/FormInput'
 
 type FormPasswordProps = {
   close: () => void,
 }
 
 const FormPassword: FC<FormPasswordProps> = ({close}) => {
-  const [fieldsEdit, setFieldsEdit] = useState<PasswordParams>({
-    oldPassword: '',
-    newPassword: '',
-    repeatPassword: '',
-  })
-  const [errors, setErrors] = useState<Record<string,string|undefined>>({})
 
-  const setError = (k:string, e:string|undefined) => {
-    setErrors({ ...errors, [k]: e })
+  const { register, handleSubmit, formState: { errors } } = useForm<PasswordParams>()
+
+  const onSubmitEditHandler = (data: PasswordParams) => {
+    api.users.password(data).then(() => close())
   }
 
-  const editField = (k:string) => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      setFieldsEdit({ ...fieldsEdit, [k]: e.target.value })
-    }
-  }
+  return <Form noValidate onSubmit={handleSubmit(onSubmitEditHandler)}>
 
-  const editSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setErrors({})
-    //save api
-    fetch(`/`).then(() => {
-      if(fieldsEdit.newPassword!==fieldsEdit.repeatPassword){
-        setError('repeatPassword','Пароли не совпадают');
-        return;
+    <FormInput
+      label={'Текущий пароль'}
+      isInvalid={!!errors.oldPassword}
+      isPassword
+      placeholder={'****************'}
+      register={
+        register('oldPassword', {
+          required: 'Обязательное поле.',
+          pattern: validation.oldPassword.regExp,
+        })
       }
-      close()
-    })
-  }
+      errorMsg={errors?.oldPassword?.message}
+    />
 
-  const hasError = (k:string)=>{
-    const v = errors[k];
-    return (typeof v === 'string' && v.length>0)
-  }
+    <FormInput
+      label={'Новый пароль'}
+      isInvalid={!!errors.newPassword}
+      isPassword
+      placeholder={'****************'}
+      register={
+        register('newPassword', {
+          required: 'Обязательное поле.',
+          pattern: validation.newPassword.regExp,
+        })
+      }
+      errorMsg={errors?.newPassword?.message}
+    />
 
-  return <Form onSubmit={editSubmit}>
-    <Form.Group key="pasword-group-0" controlId="oldPassword" className="mb-3">
-      <Form.Label>Текущий пароль</Form.Label>
-      <Form.Control type="password" placeholder="****************"
-        isInvalid={hasError('oldPassword')}
-        onChange={editField('oldPassword')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.oldPassword}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group key="pasword-group-1" controlId="newPassword" className="mb-3">
-      <Form.Label>Новый пароль</Form.Label>
-      <Form.Control type="password" placeholder="****************"
-        isInvalid={hasError('newPassword')}
-        onChange={editField('newPassword')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.newPassword}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group key="pasword-group-2" controlId="repeatPassword" className="mb-3">
-      <Form.Label>Подтверждение</Form.Label>
-      <Form.Control type="password" placeholder="****************"
-        isInvalid={hasError('repeatPassword')}
-        onChange={editField('repeatPassword')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.repeatPassword}</Form.Control.Feedback>
-    </Form.Group>
+    <FormInput
+      label={'Подтверждение'}
+      isInvalid={!!errors.repeatPassword}
+      isPassword
+      placeholder={'****************'}
+      register={
+        register('repeatPassword', {
+          required: 'Обязательное поле.',
+        })
+      }
+      errorMsg={errors?.repeatPassword?.message}
+    />
+
     <Button variant="success" type="submit" className="me-2">Сохранить</Button>
   </Form>
 }

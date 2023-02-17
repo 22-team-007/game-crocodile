@@ -1,92 +1,108 @@
-import { useState, ChangeEvent, FormEvent, FC } from 'react'
+import { FC } from 'react'
 import { Button, Form } from 'react-bootstrap'
+import { FieldError, useForm } from 'react-hook-form'
+import FormInput from '../../../components/FormInput'
+import { validation } from '../../../utils'
+import api from '../../../api'
 
 type FormEditProps = {
   fields: ProfileParams,
   close: (fields: ProfileParams) => void
 }
 
+interface FormParams {
+  first_name: string;
+  second_name: string;
+  display_name: string;
+  login: string;
+  email: string;
+  phone: string;
+}
+
 const FormEdit: FC<FormEditProps>  = ({fields, close}) => {
-  const [fieldsEdit, setFieldsEdit] = useState<ProfileParams>(fields)
-  const [errors, setErrors] = useState<Record<string,string|undefined>>({})
 
-  const setError = (k:string, e:string|undefined) => {
-    setErrors({ ...errors, [k]: e })
+  const { register, handleSubmit, formState: { errors } } = useForm<FormParams>({
+    defaultValues: fields
+  })
+
+  const onSubmitEditHandler = (data: ProfileParams) => {
+    api.users.profile(data as UserType).then(() => close(data))
   }
 
-  const editField = (k:string) => {
-    return (e: ChangeEvent<HTMLInputElement>) => {
-      setFieldsEdit({ ...fieldsEdit, [k]: e.target.value })
-    }
-  }
+  return <Form noValidate onSubmit={handleSubmit(onSubmitEditHandler)}>
 
-  const editSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setErrors({})
-    //save api
-    fetch(`/`).then(() => {
-      if(!fieldsEdit.first_name || fieldsEdit.first_name.length===0){
-        setError('first_name','Заполните Имя');
-        return;
+    <FormInput
+      label={'Имя'}
+      isInvalid={!!errors.first_name}
+      register={
+        register('first_name', {
+          required: 'Обязательное поле.',
+          pattern: validation.first_name.regExp,
+        })
       }
-      close(fieldsEdit)
-    })
-  }
+      errorMsg={errors?.first_name?.message}
+    />
 
-  const hasError = (k:string)=>{
-    const v = errors[k];
-    return (typeof v === 'string' && v.length>0)
-  }
+    <FormInput
+      label={'Фамилия'}
+      isInvalid={!!errors.second_name}
+      register={
+        register('second_name', {
+          required: 'Обязательное поле.',
+          pattern: validation.second_name.regExp,
+        })
+      }
+      errorMsg={errors?.second_name?.message}
+    />
 
-  return <Form onSubmit={editSubmit}>
-    <Form.Group>
-      <Form.Label>Имя</Form.Label>
-      <Form.Control type="text" placeholder="Имя" value={fieldsEdit.first_name}
-        isInvalid={hasError('first_name')}
-        onChange={editField('first_name')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.first_name}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group>
-      <Form.Label>Фамилия</Form.Label>
-      <Form.Control type="text" placeholder="Фамилия" value={fieldsEdit.second_name}
-        isInvalid={hasError('second_name')}
-        onChange={editField('second_name')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.second_name}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group>
-      <Form.Label>Псевдоним</Form.Label>
-      <Form.Control type="text" placeholder="Псевдоним" value={fieldsEdit.display_name}
-        isInvalid={hasError('display_name')}
-        onChange={editField('display_name')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.display_name}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group>
-      <Form.Label>Логин</Form.Label>
-      <Form.Control type="text" placeholder="Логин" value={fieldsEdit.login}
-        isInvalid={hasError('login')}
-        onChange={editField('login')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.login}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group>
-      <Form.Label>Email</Form.Label>
-      <Form.Control type="text" placeholder="Email" value={fieldsEdit.email}
-        isInvalid={hasError('email')}
-        onChange={editField('email')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-    </Form.Group>
-    <Form.Group>
-      <Form.Label>Телефон</Form.Label>
-      <Form.Control type="text" placeholder="Телефон" value={fieldsEdit.phone}
-        isInvalid={hasError('phone')}
-        onChange={editField('phone')}
-      />
-      <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback>
-    </Form.Group>
+    <FormInput
+      label={'Псевдоним'}
+      isInvalid={!!errors.display_name}
+      register={
+        register('display_name', {
+          required: 'Обязательное поле.',
+          pattern: validation.display_name.regExp,
+        })
+      }
+      errorMsg={errors?.display_name?.message}
+    />
+
+    <FormInput
+      label={'Логин'}
+      isInvalid={!!errors?.login}
+      register={
+        register('login', {
+          required: 'Обязательное поле.',
+          pattern: validation.login.regExp!,
+        })
+      }
+      errorMsg={errors?.login?.message}
+    />
+
+    <FormInput
+      label={'Email'}
+      isInvalid={!!errors?.email}
+      register={
+        register('email', {
+          required: 'Обязательное поле.',
+          pattern: validation.email.regExp!,
+        })
+      }
+      errorMsg={errors?.email?.message}
+    />
+
+    <FormInput
+      label={'Телефон'}
+      isInvalid={!!errors?.phone}
+      register={
+        register('phone', {
+          required: 'Обязательное поле.',
+          pattern: validation.phone.regExp!,
+        })
+      }
+      errorMsg={errors?.phone?.message}
+    />
+
     <Button variant="success" type="submit" className="ms-2 me-2">Сохранить</Button>
   </Form>
 }
