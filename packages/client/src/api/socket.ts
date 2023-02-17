@@ -67,7 +67,6 @@ export default class Socket extends WebSocket implements SocketAPIType {
       })
     }
   }
-  
 
   public sendContent (type:string, content: Omit<Content, "type">) {
     this.send2({
