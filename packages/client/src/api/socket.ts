@@ -2,7 +2,8 @@ type Content = {
   type: string,
   chat_id?: number,
   time?: string,
-  user_id?: string,
+  user_id?: number,
+  id?: number,
   color?: string
   content?: string | [x:number,y:number][] | Content,
   file?: ResourceType
@@ -19,6 +20,7 @@ type SocketAPIType = {
 
 export default class Socket extends WebSocket implements SocketAPIType {
   protected static instance:Socket;
+  protected static userId:number;
 
   static connect (userId:number,chatId:number,token:string):Socket {
     const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`;
@@ -28,6 +30,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
       this.instance.close();
       this.instance = new this(url);
     }
+    this.userId = userId;
     return this.instance
   }
 
@@ -52,11 +55,25 @@ export default class Socket extends WebSocket implements SocketAPIType {
     }
   }
 
+  private send2(c:Content){
+    if(this.readyState===this.OPEN && self.navigator.onLine===true)
+      super.send(JSON.stringify(c))
+    else{
+      this.emit({
+        ...c,
+        time: new Date().toISOString().split('.')[0]+'+00:00',
+        user_id: Socket.userId,
+        id: Math.floor(new Date().getTime()/200%100000)
+      })
+    }
+  }
+  
+
   public sendContent (type:string, content: Omit<Content, "type">) {
-    this.send(JSON.stringify({
+    this.send2({
       type: 'message',
       content: { type, ...content }
-    }))
+    })
   }
 
   public sendMessage (text:string) {
@@ -68,11 +85,17 @@ export default class Socket extends WebSocket implements SocketAPIType {
   }
 
   public sendImage (content:string) {
-    this.send(JSON.stringify({ content, type: 'file' }))
+    this.send2({
+      type: 'file',
+      content
+    })
   }
 
   public getMessages (content:string) {
-    this.send(JSON.stringify({ content, type: 'get old' }))
+    this.send2({
+      type: 'get old',
+      content
+    })
   }
 
   public on(event: string, handler: (res?: string | Content) => void) {
