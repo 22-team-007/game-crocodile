@@ -2,6 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import store from './store/store'
+
 // components
 import App from './layouts/app/App'
 import {
@@ -147,25 +150,27 @@ const router = createBrowserRouter([
   },
 ])
 
-api.auth.signIn({
-  login:"Gosha",
-  password:"123Gosha"
-}).then(v=>{
-  api.games.socketConnect(v.id,421).then(socket=>{
-    socket.on("coordinates",console.log);
-    socket.on("text",console.log);
-    setInterval(()=>{
-      socket.sendCoordinates([[1,2],[4,5]],'#000000')
-      socket.sendMessage('Арбуз')
-    },1000)
-  })
-})
+// api.auth.signIn({
+//   login:"Gosha",
+//   password:"123Gosha"
+// }).then(v=>{
+//   api.games.socketConnect(v.id,421).then(socket=>{
+//     socket.on("coordinates",console.log);
+//     socket.on("text",console.log);
+//     setInterval(()=>{
+//       socket.sendCoordinates([[1,2],[4,5]],'#000000')
+//       socket.sendMessage('Арбуз')
+//     },1000)
+//   })
+// })
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
 }
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 )

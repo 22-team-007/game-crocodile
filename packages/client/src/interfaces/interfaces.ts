@@ -1,21 +1,10 @@
-export interface GetUser {
-  id: number
-  first_name: string
-  second_name: string
-  display_name: string | null
-  login: string
-  email: string
-  phone: string
-  avatar: string
-}
-
 export interface ChatInfo {
   id: number
   title: string
   avatar: string
   unread_count: number
   last_message: {
-    user: GetUser
+    user: UserType
     time: string
     content: string
   }
@@ -48,7 +37,7 @@ export interface ForumThemesProps {
   chats: ChatInfo[]
 }
 
-export interface LeaderProps extends GetUser {
+export interface LeaderProps extends UserType {
   score: number
 }
 
