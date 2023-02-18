@@ -3,6 +3,7 @@ import { Container, Navbar, Nav } from 'react-bootstrap'
 import { NavLink, Outlet } from 'react-router-dom'
 import { LINKS } from './constants'
 
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './app.scss'
 
 const App = () => {
@@ -18,7 +19,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <Navbar fixed="top" bg="light">
+      <Navbar className="mb-4" bg="light">
         <Container>
           <NavLink className="navbar-brand" to="/">
             Крокодил

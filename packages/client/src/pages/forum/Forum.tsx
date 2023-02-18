@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import ForumMessages from '../../components/ForumMessages'
 import ForumThemes from '../../components/ForumThemes'
-import { Container, Tabs, Tab, Form, Button, Modal } from 'react-bootstrap'
+import { Card, Container, Tabs, Tab, Form, Button, Modal } from 'react-bootstrap'
 
 import { mockTopics, mockMessages } from './mockData'
 import './styles.scss'
@@ -23,6 +23,9 @@ const Forum = () => {
 
   return (
     <Container className="forum-container">
+      <Card>
+        <Card.Title>Форум</Card.Title>
+        <Card.Body>
       <Tabs defaultActiveKey="themes" className="mb-3">
         <Tab eventKey="themes" title="Список тем">
           <Button variant="primary" onClick={handleShow}>
@@ -63,6 +66,8 @@ const Forum = () => {
           </Form>
         </Tab>
       </Tabs>
+      </Card.Body>
+      </Card>
     </Container>
   )
 }

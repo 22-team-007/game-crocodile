@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
+import './style.scss'
 
 const StartPage = () => {
   return <>
-    <div className="p-5 mb-4 bg-light rounded-3">
+    <div className="greeting p-5 mb-4 bg-light rounded-3">
       <div className="container-fluid py-5">
         <h1 className="display-5 fw-bold">Добро пожаловать!</h1>
         <figure>
