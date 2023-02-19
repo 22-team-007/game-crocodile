@@ -24,7 +24,9 @@ const Forum = () => {
   return (
     <Container className="forum-container">
       <Card>
-        <Card.Title>Форум</Card.Title>
+        <Card.Header>
+          <Card.Title>Форум</Card.Title>
+        </Card.Header>
         <Card.Body>
       <Tabs defaultActiveKey="themes" className="mb-3">
         <Tab eventKey="themes" title="Список тем">

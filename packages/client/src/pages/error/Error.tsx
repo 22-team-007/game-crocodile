@@ -1,4 +1,6 @@
 import { useRouteError } from 'react-router-dom'
+import { Card, Container } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 type ErrorResponse = {
   data: any
@@ -23,13 +25,25 @@ export default function ErrorPage() {
       : 'Извините, произошла неожиданная ошибка.'
 
   return (
+    <div className="App">
+    <Container className='d-flex justify-content-center align-items-center'>
     <div id="error-page">
-      <h1>Oops!</h1>
-
+    <Card>
+      <Card.Title>
+        <h1>Oops!</h1>
+      </Card.Title>
+      <Card.Body>
       <p>{errMsg}</p>
-      <p>
+      <div className='error-page__message'>
         <i>{error.statusText || error.message}</i>
-      </p>
+      </div>
+      <div className='error-page__links mt-4'>{
+      <Link to={'/'}>Вернуться на главную страницу</Link>
+      }</div>
+    </Card.Body>
+    </Card>
+    </div>
+    </Container>
     </div>
   )
 }

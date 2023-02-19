@@ -24,11 +24,13 @@ const Login = () => {
 
   return (
     <Container className='d-flex justify-content-center align-items-center'>
-      <Form style={{width: '300px'}} noValidate onSubmit={handleSubmit(onSubmitHandler)}>
+      <Form style={{width: '500px'}} noValidate onSubmit={handleSubmit(onSubmitHandler)}>
         <Card>
-          <Card.Title>
-            <h3 className="text-center">Вход</h3>
-          </Card.Title>
+          <Card.Header>
+            <Card.Title>
+              <h3 className="text-center">Вход</h3>
+            </Card.Title>
+          </Card.Header>
           <Card.Body>
             <FormInput
               label={'Логин'}
@@ -55,11 +57,13 @@ const Login = () => {
               errorMsg={errors?.password?.message}
             />
 
+          </Card.Body>
+          <Card.Footer>
             <Button className='w-100 mt-3' type='submit'>Войти</Button>
             <NavLink to={`/${Routes.Register}`}>
               <Button className='w-100' size='sm' variant='link'>Нет аккаунта?</Button>
             </NavLink>
-          </Card.Body>
+          </Card.Footer>
         </Card>
       </Form>
     </Container>

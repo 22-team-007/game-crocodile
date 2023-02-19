@@ -23,11 +23,13 @@ const Registration = () => {
 
   return (
     <Container className='d-flex justify-content-center align-items-center'>
-      <Form style={{ width: '300px' }} noValidate onSubmit={handleSubmit(onSubmitHandler)}>
+      <Form style={{ width: '500px' }} noValidate onSubmit={handleSubmit(onSubmitHandler)}>
         <Card>
-          <Card.Title>
-            <h3 className="text-center">Регистрация</h3>
-          </Card.Title>
+          <Card.Header>
+            <Card.Title>
+              <h3 className="text-center">Регистрация</h3>
+            </Card.Title>
+          </Card.Header>
           <Card.Body>
             <FormInput
               label={'Почта'}
@@ -113,12 +115,13 @@ const Registration = () => {
               }
               errorMsg={errors?.password_repeat?.message}
             />
-
+          </Card.Body>
+          <Card.Footer>
             <Button className='w-100 mt-3' type='submit'>Зарегистрироваться</Button>
             <NavLink to={`/${Routes.Login}`}>
               <Button className='w-100' size='sm' variant='link'>Войти</Button>
             </NavLink>
-          </Card.Body>
+          </Card.Footer>
         </Card>
       </Form>
     </Container>
