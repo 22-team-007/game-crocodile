@@ -18,7 +18,7 @@ declare type SignUpParams = SignInParams & {
   email: string,
   phone: string,
 }
-declare type UserType = Omit<SignUpParams, "password"> & {
+declare type UserType = SignUpParams & {
   id: number,
   display_name?: string,
   avatar?: string,
@@ -44,6 +44,7 @@ declare type GameType = {
   title: string,
   avatar: string,
   unread_count?: number,
+  created_by?: number,
   last_message?: {
     user: UserType,
     time: string,

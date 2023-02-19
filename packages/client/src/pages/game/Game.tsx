@@ -1,16 +1,16 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { Container, ListGroup, Image, Form } from 'react-bootstrap'
+import { Container, ListGroup, Image, Form, Modal, Button, OverlayTrigger, Popover } from 'react-bootstrap'
+import { useParams } from 'react-router';
 
-import './styles.scss'
 import Arrow from '../../assets/arrow.svg'
 import Brush from '../../utils/tools/Brush'
+import withAuth from '../../hoc/withAuth'
+
+import api from '../../api'
+
+import './styles.scss'
 
 const mockMessages = ['message 1', 'message 2', 'message 3', 'message 4']
-const mockPlayers = ['player 1', 'player 2', 'player 3', 'player 4']
-
-import withAuth from '../../hoc/withAuth'
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
 function StartEndGame() {
   const [showStart, setShowStart] = useState(false);
@@ -56,12 +56,16 @@ function StartEndGame() {
 }
 
 const Game = () => {
+  const { chatId } = useParams();
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const brush = useRef<Brush>()
   const [message, setMessage] = useState('')
+  const [gamePlayers, setGamePlayers] = useState<UserType[]>([]);
+  const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([]);
 
   useEffect(() => {
+    api.games.users(Number(chatId)).then(setGamePlayers)
     brush.current = new Brush(canvasRef.current!)
   }, [])
 
@@ -74,7 +78,21 @@ const Game = () => {
     setMessage(event.target.value)
   }
 
-  return (
+  const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
+    const v = event.target.value;
+    if(v && v.length>=3)
+      api.users.search(v).then(setSearchedPlayers)
+    else
+      setSearchedPlayers([])
+  }
+
+  const addPlayer = (userId:number) => {
+    api.games.includeUser(Number(chatId),[userId]).then(()=>{
+      api.games.users(Number(chatId)).then(setGamePlayers)
+    })
+  }
+
+  return (<>
     <Container className="game-container">
       <div className="game-wrapper">
         <div className="drawing">
@@ -88,22 +106,49 @@ const Game = () => {
 
         <div className="chatting">
           <div className="leader-board">
-            <h5 className="text-center">Раунд 8 из 15</h5>
             <ListGroup variant="flush" className="leader-board_wrap">
-              {mockPlayers.map(player => (
-                <ListGroup.Item key={player} className="d-flex justify-content-between text-white no-border">
-                  <span>
-                    <Image
-                      src={'https://via.placeholder.com/30/FFA500'}
-                      width={30}
-                      height={30}
-                      roundedCircle={true}
-                    />
-                    <span className="user-name">{player}</span>
-                  </span>
-                  <span>80</span>
-                </ListGroup.Item>
-              ))}
+              <ListGroup.Item className="d-flex justify-content-between align-items-center text-white no-border" style={{cursor: 'pointer'}}>
+                <OverlayTrigger trigger="click" placement="bottom-start" overlay={
+                  <Popover>
+                    <Popover.Header as="h3">Добавление игрока</Popover.Header>
+                    <Popover.Body>
+                      <Form.Control className="mb-2" onChange={searchPlayers}/>
+                      <ListGroup>
+                      {searchedPlayers?.map(player => (
+                        <ListGroup.Item action key={player.id} onClick={() => addPlayer(player.id)}>
+                          <Image
+                            src={api.resources.url(player.avatar)}
+                            width={30}
+                            height={30}
+                            roundedCircle={true}
+                          />
+                          <span className='ms-2'>{player.login}</span>
+                        </ListGroup.Item>
+                      ))}
+                      </ListGroup>
+                    </Popover.Body>
+                  </Popover>
+                }>
+                  <Button className="rounded-circle">&#43;</Button>
+                </OverlayTrigger>
+                <h5 className="text-center">Раунд 8 из 15</h5>
+              </ListGroup.Item>
+            </ListGroup>
+            <ListGroup variant="flush" className="leader-board_wrap">
+            {gamePlayers?.map(player => (
+              <ListGroup.Item key={player.id} className="d-flex justify-content-between text-white no-border">
+                <span>
+                  <Image
+                    src={api.resources.url(player.avatar)}
+                    width={30}
+                    height={30}
+                    roundedCircle={true}
+                  />
+                  <span className="user-name">{player.login}</span>
+                </span>
+                <span>80</span>
+              </ListGroup.Item>
+            ))}
             </ListGroup>
           </div>
           <div className="chat">
@@ -130,6 +175,6 @@ const Game = () => {
       </div>
       <StartEndGame/>
     </Container>
-  )
+  </>)
 }
 export default withAuth(Game)
