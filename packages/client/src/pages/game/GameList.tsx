@@ -14,7 +14,7 @@ const GameList = () => {
   useEffect(() => {
     api.games.get().then(setGameList)
     api.auth.user().then(setCurrentUser)
-    let intervalList = setInterval(()=>{
+    const intervalList = setInterval(()=>{
       api.games.get().then(setGameList)
     },10000)
     return () => {
