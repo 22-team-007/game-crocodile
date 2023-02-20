@@ -23,8 +23,8 @@ export default class ApiBase {
   protected fetchRequest(method:string, path:string, params?:RequestInit):Promise<Response>{
     return fetch(`${this.host}${path}`,{
       headers: {
-        accept: 'application/json',
-        'Content-Type': 'application/json'
+        'accept': 'application/json',
+        'content-type': 'application/json'
       },
       mode: "cors",
       credentials: "include",

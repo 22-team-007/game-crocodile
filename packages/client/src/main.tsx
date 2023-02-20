@@ -13,6 +13,7 @@ import {
   LeaderBoard,
   leaderBoardLoader,
   Game,
+  GameList,
   Forum,
   Registration,
   Page,
@@ -25,7 +26,8 @@ export enum Routes {
   Login = 'signin',
   Register = 'signup',
   Logout = 'signout',
-  Game = 'game',
+  GameList = 'game',
+  Game = 'game/:chatId',
   Profile = 'profile',
   ProfileId = 'profile/:profileId',
   Leaderboard = 'leaders',
@@ -65,6 +67,14 @@ const router = createBrowserRouter([
         element: (
           <Page title="Крокодил - Вход">
             <Login />
+          </Page>
+        ),
+      },
+      {
+        path: Routes.GameList,
+        element: (
+          <Page title="Крокодил - Игра">
+            <GameList />
           </Page>
         ),
       },
@@ -120,8 +130,8 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Logout,
-        loader: () => {
-          console.log('We sending our logout request to server')
+        loader: async () => {
+          await api.auth.logOut();
           return redirect('/')
         },
       },

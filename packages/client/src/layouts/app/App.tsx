@@ -19,7 +19,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <Navbar className="mb-4" bg="light">
+      <Navbar fixed='top' className="mb-4" bg="light">
         <Container>
           <NavLink className="navbar-brand" to="/">
             Крокодил
@@ -35,7 +35,7 @@ const App = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container>
+      <Container style={{paddingTop: '70px'}}>
         <Outlet />
       </Container>
     </div>
