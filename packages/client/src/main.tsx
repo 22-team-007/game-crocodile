@@ -132,8 +132,8 @@ const router = createBrowserRouter([
       },
       {
         path: Routes.Logout,
-        loader: () => {
-          api.auth.logOut();
+        loader: async () => {
+          await api.auth.logOut();
           return redirect('/')
         },
       },
