@@ -17,6 +17,8 @@ self.addEventListener('install', (event)=> {
       console.log(cache)
       cache.addAll([
         "/",
+        "/sw.js",
+        "/vite.svg",
         '/assets/index.css',
         '/assets/index.js',
         '/assets/arrow.svg'
