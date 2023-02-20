@@ -19,8 +19,6 @@ import {
 } from './pages'
 
 import api from './api'
-// styles
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 export enum Routes {
   Index = '/',

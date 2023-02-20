@@ -75,7 +75,8 @@ const Game = () => {
   }
 
   return (
-    <Container className="game-container">
+    <Container className="d-flex justify-content-center align-items-center">
+      <div className="game-container">
       <div className="game-wrapper">
         <div className="drawing">
           <Form.Control type="color" onChange={changeColor}/>
@@ -129,6 +130,7 @@ const Game = () => {
         </div>
       </div>
       <StartEndGame/>
+      </div>
     </Container>
   )
 }
