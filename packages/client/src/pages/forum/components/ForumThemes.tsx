@@ -1,8 +1,6 @@
 import { FC, memo } from 'react'
 import { ListGroup, Image } from 'react-bootstrap'
 
-import { ForumThemesProps } from '../../interfaces/interfaces'
-
 const ForumMessages: FC<ForumThemesProps> = () => {
   return (
     <>

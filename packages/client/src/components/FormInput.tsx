@@ -1,17 +1,17 @@
 // React
 import { FC, memo, useId } from 'react'
 // React-Hook-Form
-import { UseFormRegisterReturn } from 'react-hook-form';
+import { UseFormRegisterReturn } from 'react-hook-form'
 // Bootstrap components
 import { Form } from 'react-bootstrap'
 
 interface FormInputProps {
-  label: string;
-  isInvalid: boolean;
-  isPassword?: boolean;
-  placeholder?: string;
-  register: UseFormRegisterReturn;
-  errorMsg?: string;
+  label: string
+  isInvalid: boolean
+  isPassword?: boolean
+  placeholder?: string
+  register: UseFormRegisterReturn
+  errorMsg?: string
 }
 
 /**
@@ -34,20 +34,21 @@ const FormInput: FC<FormInputProps> = ({
   placeholder,
   label,
   isPassword,
-  }) => {
-
-  const controlId = useId();
+}) => {
+  const controlId = useId()
 
   return (
     <Form.Group controlId={controlId}>
-      <Form.Label className='mb-0 mx-1'>{label}</Form.Label>
+      <Form.Label className="mb-0 mx-1">{label}</Form.Label>
       <Form.Control
         {...register}
         isInvalid={isInvalid}
         type={isPassword ? 'password' : 'text'}
         placeholder={placeholder || label}
       />
-      <Form.Control.Feedback className='mt-0' type='invalid'>{errorMsg}</Form.Control.Feedback>
+      <Form.Control.Feedback className="mt-0" type="invalid">
+        {errorMsg}
+      </Form.Control.Feedback>
     </Form.Group>
   )
 }

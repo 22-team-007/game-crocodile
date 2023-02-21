@@ -1,6 +1,19 @@
-type ValidationKey = 'email' | 'login' | 'first_name' | 'display_name' | 'second_name' | 'phone' | 'password' | 'newPassword' | 'oldPassword' | 'repeatPassword'
+type ValidationKey =
+  | 'email'
+  | 'login'
+  | 'first_name'
+  | 'display_name'
+  | 'second_name'
+  | 'phone'
+  | 'password'
+  | 'newPassword'
+  | 'oldPassword'
+  | 'repeatPassword'
 
-export const validation: Record<ValidationKey, { regExp?: RegExp, message: string, errMessage: string }> = {
+export const validation: Record<
+  ValidationKey,
+  { regExp?: RegExp; message: string; errMessage: string }
+> = {
   email: {
     regExp: /^[a-zA-Z0-9_-]+[@][a-zA-Z]+[.][a-zA-Z]+/,
     message:
@@ -32,8 +45,7 @@ export const validation: Record<ValidationKey, { regExp?: RegExp, message: strin
   },
   phone: {
     regExp: /^([+]{1})?[0-9]{10,15}$/,
-    message:
-      'от 10 до 15 символов, состоит из цифр, может начинается с плюса.',
+    message: 'от 10 до 15 символов, состоит из цифр, может начинается с плюса.',
     errMessage: 'номер телефона введен не правильно',
   },
   password: {
@@ -58,4 +70,4 @@ export const validation: Record<ValidationKey, { regExp?: RegExp, message: strin
     message: 'пароли должны совпадать',
     errMessage: 'пароли не совпадают',
   },
-};
+}

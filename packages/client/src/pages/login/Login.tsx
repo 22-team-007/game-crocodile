@@ -4,8 +4,6 @@ import { useForm } from 'react-hook-form'
 import { NavLink } from 'react-router-dom'
 import { Routes } from '../../main'
 import WithAuth from '../../hoc/withAuth'
-// interfaces
-import { LoginData } from '../../types/interfaces'
 // components
 import FormInput from '../../components/FormInput'
 // Bootstrap components
@@ -23,7 +21,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginData>()
-  
+
   const dispatch = useAppDispatch()
 
   const onSubmitHandler = (data: LoginData) => {
@@ -33,42 +31,48 @@ const Login = () => {
   }
 
   return (
-    <Container className="vh-100 d-flex justify-content-center align-items-center">
+    <Container className="d-flex justify-content-center align-items-center">
       <Form
-        style={{ width: '300px' }}
+        style={{ width: '500px' }}
         noValidate
         onSubmit={handleSubmit(onSubmitHandler)}>
-        <h3 className="text-center">Вход</h3>
+        <Card>
+          <Card.Header>
+            <Card.Title>Вход</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <FormInput
+              label={'Логин'}
+              isInvalid={!!errors?.login}
+              register={register('login', {
+                required: 'Обязательное поле.',
+                pattern: validation.login.regExp,
+              })}
+              errorMsg={errors?.login?.message}
+            />
 
-        <FormInput
-          label={'Логин'}
-          isInvalid={!!errors?.login}
-          register={register('login', {
-            required: 'Обязательное поле.',
-            pattern: validation.login.regExp!,
-          })}
-          errorMsg={errors?.login?.message}
-        />
-
-        <FormInput
-          label={'Пароль'}
-          isInvalid={!!errors?.password}
-          isPassword
-          register={register('password', {
-            required: 'Обязательное поле.',
-            pattern: validation.password.regExp!,
-          })}
-          errorMsg={errors?.password?.message}
-        />
-
-        <Button className="w-100 mt-3" type="submit">
-          Войти
-        </Button>
-        <NavLink to={`/${Routes.Register}`}>
-          <Button className="w-100" size="sm" variant="link">
-            Нет аккаунта?
-          </Button>
-        </NavLink>
+            <FormInput
+              label={'Пароль'}
+              isInvalid={!!errors?.password}
+              isPassword
+              register={register('password', {
+                required: 'Обязательное поле.',
+                pattern: validation.password.regExp,
+              })}
+              errorMsg={errors?.password?.message}
+            />
+          </Card.Body>
+          <Card.Footer>
+            <Button className="w-100 mt-3" type="submit">
+              Войти
+            </Button>
+            <NavLink to={`/${Routes.Register}`}>
+              <Button className="w-100" size="sm" variant="link">
+                Нет аккаунта?
+              </Button>
+            </NavLink>
+          </Card.Footer>
+        </Card>
       </Form>
     </Container>
   )

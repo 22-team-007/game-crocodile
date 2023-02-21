@@ -1,5 +1,4 @@
 import { FC } from 'react'
-import { LeaderProps } from '../../../interfaces/interfaces'
 
 export const Leader: FC<LeaderProps> = props => {
   const { display_name, score, avatar, login } = props

@@ -1,5 +1,3 @@
-import { TopUser } from '../../interfaces/interfaces'
-
 export const leadersData: TopUser[] = [
   {
     id: 299240,

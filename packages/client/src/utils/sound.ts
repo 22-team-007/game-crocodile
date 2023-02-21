@@ -53,8 +53,8 @@ class Sound {
         return fetch(nameLoadingFile)
           .then(res => res.arrayBuffer())
           .then(audioData => (this.sounds[key].buffer = audioData))
-      } catch (e: any) {
-        console.log(`Fail loading sound file`)
+      } catch (e) {
+        console.error(`Fail loading sound file`, e as Error)
       }
     })
 
@@ -62,8 +62,8 @@ class Sound {
   }
 }
 
-const sound = new Sound();
+const sound = new Sound()
 
-(async () => await sound.init())()
+;(async () => await sound.init())()
 
 export default sound

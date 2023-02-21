@@ -25,7 +25,6 @@ import {
 
 import api from './api'
 
-
 export enum Routes {
   Index = '/',
   Login = 'signin',
@@ -136,7 +135,7 @@ const router = createBrowserRouter([
       {
         path: Routes.Logout,
         loader: async () => {
-          await api.auth.logOut();
+          await api.auth.logOut()
           return redirect('/')
         },
       },
