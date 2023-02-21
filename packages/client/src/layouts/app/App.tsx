@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Container, Navbar, Nav } from 'react-bootstrap'
 import { NavLink, Outlet } from 'react-router-dom'
 import { LINKS } from './constants'
+import FullScreen from '../../components/FullScreen/fullScreen'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './app.scss'
@@ -31,6 +32,7 @@ const App = () => {
                     {link.title}
                   </NavLink>
               ))}
+              <FullScreen />
             </Nav>
           </Navbar.Collapse>
         </Container>
