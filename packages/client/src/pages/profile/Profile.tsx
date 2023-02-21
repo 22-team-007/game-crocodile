@@ -21,7 +21,7 @@ export const Profile = () => {
   useEffect(() => {
     //load by API
     api.auth.user()
-      .then(data => setFields({ ...data, avatar: `https://ya-praktikum.tech/api/v2/resources${data.avatar}` }))
+      .then(data => setFields({ ...data, avatar: data?.avatar ? `https://ya-praktikum.tech/api/v2/resources${data.avatar}` : null }))
   }, [])
 
   const setValue = (k: string, v: string) => {
