@@ -62,7 +62,8 @@ class Sound {
   }
 }
 
-const sound = new Sound()
-await sound.init()
+const sound = new Sound();
+
+(async () => await sound.init())()
 
 export default sound
