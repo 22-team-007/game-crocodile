@@ -1,4 +1,5 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useParams } from 'react-router'
 import {
   Container,
   ListGroup,
@@ -9,17 +10,15 @@ import {
   OverlayTrigger,
   Popover,
 } from 'react-bootstrap'
-import { useParams } from 'react-router'
 
-import Arrow from '../../assets/arrow.svg'
-import Brush from '../../utils/tools/Brush'
 import withAuth from '../../hoc/withAuth'
+import { useAppSelector } from '../../hooks/useAppSelector'
 
 import api from '../../api'
 
-import './styles.scss'
+import { GameChat, GameDraw } from './components'
 
-const mockMessages = ['message 1', 'message 2', 'message 3', 'message 4']
+import './game.scss'
 
 function StartEndGame() {
   const [showStart, setShowStart] = useState(false)
@@ -78,27 +77,21 @@ function StartEndGame() {
 const Game = () => {
   const { chatId } = useParams()
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const brush = useRef<Brush>()
-  const [message, setMessage] = useState('')
+  const [webSocket, setWebSocket] = useState<SocketAPIType>()
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
+  const currentUser = useAppSelector(state => state.userData.user)
 
   useEffect(() => {
-    api.games.users(Number(chatId)).then(setGamePlayers)
-    if (canvasRef.current) brush.current = new Brush(canvasRef.current)
-  }, [])
-
-  const changeColor = (e: ChangeEvent<HTMLInputElement>) => {
-    if (brush.current) {
-      brush.current.strokeColor = e.target.value
-      brush.current.fillColor = e.target.value
+    if (typeof chatId === 'string') {
+      api.games.users(Number(chatId)).then(setGamePlayers)
+      if (currentUser !== null) {
+        api.games
+          .socketConnect(currentUser.id, Number(chatId))
+          .then(setWebSocket)
+      }
     }
-  }
-
-  const messageHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    setMessage(event.target.value)
-  }
+  }, [currentUser, chatId])
 
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value
@@ -116,11 +109,9 @@ const Game = () => {
     <Container className="d-flex justify-content-center align-items-center">
       <div className="game-container">
         <div className="game-wrapper">
-          <div className="drawing">
-            <Form.Control type="color" onChange={changeColor} />
-            <canvas ref={canvasRef} width={650} height={600} />
-          </div>
-
+          {currentUser && (
+            <GameDraw currentUserId={currentUser.id} socket={webSocket} />
+          )}
           <div className="chatting">
             <div className="leader-board">
               <ListGroup variant="flush" className="leader-board_wrap">
@@ -183,26 +174,7 @@ const Game = () => {
                 ))}
               </ListGroup>
             </div>
-            <div className="chat">
-              <ListGroup variant="flush">
-                {mockMessages.map((msg, index) => (
-                  <ListGroup.Item key={index}>
-                    <span className="name-color">player 1</span> {msg}
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
-            </div>
-            <div className="send-message">
-              <input
-                type="text"
-                onChange={messageHandler}
-                value={message}
-                placeholder="Напишите сообщение"
-              />
-              <button type="submit">
-                <img src={Arrow} alt="submit" />
-              </button>
-            </div>
+            <GameChat chatId={Number(chatId)} socket={webSocket} />
           </div>
         </div>
         <StartEndGame />

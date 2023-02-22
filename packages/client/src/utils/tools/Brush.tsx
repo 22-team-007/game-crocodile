@@ -1,44 +1,64 @@
 import Tool from './Tool'
 
 export default class Brush extends Tool {
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    onMouseUp: (buffer: Coordinate[]) => void
+  ) {
     super(canvas)
     this.listen()
+    this.onMouseUp = onMouseUp
   }
 
   public mouseDown = false
 
-  listen() {
+  public drawArray(coordinates: Coordinate[], color: string) {
+    this.strokeColor = this.fillColor = color
+    coordinates.forEach(([x, y], i: number) => {
+      if (i === 0) {
+        this.ctx?.beginPath()
+        this.ctx?.moveTo(x, y)
+      } else {
+        this.ctx?.lineTo(x, y)
+        this.ctx?.stroke()
+      }
+    })
+  }
+
+  private buffer: Coordinate[] = []
+  private onMouseUp: (buffer: Coordinate[]) => void
+
+  private listen() {
     this.canvas.onmousemove = this.mouseMoveHandler.bind(this)
     this.canvas.onmousedown = this.mouseDownHandler.bind(this)
     this.canvas.onmouseup = this.mouseUpHandler.bind(this)
     this.canvas.onmouseleave = this.mouseUpHandler.bind(this)
   }
 
-  mouseUpHandler() {
+  private mouseUpHandler() {
     this.mouseDown = false
-  }
-
-  mouseDownHandler(e: MouseEvent) {
-    this.mouseDown = true
-    this.ctx?.beginPath()
-    this.ctx?.moveTo(
-      e.pageX - (e.target as HTMLElement).offsetLeft,
-      e.pageY - (e.target as HTMLElement).offsetTop
-    )
-  }
-
-  mouseMoveHandler(e: MouseEvent) {
-    if (this.mouseDown) {
-      this.draw(
-        e.pageX - (e.target as HTMLElement).offsetLeft,
-        e.pageY - (e.target as HTMLElement).offsetTop
-      )
+    if (this.buffer.length > 0) {
+      this.onMouseUp(this.buffer)
+      this.buffer = []
     }
   }
 
-  draw(x: number, y: number) {
-    this.ctx?.lineTo(x, y)
-    this.ctx?.stroke()
+  private mouseDownHandler(e: MouseEvent) {
+    const x = e.pageX - (e.target as HTMLElement).offsetLeft
+    const y = e.pageY - (e.target as HTMLElement).offsetTop
+    this.mouseDown = true
+    this.ctx?.beginPath()
+    this.ctx?.moveTo(x, y)
+    this.buffer.push([x, y])
+  }
+
+  private mouseMoveHandler(e: MouseEvent) {
+    if (this.mouseDown) {
+      const x = e.pageX - (e.target as HTMLElement).offsetLeft
+      const y = e.pageY - (e.target as HTMLElement).offsetTop
+      this.ctx?.lineTo(x, y)
+      this.ctx?.stroke()
+      this.buffer.push([x, y])
+    }
   }
 }

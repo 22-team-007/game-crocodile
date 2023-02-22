@@ -100,3 +100,27 @@ declare type TopUser = Required<LeaderProps>
 declare interface TopLeaderProp extends TopUser {
   title: string
 }
+
+declare type Coordinate = [x: number, y: number]
+
+declare interface SocketAPIType extends WebSocket {
+  sendContent: (type: string, content: Omit<SocketContent, 'type'>) => void
+  sendImage: (content: string) => void
+  getMessages: (content: string) => void
+  on<T>(event: string, handler: (res: T) => void): void
+}
+
+declare type SocketContent = {
+  type: string
+  chat_id?: number
+  time?: string
+  user_id?: number
+  id?: number
+  color?: string
+  content?: string | Coordinate[] | SocketContent
+  file?: ResourceType
+}
+
+declare type SocketMessage = SocketContent & {
+  user: UserType
+}
