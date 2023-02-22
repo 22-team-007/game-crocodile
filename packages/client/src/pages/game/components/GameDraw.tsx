@@ -3,20 +3,22 @@ import { Form } from 'react-bootstrap'
 
 import Brush from '../../../utils/tools/Brush'
 
-interface GameChatProps {
+interface GameDrawProps {
   currentUserId: number
   socket?: SocketAPIType
 }
 
-const GameDraw: FC<GameChatProps> = ({ currentUserId, socket }) => {
+const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const brush = useRef<Brush>()
 
   useEffect(() => {
     if (canvasRef.current)
       brush.current = new Brush(canvasRef.current, sendCoordinates)
-    if (socket !== undefined)
+    if (socket !== undefined) {
       socket.on<SocketContent>('coordinates', onCoordinates)
+      socket.getMessages('0')
+    }
   }, [socket])
 
   const sendCoordinates = (content: Coordinate[]) => {

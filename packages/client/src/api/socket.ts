@@ -1,6 +1,7 @@
 export default class Socket extends WebSocket implements SocketAPIType {
   protected static instance: Socket
   protected static userId: number
+  protected static chatId: number
 
   static connect(userId: number, chatId: number, token: string): Socket {
     const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`
@@ -11,6 +12,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
       this.instance = new this(url)
     }
     this.userId = userId
+    this.chatId = chatId
     return this.instance
   }
 
@@ -28,8 +30,21 @@ export default class Socket extends WebSocket implements SocketAPIType {
   private handler(event: MessageEvent) {
     const res: SocketContent | SocketContent[] = JSON.parse(event.data)
     if (res && typeof res === 'object') {
-      if (Array.isArray(res)) res.reverse().forEach(this.emit)
-      else this.emit(res)
+      if (Array.isArray(res)) {
+        res.reverse().forEach((r: SocketContent) => {
+          if (
+            r.chat_id === Socket.chatId ||
+            r.chat_id === undefined ||
+            r.chat_id === null
+          )
+            this.emit({ ...r, ...JSON.parse(r.content as string) })
+        })
+      } else if (
+        res.chat_id === Socket.chatId ||
+        res.chat_id === undefined ||
+        res.chat_id === null
+      )
+        this.emit(res)
     }
   }
 
