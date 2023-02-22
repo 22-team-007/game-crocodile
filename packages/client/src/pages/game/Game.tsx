@@ -18,7 +18,7 @@ import api from '../../api'
 
 import { GameChat, GameDraw } from './components'
 
-import './game.scss'
+import './style.scss'
 
 function StartEndGame() {
   const [showStart, setShowStart] = useState(false)
