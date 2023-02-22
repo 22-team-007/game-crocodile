@@ -18,10 +18,9 @@ export const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
 
-  const user = useAppSelector(state => state.userData.user)
+  //const user = useAppSelector(state => state.userData.user) нужно dispatch сделать при вызове setValue
 
   useEffect(() => {
-    //load by API
     api.auth
       .user()
       .then(data =>
