@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Button, Card, Row, Col, Container } from 'react-bootstrap'
 import { Avatar, FormEdit, FormShow, FormPassword } from './components'
 
-import { useAppSelector } from '../../hooks/useAppSelector'
+//import { useAppSelector } from '../../hooks/useAppSelector'
 import withAuth from '../../hoc/withAuth'
+import api from '../../api'
 
 import './profile.scss'
 
@@ -17,13 +18,15 @@ export const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
 
-  const user = useAppSelector(state => state.userData.user)
+  //const user = useAppSelector(state => state.userData.user) нужно dispatch сделать при вызове setValue
 
   useEffect(() => {
-    if (user) {
-      setFields(user)
-    }
-  }, [user])
+    api.auth
+      .user()
+      .then(data =>
+        setFields({ ...data, avatar: api.resources.url(data.avatar) })
+      )
+  }, [])
 
   const setValue = (k: string, v: string) => {
     setFields({ ...fields, [k]: v })

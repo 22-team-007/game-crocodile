@@ -24,7 +24,7 @@ export default class Users extends ApiBase implements UserAPIType {
     body.append('avatar', file)
     const r = await this.FORM('/api/v2/user/profile/avatar', body)
     const user = await r.json()
-    return `${this.host}/api/v2/resources/${user.avatar || ''}`
+    return user.avatar
   }
 
   public async search(login: string): Promise<UserType[]> {

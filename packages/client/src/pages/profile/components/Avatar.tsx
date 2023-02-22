@@ -12,13 +12,8 @@ const Avatar: FC<AvatarProps> = ({ src, setValue }) => {
     //upload by API
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]
-      api.users.avatar(file).then(() => {
-        // для мгновенного отображения нового аватара
-        const fileReader = new FileReader()
-        fileReader.onload = () => {
-          setValue(e.target.id, fileReader.result as string)
-        }
-        fileReader.readAsDataURL(file)
+      api.users.avatar(file).then(url => {
+        setValue(e.target.id, api.resources.url(url))
       })
     }
   }
