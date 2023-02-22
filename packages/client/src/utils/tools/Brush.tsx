@@ -6,7 +6,7 @@ export default class Brush extends Tool {
     this.listen()
   }
 
-  public mouseDown = false;
+  public mouseDown = false
 
   listen() {
     this.canvas.onmousemove = this.mouseMoveHandler.bind(this)
@@ -22,12 +22,18 @@ export default class Brush extends Tool {
   mouseDownHandler(e: MouseEvent) {
     this.mouseDown = true
     this.ctx?.beginPath()
-    this.ctx?.moveTo(e.pageX - (e.target as HTMLElement).offsetLeft, e.pageY - (e.target as HTMLElement).offsetTop)
+    this.ctx?.moveTo(
+      e.pageX - (e.target as HTMLElement).offsetLeft,
+      e.pageY - (e.target as HTMLElement).offsetTop
+    )
   }
 
   mouseMoveHandler(e: MouseEvent) {
     if (this.mouseDown) {
-      this.draw(e.pageX - (e.target as HTMLElement).offsetLeft, e.pageY - (e.target as HTMLElement).offsetTop)
+      this.draw(
+        e.pageX - (e.target as HTMLElement).offsetLeft,
+        e.pageY - (e.target as HTMLElement).offsetTop
+      )
     }
   }
 

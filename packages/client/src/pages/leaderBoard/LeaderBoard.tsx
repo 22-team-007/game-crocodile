@@ -2,7 +2,6 @@ import { useLoaderData } from 'react-router-dom'
 import { Row, Col } from 'react-bootstrap'
 import { Leader } from './components/Leader'
 import { TopLeader } from './components/TopLeader'
-import { TopUser } from '../../interfaces/interfaces'
 
 import { leadersData } from './data'
 

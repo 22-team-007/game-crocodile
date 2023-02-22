@@ -12,13 +12,13 @@ export default defineConfig({
     __SERVER_PORT__: process.env.SERVER_PORT,
   },
   plugins: [react()],
-  base: "/",
+  base: '/',
   build: {
     rollupOptions: {
       output: {
-        assetFileNames: "assets/[name].[ext]",
-        entryFileNames: "assets/[name].js"
+        assetFileNames: 'assets/[name].[ext]',
+        entryFileNames: 'assets/[name].js',
       },
-    }
+    },
   },
 })

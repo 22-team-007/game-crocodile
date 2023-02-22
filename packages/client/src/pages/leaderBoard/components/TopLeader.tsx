@@ -1,6 +1,5 @@
 import { FC } from 'react'
 import { Leader } from './Leader'
-import { TopLeaderProp } from '../../../interfaces/interfaces'
 
 export const TopLeader: FC<TopLeaderProp> = props => {
   const { title, ...other } = props
