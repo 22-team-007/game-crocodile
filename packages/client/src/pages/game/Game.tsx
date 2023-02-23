@@ -83,7 +83,7 @@ const Game = () => {
   const currentUser = useAppSelector(state => state.userData.user)
 
   useEffect(() => {
-    if (typeof chatId === 'string') {
+    if (chatId) {
       api.games.users(Number(chatId)).then(setGamePlayers)
       if (currentUser !== null) {
         api.games
