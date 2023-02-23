@@ -17,7 +17,6 @@ const GameChat: FC<GameChatProps> = ({ socket }) => {
   useEffect(() => {
     if (socket !== undefined) {
       socket.on<SocketContent>('text', onText)
-      socket.getMessages('0')
     }
   }, [socket])
 

@@ -17,7 +17,6 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
       brush.current = new Brush(canvasRef.current, sendCoordinates)
     if (socket !== undefined) {
       socket.on<SocketContent>('coordinates', onCoordinates)
-      socket.getMessages('0')
     }
   }, [socket])
 
