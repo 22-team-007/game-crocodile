@@ -6,8 +6,8 @@ export default function WithAuth<P extends object>(
   PrivateComponent: ComponentType<P>,
   redirectTo = '/signin',
   invertRule = false
-): React.ComponentType | any {
-  return function HOC(props: any) {
+): React.ComponentType | unknown {
+  return function HOC(props: unknown) {
     let userId = useAppSelector(state => state.userData.user?.id)
 
     if (!userId) {

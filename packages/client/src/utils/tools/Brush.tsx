@@ -13,8 +13,11 @@ export default class Brush extends Tool {
   public mouseDown = false
 
   public drawArray(coordinates: Coordinate[], color: string) {
+    const tmpStrokeColor = this.strokeColor
+    const tmpfillColor = this.fillColor
     this.strokeColor = this.fillColor = color
-    coordinates.forEach(([x, y], i: number) => {
+    for (let i = 0; i < coordinates.length; i++) {
+      const [x, y] = coordinates[i]
       if (i === 0) {
         this.ctx?.beginPath()
         this.ctx?.moveTo(x, y)
@@ -22,7 +25,9 @@ export default class Brush extends Tool {
         this.ctx?.lineTo(x, y)
         this.ctx?.stroke()
       }
-    })
+    }
+    this.strokeColor = tmpStrokeColor
+    this.fillColor = tmpfillColor
   }
 
   private buffer: Coordinate[] = []
