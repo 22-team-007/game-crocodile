@@ -2,10 +2,12 @@ import { userTypes } from '../actions/user'
 
 const initState = {
   user: null,
+  userAvatar: undefined
 }
 
 type UserState = {
-  user: UserType | null
+  user: UserType | null,
+  userAvatar: string | undefined
 }
 
 export function userReducer(
@@ -17,6 +19,11 @@ export function userReducer(
       return {
         ...state,
         user: payload,
+      }
+    case userTypes.SET_USER_AVATAR:
+      return {
+        ...state,
+        userAvatar: payload.avatar,
       }
 
     default:

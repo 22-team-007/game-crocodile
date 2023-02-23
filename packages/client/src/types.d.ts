@@ -68,7 +68,7 @@ declare type LeaderType = {
 }
 
 declare type ItemActionType = {
-  payload: UserType
+  payload: any
   type: string
 }
 
