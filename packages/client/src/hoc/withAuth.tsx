@@ -7,7 +7,7 @@ export default function WithAuth<P extends object>(
   redirectTo = '/signin',
   invertRule = false
 ): React.ComponentType | unknown {
-  return function HOC(props: unknown) {
+  return function HOC(props: P) {
     let userId = useAppSelector(state => state.userData.user?.id)
 
     if (!userId) {
