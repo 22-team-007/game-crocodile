@@ -23,7 +23,7 @@ export function userReducer(
     case userTypes.SET_USER_AVATAR:
       return {
         ...state,
-        userAvatar: payload.avatar,
+        userAvatar: payload,
       }
 
     default:

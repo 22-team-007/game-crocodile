@@ -25,9 +25,7 @@ const Login = () => {
   const dispatch = useAppDispatch()
 
   const onSubmitHandler = (data: LoginData) => {
-    api.auth.signIn(data).then(user => {
-      dispatch(usertActions.setUSer(user))
-    })
+    dispatch(usertActions.setUser(data))
   }
 
   return (

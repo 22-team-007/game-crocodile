@@ -4,7 +4,9 @@ import { Avatar, FormEdit, FormShow, FormPassword } from './components'
 
 import withAuth from '../../hoc/withAuth'
 import api from '../../api'
-import { useAppSelector } from '../../hooks/useAppSelector'
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppSelector'
+import { selectUser, selectUserAvatar } from '../../store/selectors'
+import { usertActions } from '../../store/actions'
 
 import './profile.scss'
 
@@ -17,26 +19,27 @@ enum Pages {
 export const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
-
-  const user = useAppSelector(state => state.userData.user)
+  const dispatch = useAppDispatch()
+  
+  const user = useAppSelector(selectUser)
+  let avatar = useAppSelector(selectUserAvatar)
 
   useEffect(() => {
     if (user) {
       setFields(user)
     }
   }, [user])
-  
+
   useEffect(() => {
     api.auth
       .user()
       .then(data => 
         setFields({ ...data, avatar: api.resources.url(data.avatar) })
       )
-  }, [])
+  }, [avatar])
 
   const setValue = (k: string, v: string) => {
-    //здесь диспатч
-    setFields({ ...fields, [k]: v })
+    dispatch(usertActions.setAvatar(v))
   }
 
   return (
