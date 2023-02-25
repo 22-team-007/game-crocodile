@@ -68,7 +68,7 @@ declare type LeaderType = {
 }
 
 declare type ItemActionType = {
-  payload: any
+  [k: string]: any
   type: string
 }
 

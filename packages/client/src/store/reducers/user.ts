@@ -1,3 +1,4 @@
+import { AnyAction } from 'redux'
 import { userTypes } from '../actions/user'
 
 const initState = {
@@ -10,9 +11,14 @@ type UserState = {
   userAvatar: string | undefined
 }
 
+
+type TAction = {
+  [k: string]: any
+}
+
 export function userReducer(
   state: UserState = initState,
-  { type, payload }: ItemActionType
+  { type, payload }: TAction
 ): UserState {
   switch (type) {
     case userTypes.SET_USER_DATA:

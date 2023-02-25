@@ -15,6 +15,9 @@ import api from '../../api'
 import { useAppDispatch } from '../../hooks/useAppSelector'
 import { usertActions } from '../../store/actions'
 
+import { setUser } from '../../store/actions/user'
+
+
 const Login = () => {
   const {
     register,
@@ -25,7 +28,7 @@ const Login = () => {
   const dispatch = useAppDispatch()
 
   const onSubmitHandler = (data: LoginData) => {
-    dispatch(usertActions.setUser(data))
+    dispatch(setUser(data))
   }
 
   return (
