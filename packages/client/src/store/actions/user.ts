@@ -1,9 +1,7 @@
-import { AnyAction, Dispatch } from 'redux'
+import { AnyAction } from 'redux'
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import api from '../../api'
-import { RootState } from '../store'
-
-import 'redux-thunk/extend-redux'
+import type {} from 'redux-thunk/extend-redux'
 
 export const userTypes = {
   SET_USER_DATA: 'SET_USER_DATA',
@@ -24,26 +22,8 @@ async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
   }
 }
 
+export const setAvatar = (src: string) => ({
+  type: userTypes.SET_USER_AVATAR,
+  payload: src,
+})
 
-const Actions = {
-  setUser: (data: SignInParams) => {
-    return async (dispatch: Dispatch) => {
-      try {
-        api.auth.signIn(data).then(user => {
-          dispatch({
-            type: userTypes.SET_USER_DATA,
-            payload: user,
-          })
-        })
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  },
-  setAvatar: (src: string) => ({
-    type: userTypes.SET_USER_AVATAR,
-    payload: src,
-  }),
-}
-
-export default Actions

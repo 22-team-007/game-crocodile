@@ -6,7 +6,7 @@ import withAuth from '../../hoc/withAuth'
 import api from '../../api'
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppSelector'
 import { selectUser, selectUserAvatar } from '../../store/selectors'
-import { usertActions } from '../../store/actions'
+import { setAvatar } from '../../store/actions/user'
 
 import './profile.scss'
 
@@ -39,7 +39,7 @@ export const Profile = () => {
   }, [avatar])
 
   const setValue = (k: string, v: string) => {
-    dispatch(usertActions.setAvatar(v))
+    dispatch(setAvatar(v))
   }
 
   return (

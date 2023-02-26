@@ -10,11 +10,8 @@ import FormInput from '../../components/FormInput'
 import { Button, Card, Container, Form } from 'react-bootstrap'
 // Utils
 import { validation } from '../../utils'
-import api from '../../api'
 
 import { useAppDispatch } from '../../hooks/useAppSelector'
-import { usertActions } from '../../store/actions'
-
 import { setUser } from '../../store/actions/user'
 
 
