@@ -67,9 +67,8 @@ declare type LeaderType = {
   score: number
 }
 
-declare type ItemActionType = {
+declare type TAction = {
   [k: string]: any
-  type: string
 }
 
 declare interface Message {

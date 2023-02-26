@@ -1,19 +1,11 @@
-import { AnyAction } from 'redux'
 import { userTypes } from '../actions/user'
 
 const initState = {
   user: null,
-  userAvatar: undefined
 }
 
 type UserState = {
   user: UserType | null,
-  userAvatar: string | undefined
-}
-
-
-type TAction = {
-  [k: string]: any
 }
 
 export function userReducer(
@@ -26,10 +18,17 @@ export function userReducer(
         ...state,
         user: payload,
       }
-    case userTypes.SET_USER_AVATAR:
+    case userTypes.SET_USER_PROFILE:
       return {
         ...state,
-        userAvatar: payload,
+        user: payload,
+      }
+    case userTypes.SET_USER_AVATAR:
+      if(state.user) {
+        return {
+          ...state,
+          user: {...state.user, avatar: payload},
+        }
       }
 
     default:

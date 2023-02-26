@@ -12,8 +12,8 @@ const Avatar: FC<AvatarProps> = ({ src, setValue }) => {
   const selectAvatar = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]
-      api.users.avatar(file).then(response => {
-        setValue(e.target.id, api.resources.url(response))
+      api.users.avatar(file).then(url => {
+        setValue(e.target.id, api.resources.url(url))
       })
     }
   }

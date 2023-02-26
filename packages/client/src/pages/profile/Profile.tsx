@@ -6,7 +6,7 @@ import withAuth from '../../hoc/withAuth'
 import api from '../../api'
 import { useAppDispatch, useAppSelector } from '../../hooks/useAppSelector'
 import { selectUser, selectUserAvatar } from '../../store/selectors'
-import { setAvatar } from '../../store/actions/user'
+import { setAvatar, setProfile } from '../../store/actions/user'
 
 import './profile.scss'
 
@@ -42,6 +42,12 @@ export const Profile = () => {
     dispatch(setAvatar(v))
   }
 
+  const onCloseEdit = (f: ProfileParams) => {
+    setFields(f)
+    setPage(Pages.Show)
+    dispatch(setProfile(f))
+  }
+
   return (
     <Container style={{ maxWidth: '960px' }}>
       <Card>
@@ -65,10 +71,7 @@ export const Profile = () => {
               {page === Pages.Edit && (
                 <FormEdit
                   fields={fields}
-                  close={(f: ProfileParams) => {
-                    setFields(f)
-                    setPage(Pages.Show)
-                  }}
+                  close={onCloseEdit}
                 />
               )}
             </Col>
