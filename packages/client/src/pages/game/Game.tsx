@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import {
   Container,
   ListGroup,
@@ -9,10 +9,11 @@ import {
   OverlayTrigger,
   Popover,
 } from 'react-bootstrap'
+import GameCanvas from '../../components/GameCanvas/GameCanvas'
+
 import { useParams } from 'react-router'
 
 import Arrow from '../../assets/arrow.svg'
-import Brush from '../../utils/tools/Brush'
 import withAuth from '../../hoc/withAuth'
 
 import api from '../../api'
@@ -78,23 +79,13 @@ function StartEndGame() {
 const Game = () => {
   const { chatId } = useParams()
 
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const brush = useRef<Brush>()
   const [message, setMessage] = useState('')
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
 
   useEffect(() => {
     api.games.users(Number(chatId)).then(setGamePlayers)
-    if (canvasRef.current) brush.current = new Brush(canvasRef.current)
-  }, [])
-
-  const changeColor = (e: ChangeEvent<HTMLInputElement>) => {
-    if (brush.current) {
-      brush.current.strokeColor = e.target.value
-      brush.current.fillColor = e.target.value
-    }
-  }
+  },[])
 
   const messageHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value)
@@ -116,11 +107,7 @@ const Game = () => {
     <Container className="d-flex justify-content-center align-items-center">
       <div className="game-container">
         <div className="game-wrapper">
-          <div className="drawing">
-            <Form.Control type="color" onChange={changeColor} />
-            <canvas ref={canvasRef} width={650} height={600} />
-          </div>
-
+          <GameCanvas/>
           <div className="chatting">
             <div className="leader-board">
               <ListGroup variant="flush" className="leader-board_wrap">
