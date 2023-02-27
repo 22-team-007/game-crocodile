@@ -1,29 +1,7 @@
-type Content = {
-  type: string
-  chat_id?: number
-  time?: string
-  user_id?: number
-  id?: number
-  color?: string
-  content?: string | [x: number, y: number][] | Content
-  file?: ResourceType
-}
-
-type SocketAPIType = {
-  sendContent: (type: string, content: Omit<Content, 'type'>) => void
-  sendMessage: (text: string) => void
-  sendCoordinates: (
-    coordinates: [x: number, y: number][],
-    color: string
-  ) => void
-  sendImage: (content: string) => void
-  getMessages: (content: string) => void
-  on: (event: string, handler: (res?: string | Content) => void) => void
-}
-
 export default class Socket extends WebSocket implements SocketAPIType {
   protected static instance: Socket
   protected static userId: number
+  protected static chatId: number
 
   static connect(userId: number, chatId: number, token: string): Socket {
     const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`
@@ -34,6 +12,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
       this.instance = new this(url)
     }
     this.userId = userId
+    this.chatId = chatId
     return this.instance
   }
 
@@ -42,21 +21,34 @@ export default class Socket extends WebSocket implements SocketAPIType {
     super.addEventListener('message', this.handler)
   }
 
-  private emit(c: Content) {
+  private emit(c: SocketContent) {
     if (c.type === 'message' && c.content && typeof c.content === 'object')
-      c = { ...c, ...c.content } as Content
-    this.dispatchEvent(new CustomEvent(c.type, { detail: c }))
+      c = { ...c, ...c.content } as SocketContent
+    super.dispatchEvent(new CustomEvent(c.type, { detail: c }))
   }
 
   private handler(event: MessageEvent) {
-    const res: Content | Content[] = JSON.parse(event.data)
+    const res: SocketContent | SocketContent[] = JSON.parse(event.data)
     if (res && typeof res === 'object') {
-      if (Array.isArray(res)) res.reverse().forEach(this.emit)
-      else this.emit(res)
+      if (Array.isArray(res)) {
+        res.reverse().forEach((r: SocketContent) => {
+          if (
+            r.chat_id === Socket.chatId ||
+            r.chat_id === undefined ||
+            r.chat_id === null
+          )
+            this.emit({ ...r, ...JSON.parse(r.content as string) })
+        })
+      } else if (
+        res.chat_id === Socket.chatId ||
+        res.chat_id === undefined ||
+        res.chat_id === null
+      )
+        this.emit(res)
     }
   }
 
-  private send2(c: Content) {
+  private send2(c: SocketContent) {
     if (this.readyState === this.OPEN && self.navigator.onLine === true)
       super.send(JSON.stringify(c))
     else {
@@ -69,19 +61,11 @@ export default class Socket extends WebSocket implements SocketAPIType {
     }
   }
 
-  public sendContent(type: string, content: Omit<Content, 'type'>) {
+  public sendContent(type: string, content: Omit<SocketContent, 'type'>) {
     this.send2({
       type: 'message',
       content: { type, ...content },
     })
-  }
-
-  public sendMessage(text: string) {
-    this.sendContent('text', { content: text })
-  }
-
-  public sendCoordinates(coordinates: [x: number, y: number][], color: string) {
-    this.sendContent('coordinates', { content: coordinates, color })
   }
 
   public sendImage(content: string) {
@@ -98,7 +82,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
     })
   }
 
-  public on(event: string, handler: (res?: string | Content) => void) {
+  public on<T>(event: string, handler: (res: T) => void) {
     super.addEventListener(event, (e: Event) => {
       handler((e as CustomEvent).detail)
     })

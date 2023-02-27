@@ -6,7 +6,7 @@ import { Avatar, FormEdit, FormShow, FormPassword } from './components'
 import withAuth from '../../hoc/withAuth'
 import api from '../../api'
 
-import './profile.scss'
+import './style.scss'
 
 enum Pages {
   Show = 'ProfileShow',

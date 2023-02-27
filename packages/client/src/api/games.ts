@@ -93,6 +93,11 @@ export default class Games extends ApiBase implements GameAPIType {
   public async socketConnect(userId: number, chatId: number): Promise<Socket> {
     const r = await this.POST(`/api/v2/chats/token/${chatId}`)
     const a = await r.json()
-    return Socket.connect(userId, chatId, a.token)
+    return await new Promise<Socket>(resolve => {
+      const socket = Socket.connect(userId, chatId, a.token)
+      socket.addEventListener('open', () => {
+        resolve(socket)
+      })
+    })
   }
 }

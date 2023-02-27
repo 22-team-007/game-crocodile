@@ -11,7 +11,7 @@ import {
 } from 'react-bootstrap'
 
 import { mockTopics, mockMessages } from './mockData'
-import './styles.scss'
+import './style.scss'
 
 const Forum = () => {
   const [show, setShow] = useState(false)

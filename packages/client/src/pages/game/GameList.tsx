@@ -10,14 +10,14 @@ import { Link } from 'react-router-dom'
 
 import api from '../../api'
 import withAuth from '../../hoc/withAuth'
+import { useAppSelector } from '../../hooks/useAppSelector'
 
 const GameList = () => {
   const [gameList, setGameList] = useState<GameType[]>([])
-  const [currentUser, setCurrentUser] = useState<UserType>()
+  const currentUser = useAppSelector(state => state.userData.user)
 
   useEffect(() => {
     api.games.get().then(setGameList)
-    api.auth.user().then(setCurrentUser)
     const intervalList = setInterval(() => {
       api.games.get().then(setGameList)
     }, 10000)
