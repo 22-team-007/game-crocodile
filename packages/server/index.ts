@@ -20,6 +20,9 @@ app.get('/assets/:page', (req, res) => {
 app.get('/', (_, res) => {
   res.sendFile(`${packagesPath}/client/dist/index.html`)
 })
+app.get('/game/:chatId', (_, res) => {
+  res.sendFile(`${packagesPath}/client/dist/index.html`)
+})
 app.get('/get/word', (_, res) => {
   res.send(words[Math.floor(Math.random() * words.length)])
 })

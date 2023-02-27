@@ -8,18 +8,29 @@ export default class Tool {
   protected canvas: HTMLCanvasElement
   protected ctx: CanvasRenderingContext2D | null
 
-  set fillColor(color: string | CanvasGradient | CanvasPattern) {
+  public get fillColor(): string {
+    if (this.ctx) return this.ctx.fillStyle as string
+    return '#000000'
+  }
+
+  public set fillColor(color: string | CanvasGradient | CanvasPattern) {
     this.ctx!.fillStyle = color
   }
-  set strokeColor(color: string | CanvasGradient | CanvasPattern) {
+
+  public get strokeColor(): string {
+    if (this.ctx) return this.ctx.strokeStyle as string
+    return '#000000'
+  }
+
+  public set strokeColor(color: string | CanvasGradient | CanvasPattern) {
     this.ctx!.strokeStyle = color
   }
 
-  set lineWidth(width: number) {
+  public set lineWidth(width: number) {
     this.ctx!.lineWidth = width
   }
 
-  destroyEvents() {
+  private destroyEvents() {
     this.canvas.onmousemove = null
     this.canvas.onmousedown = null
     this.canvas.onmouseup = null

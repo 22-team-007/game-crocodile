@@ -1,15 +1,20 @@
-import { ChangeEvent, useEffect, useRef } from 'react'
+import { ChangeEvent, FC, useEffect, useRef } from 'react'
 import { Form } from 'react-bootstrap'
-import Brush from '../../utils/tools/Brush'
 
-const GameCanvas = () => {
+import Brush from '../../../utils/tools/Brush'
 
+interface GameDrawProps {
+  currentUserId: number
+  socket?: SocketAPIType
+}
+
+const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const brush = useRef<Brush>()
 
   useEffect(() => {
     if (canvasRef.current) {
-      brush.current = new Brush(canvasRef.current)
+      brush.current = new Brush(canvasRef.current, sendCoordinates)
 
       const brushWidth = localStorage.getItem('brushWidth')
       const brushColor = localStorage.getItem('brushColor')
@@ -21,7 +26,26 @@ const GameCanvas = () => {
         brush.current.fillColor = brushColor
       }
     }
-  }, [])
+
+    if (socket !== undefined) {
+      socket.on<SocketContent>('coordinates', onCoordinates)
+    }
+  }, [socket])
+
+  const sendCoordinates = (content: Coordinate[]) => {
+    if (brush.current && socket !== undefined) {
+      socket.sendContent('coordinates', {
+        content,
+        color: brush.current.strokeColor,
+      })
+    }
+  }
+
+  const onCoordinates = (c: SocketContent) => {
+    if (brush.current && currentUserId !== c.user_id) {
+      brush.current.drawArray(c.content as Coordinate[], c.color || '#000000')
+    }
+  }
 
   const changeLineWidth = (e: ChangeEvent<HTMLInputElement>) => {
     if (brush.current) {
@@ -68,4 +92,4 @@ const GameCanvas = () => {
   )
 }
 
-export default GameCanvas
+export default GameDraw
