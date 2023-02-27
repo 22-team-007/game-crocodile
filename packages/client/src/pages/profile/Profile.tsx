@@ -20,9 +20,9 @@ export const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
   const dispatch = useAppDispatch()
-  
+
   const user = useAppSelector(selectUser)
-  let avatar = useAppSelector(selectUserAvatar)
+  const avatar = useAppSelector(selectUserAvatar)
 
   useEffect(() => {
     if (user) {
@@ -33,7 +33,7 @@ export const Profile = () => {
   useEffect(() => {
     api.auth
       .user()
-      .then(data => 
+      .then(data =>
         setFields({ ...data, avatar: api.resources.url(data.avatar) })
       )
   }, [avatar])
