@@ -8,13 +8,14 @@ import FormInput from '../../components/FormInput'
 // Bootstrap components
 import { Button, Card, Container, Form } from 'react-bootstrap'
 // Utils
-import { validation } from '../../utils'
+import { onValidateRepeatPassword, validation } from '../../utils'
 import api from '../../api'
 
 const Registration = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegistrationData>()
 
@@ -40,7 +41,7 @@ const Registration = () => {
               isInvalid={!!errors?.email}
               register={register('email', {
                 required: 'Обязательное поле.',
-                pattern: { value: validation.email.regExp, message: validation.email.message }
+                pattern: validation.email,
               })}
               errorMsg={errors?.email?.message}
             />
@@ -50,7 +51,7 @@ const Registration = () => {
               isInvalid={!!errors?.login}
               register={register('login', {
                 required: 'Обязательное поле.',
-                pattern: { value: validation.login.regExp, message: validation.login.message }
+                pattern: validation.login,
               })}
               errorMsg={errors?.login?.message}
             />
@@ -60,7 +61,7 @@ const Registration = () => {
               isInvalid={!!errors?.first_name}
               register={register('first_name', {
                 required: 'Обязательное поле.',
-                pattern: { value: validation.first_name.regExp, message: validation.first_name.message }
+                pattern: validation.first_name,
               })}
               errorMsg={errors?.first_name?.message}
             />
@@ -70,7 +71,7 @@ const Registration = () => {
               isInvalid={!!errors?.second_name}
               register={register('second_name', {
                 required: 'Обязательное поле.',
-                pattern: { value: validation.second_name.regExp, message: validation.second_name.message }
+                pattern: validation.second_name,
               })}
               errorMsg={errors?.second_name?.message}
             />
@@ -80,7 +81,7 @@ const Registration = () => {
               isInvalid={!!errors?.phone}
               register={register('phone', {
                 required: 'Обязательное поле.',
-                pattern: { value: validation.phone.regExp, message: validation.phone.message }
+                pattern: validation.phone,
               })}
               errorMsg={errors?.phone?.message}
             />
@@ -91,7 +92,7 @@ const Registration = () => {
               isPassword
               register={register('password', {
                 required: 'Обязательное поле.',
-                pattern: { value: validation.password.regExp, message: validation.password.message }
+                pattern: validation.password,
               })}
               errorMsg={errors?.password?.message}
             />
@@ -102,6 +103,8 @@ const Registration = () => {
               isPassword
               register={register('password_repeat', {
                 required: 'Обязательное поле.',
+                validate: value => onValidateRepeatPassword(watch('password'), value)
+
               })}
               errorMsg={errors?.password_repeat?.message}
             />

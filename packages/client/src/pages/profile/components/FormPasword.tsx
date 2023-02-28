@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import api from '../../../api'
-import { validation } from '../../../utils'
+import { onValidateRepeatPassword, validation } from '../../../utils'
 import FormInput from '../../../components/FormInput'
 
 type FormPasswordProps = {
@@ -21,13 +21,6 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
     api.users.password(data).then(() => close())
   }
 
-  const onValidateRepeatPassword = (value: string | undefined) => {
-    if (watch('newPassword') === value){
-      return true
-    }
-    return 'пароли не совпадают'
-  }
-
   return (
     <Form noValidate onSubmit={handleSubmit(onSubmitEditHandler)}>
       <FormInput
@@ -37,7 +30,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('oldPassword', {
           required: 'Обязательное поле.',
-          pattern: { value: validation.password.regExp, message: validation.password.message },
+          pattern: validation.password,
         })}
         errorMsg={errors?.oldPassword?.message}
       />
@@ -49,7 +42,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('newPassword', {
           required: 'Обязательное поле.',
-          pattern: { value: validation.password.regExp, message: validation.password.message },
+          pattern: validation.password,
         })}
         errorMsg={errors?.newPassword?.message}
       />
@@ -61,7 +54,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('repeatPassword', {
           required: 'Обязательное поле.',
-          validate: value => onValidateRepeatPassword(value)
+          validate: value => onValidateRepeatPassword(watch('newPassword'), value)
         })}
         errorMsg={errors?.repeatPassword?.message}
       />

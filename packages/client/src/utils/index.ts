@@ -1,3 +1,3 @@
-import { validation } from './validation'
+import { validation, onValidateRepeatPassword } from './validation'
 
-export { validation }
+export { validation, onValidateRepeatPassword }
