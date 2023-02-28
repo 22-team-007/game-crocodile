@@ -67,10 +67,6 @@ declare type LeaderType = {
   score: number
 }
 
-declare type TAction = {
-  [k: string]: any
-}
-
 declare interface Message {
   chat_id: number
   time: string
