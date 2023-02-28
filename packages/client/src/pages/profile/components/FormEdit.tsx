@@ -39,7 +39,7 @@ const FormEdit: FC<FormEditProps> = ({ fields, close }) => {
         isInvalid={!!errors.first_name}
         register={register('first_name', {
           required: 'Обязательное поле.',
-          pattern: validation.first_name.regExp,
+          pattern: { value: validation.first_name.regExp, message: validation.first_name.message },
         })}
         errorMsg={errors?.first_name?.message}
       />
@@ -49,7 +49,7 @@ const FormEdit: FC<FormEditProps> = ({ fields, close }) => {
         isInvalid={!!errors.second_name}
         register={register('second_name', {
           required: 'Обязательное поле.',
-          pattern: validation.second_name.regExp,
+          pattern: { value: validation.second_name.regExp, message: validation.second_name.message },
         })}
         errorMsg={errors?.second_name?.message}
       />
@@ -59,7 +59,7 @@ const FormEdit: FC<FormEditProps> = ({ fields, close }) => {
         isInvalid={!!errors.display_name}
         register={register('display_name', {
           required: 'Обязательное поле.',
-          pattern: validation.display_name.regExp,
+          pattern: { value: validation.display_name.regExp, message: validation.display_name.message },
         })}
         errorMsg={errors?.display_name?.message}
       />
@@ -69,7 +69,7 @@ const FormEdit: FC<FormEditProps> = ({ fields, close }) => {
         isInvalid={!!errors?.login}
         register={register('login', {
           required: 'Обязательное поле.',
-          pattern: validation.login.regExp,
+          pattern: { value: validation.login.regExp, message: validation.login.message },
         })}
         errorMsg={errors?.login?.message}
       />
@@ -79,7 +79,7 @@ const FormEdit: FC<FormEditProps> = ({ fields, close }) => {
         isInvalid={!!errors?.email}
         register={register('email', {
           required: 'Обязательное поле.',
-          pattern: validation.email.regExp,
+          pattern: { value: validation.email.regExp, message: validation.email.message },
         })}
         errorMsg={errors?.email?.message}
       />
@@ -89,7 +89,7 @@ const FormEdit: FC<FormEditProps> = ({ fields, close }) => {
         isInvalid={!!errors?.phone}
         register={register('phone', {
           required: 'Обязательное поле.',
-          pattern: validation.phone.regExp,
+          pattern: { value: validation.phone.regExp, message: validation.phone.message },
         })}
         errorMsg={errors?.phone?.message}
       />

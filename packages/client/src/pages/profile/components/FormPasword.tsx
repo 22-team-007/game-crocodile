@@ -13,11 +13,19 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<PasswordParams>()
 
   const onSubmitEditHandler = (data: PasswordParams) => {
     api.users.password(data).then(() => close())
+  }
+
+  const onValidateRepeatPassword = (value: string | undefined) => {
+    if (watch('newPassword') === value){
+      return true
+    }
+    return 'пароли не совпадают'
   }
 
   return (
@@ -29,7 +37,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('oldPassword', {
           required: 'Обязательное поле.',
-          pattern: validation.oldPassword.regExp,
+          pattern: { value: validation.password.regExp, message: validation.password.message },
         })}
         errorMsg={errors?.oldPassword?.message}
       />
@@ -41,7 +49,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('newPassword', {
           required: 'Обязательное поле.',
-          pattern: validation.newPassword.regExp,
+          pattern: { value: validation.password.regExp, message: validation.password.message },
         })}
         errorMsg={errors?.newPassword?.message}
       />
@@ -53,6 +61,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('repeatPassword', {
           required: 'Обязательное поле.',
+          validate: value => onValidateRepeatPassword(value)
         })}
         errorMsg={errors?.repeatPassword?.message}
       />

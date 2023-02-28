@@ -6,13 +6,10 @@ type ValidationKey =
   | 'second_name'
   | 'phone'
   | 'password'
-  | 'newPassword'
-  | 'oldPassword'
-  | 'repeatPassword'
 
 export const validation: Record<
   ValidationKey,
-  { regExp?: RegExp; message: string; errMessage: string }
+  { regExp: RegExp; message: string; errMessage: string }
 > = {
   email: {
     regExp: /^[a-zA-Z0-9_-]+[@][a-zA-Z]+[.][a-zA-Z]+/,
@@ -53,21 +50,5 @@ export const validation: Record<
     message:
       'от 8 до 40 символов, обязательно хотя бы одна заглавная буква и цифра.',
     errMessage: 'пароль введен не правильно',
-  },
-  newPassword: {
-    regExp: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,40}$/,
-    message:
-      'от 8 до 40 символов, обязательно хотя бы одна заглавная буква и цифра.',
-    errMessage: 'пароль введен не правильно',
-  },
-  oldPassword: {
-    regExp: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,40}$/,
-    message:
-      'от 8 до 40 символов, обязательно хотя бы одна заглавная буква и цифра.',
-    errMessage: 'пароль введен не правильно',
-  },
-  repeatPassword: {
-    message: 'пароли должны совпадать',
-    errMessage: 'пароли не совпадают',
   },
 }
