@@ -67,11 +67,6 @@ declare type LeaderType = {
   score: number
 }
 
-declare type ItemActionType = {
-  payload: UserType
-  type: string
-}
-
 declare interface Message {
   chat_id: number
   time: string

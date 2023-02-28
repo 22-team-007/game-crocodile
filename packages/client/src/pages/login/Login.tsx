@@ -10,10 +10,10 @@ import FormInput from '../../components/FormInput'
 import { Button, Card, Container, Form } from 'react-bootstrap'
 // Utils
 import { validation } from '../../utils'
-import api from '../../api'
 
 import { useAppDispatch } from '../../hooks/useAppSelector'
-import { usertActions } from '../../store/actions'
+import { setUser } from '../../store/actions/user'
+
 
 const Login = () => {
   const {
@@ -25,9 +25,7 @@ const Login = () => {
   const dispatch = useAppDispatch()
 
   const onSubmitHandler = (data: LoginData) => {
-    api.auth.signIn(data).then(user => {
-      dispatch(usertActions.setUSer(user))
-    })
+    dispatch(setUser(data))
   }
 
   return (

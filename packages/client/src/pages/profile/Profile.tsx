@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { Button, Card, Row, Col, Container } from 'react-bootstrap'
 import { Avatar, FormEdit, FormShow, FormPassword } from './components'
 
-//import { useAppSelector } from '../../hooks/useAppSelector'
 import withAuth from '../../hoc/withAuth'
 import api from '../../api'
+import { useAppDispatch, useAppSelector } from '../../hooks/useAppSelector'
+import { selectUser, selectUserAvatar } from '../../store/selectors'
+import { setAvatar, setProfile } from '../../store/actions/user'
 
 import './style.scss'
 
@@ -17,8 +19,16 @@ enum Pages {
 export const Profile = () => {
   const [fields, setFields] = useState<ProfileParams>({})
   const [page, setPage] = useState(Pages.Show)
+  const dispatch = useAppDispatch()
 
-  //const user = useAppSelector(state => state.userData.user) нужно dispatch сделать при вызове setValue
+  const user = useAppSelector(selectUser)
+  const avatar = useAppSelector(selectUserAvatar)
+
+  useEffect(() => {
+    if (user) {
+      setFields(user)
+    }
+  }, [user])
 
   useEffect(() => {
     api.auth
@@ -26,10 +36,16 @@ export const Profile = () => {
       .then(data =>
         setFields({ ...data, avatar: api.resources.url(data.avatar) })
       )
-  }, [])
+  }, [avatar])
 
   const setValue = (k: string, v: string) => {
-    setFields({ ...fields, [k]: v })
+    dispatch(setAvatar(v))
+  }
+
+  const onCloseEdit = (f: ProfileParams) => {
+    setFields(f)
+    setPage(Pages.Show)
+    dispatch(setProfile(f))
   }
 
   return (
@@ -55,10 +71,7 @@ export const Profile = () => {
               {page === Pages.Edit && (
                 <FormEdit
                   fields={fields}
-                  close={(f: ProfileParams) => {
-                    setFields(f)
-                    setPage(Pages.Show)
-                  }}
+                  close={onCloseEdit}
                 />
               )}
             </Col>
