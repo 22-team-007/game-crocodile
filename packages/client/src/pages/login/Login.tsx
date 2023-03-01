@@ -44,7 +44,7 @@ const Login = () => {
               isInvalid={!!errors?.login}
               register={register('login', {
                 required: 'Обязательное поле.',
-                pattern: validation.login.regExp,
+                pattern: validation.login,
               })}
               errorMsg={errors?.login?.message}
             />
@@ -55,7 +55,7 @@ const Login = () => {
               isPassword
               register={register('password', {
                 required: 'Обязательное поле.',
-                pattern: validation.password.regExp,
+                pattern: validation.password,
               })}
               errorMsg={errors?.password?.message}
             />

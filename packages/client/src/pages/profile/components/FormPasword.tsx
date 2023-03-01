@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import api from '../../../api'
-import { validation } from '../../../utils'
+import { onValidateRepeatPassword, validation } from '../../../utils'
 import FormInput from '../../../components/FormInput'
 
 type FormPasswordProps = {
@@ -13,6 +13,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<PasswordParams>()
 
@@ -29,7 +30,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('oldPassword', {
           required: 'Обязательное поле.',
-          pattern: validation.oldPassword.regExp,
+          pattern: validation.password,
         })}
         errorMsg={errors?.oldPassword?.message}
       />
@@ -41,7 +42,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('newPassword', {
           required: 'Обязательное поле.',
-          pattern: validation.newPassword.regExp,
+          pattern: validation.password,
         })}
         errorMsg={errors?.newPassword?.message}
       />
@@ -53,6 +54,7 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('repeatPassword', {
           required: 'Обязательное поле.',
+          validate: value => onValidateRepeatPassword(watch('newPassword'), value)
         })}
         errorMsg={errors?.repeatPassword?.message}
       />
