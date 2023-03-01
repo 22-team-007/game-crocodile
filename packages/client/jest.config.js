@@ -8,4 +8,8 @@ export default {
   globals: {
     __SERVER_PORT__: process.env.SERVER_PORT,
   },
+  moduleNameMapper: {
+    '^.+\\.(css|scss)$': 'babel-jest',
+    '.+\\.(svg|png|jpg)$': 'babel-jest',
+  },
 }
