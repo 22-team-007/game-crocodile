@@ -21,6 +21,7 @@ import {
 import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
+import { UserLogoutAction } from './store/actions/types'
 
 export enum Routes {
   Index = '/',
@@ -36,9 +37,14 @@ export enum Routes {
   E404 = '404',
   E500 = '500',
 }
-export function Index() {
 
-  const dispatch = useAppDispatch()
+export function getRouterConf(forTest: string = "") {
+
+  let dispatch: (arg0: UserLogoutAction) => any
+
+  if(!forTest) {
+    dispatch = useAppDispatch()
+  }
 
   const routerConf = [
     {
@@ -124,7 +130,7 @@ export function Index() {
           path: Routes.Logout,
           loader: async () => {
             await api.auth.logOut()
-            dispatch(logoutUser())
+            forTest ? false : dispatch(logoutUser())
             return redirect('/')
           },
         },
@@ -148,5 +154,10 @@ export function Index() {
     },
   ]
 
-  return <RouterProvider router={createBrowserRouter(routerConf)} />
+  return routerConf
+}
+export function Index() {
+  const router = getRouterConf()
+
+  return <RouterProvider router={createBrowserRouter(router)} />
 }

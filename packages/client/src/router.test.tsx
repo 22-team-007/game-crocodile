@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
-import { routerConf } from './router'
+import { getRouterConf } from './router'
 
 // @ts-ignore
 document.fullscreenElement = jest.fn(() => Promise.resolve())
@@ -28,11 +28,7 @@ jest.mock('./utils/sound', () => ({
 }));
 
 
-const Testconf = [...routerConf]
-const routeIndex = Testconf[0]
-// зарегистрирован пользователь или нет, определим сами
-routeIndex.loader = undefined
-
+const Testconf = [... getRouterConf("forTest")]
 
 describe('Testing router ', () => {
 
