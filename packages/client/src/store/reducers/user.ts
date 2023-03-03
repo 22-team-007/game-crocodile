@@ -20,6 +20,11 @@ export function userReducer(
         ...state,
         user: payload
       }
+    case userTypes.REMOVE_USER_DATA:
+      return {
+        ...state,
+        user: null
+      }
     case userTypes.SET_USER_PROFILE:
       return {
         ...state,
