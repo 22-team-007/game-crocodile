@@ -53,17 +53,12 @@ async function startServer() {
       let render: () => Promise<string>
 
       if (isDev) {
-        template = fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
-
-        template = await vite!.transformIndexHtml(url, template)
+        template = await vite!.transformIndexHtml(url, fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8'))
         render = (
           await vite!.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
         ).render
       } else {
-        template = fs.readFileSync(
-          path.resolve(distPath, 'index.html'),
-          'utf-8'
-        )
+        template = fs.readFileSync(path.resolve(distPath, 'index.html'), 'utf-8')
         render = (await import(ssrClientPath)).render
       }
 
