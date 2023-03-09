@@ -75,7 +75,7 @@ const Login = () => {
                 Нет аккаунта?
               </Button>
             </NavLink>
-            <Link to={`${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`}>
+            <Link to={`${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=https://${redirectURI}`}>
             
               <Button className="w-100" size="sm" variant="link" 
               // onClick={async () => {
