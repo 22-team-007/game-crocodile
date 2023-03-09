@@ -53,6 +53,7 @@ export function getRouterConf(forTest = "") {
       element: <App />,
       errorElement: <ErrorPage />,
       loader: async () => {
+        debugger
         const {code} = useParams(); // authorizationGrant
 
         if(code) { 
