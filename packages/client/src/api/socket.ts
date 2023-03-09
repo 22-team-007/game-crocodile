@@ -4,6 +4,11 @@ export default class Socket extends WebSocket2 implements SocketAPIType {
   protected static instance: Socket
   protected static userId: number
   protected static chatId: number
+
+  public url = ''
+  public readyState = 0
+  public OPEN = 0
+
   public close() {
     super.close()
   }
