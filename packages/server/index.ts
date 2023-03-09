@@ -6,13 +6,10 @@ dotenv.config()
 const packagesPath = `${process.env.INIT_CWD}/packages`
 
 import express from 'express'
-import { createClientAndConnect } from './db'
 
 const app = express()
 app.use(cors())
 const port = Number(process.env.SERVER_PORT) || 3001
-
-createClientAndConnect()
 
 app.get('/assets/:page', (req, res) => {
   res.sendFile(`${packagesPath}/client/dist/assets/${req.params.page}`)
@@ -35,7 +32,8 @@ app.listen(port, () => {
   console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
 })
 
-import { dbConnect, ForumRecord } from './db_connect'
+import { dbConnect, ForumRecord } from './db'
+//Пример основных методов CRUD
 dbConnect().then(() => {
   ForumRecord.create({
     parent_id: null,
