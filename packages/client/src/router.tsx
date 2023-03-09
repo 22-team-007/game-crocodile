@@ -1,5 +1,5 @@
 import { redirect, RouterProvider } from 'react-router-dom'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, useParams } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
 
@@ -52,13 +52,14 @@ export function getRouterConf(forTest: string = "") {
       path: Routes.Index,
       element: <App />,
       errorElement: <ErrorPage />,
-      loader: async ({ params }:any) => {
-        if(typeof params.code !== 'undefined') {
-          const authorizationGrant = params.code
+      loader: async () => {
+        const {code} = useParams(); // authorizationGrant
+
+        if(code) { 
           const redirectURI = 'https://game-crocodile-client.vercel.app'
           
-          const resp = await api.oauth.signIn(authorizationGrant, redirectURI)
-          debugger
+          const resp = await api.oauth.signIn(code, redirectURI)
+
           if(resp === 'ok') {
             const user = await api.auth.user()
             
