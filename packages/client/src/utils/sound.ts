@@ -51,14 +51,12 @@ class Sound {
       try {
         const fetch2 =
           typeof fetch === 'undefined'
-            ? function (
-                url: string
-              ): Promise<{ arrayBuffer: () => Promise<string> }> {
+            ? function (): Promise<{ arrayBuffer: () => Promise<ArrayBuffer> }> {
                 return new Promise(a => {
                   a({
                     arrayBuffer: () => {
                       return new Promise(b => {
-                        b(url)
+                        b(new ArrayBuffer(0))
                       })
                     },
                   })
