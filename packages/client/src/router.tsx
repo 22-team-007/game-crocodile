@@ -53,6 +53,7 @@ export function getRouterConf(forTest: string = "") {
       element: <App />,
       errorElement: <ErrorPage />,
       loader: async ({ params }:any) => {
+        debugger
         if(typeof params.code !== 'undefined') {
           const authorizationGrant = params.code
           const redirectURI = 'https://game-crocodile-client.vercel.app'
