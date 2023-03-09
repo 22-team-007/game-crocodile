@@ -12,7 +12,7 @@ dotenv.config()
 
 //createClientAndConnect()
 
-const isDev = () => process.env.NODE_ENV === 'development'
+const isDev = (process.env.NODE_ENV === 'development')
 
 async function startServer() {
   const app = express()
@@ -24,8 +24,15 @@ async function startServer() {
   const srcPath = path.dirname(require.resolve('client'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  if (isDev()) {
-    console.log('dev')
+  app.get('/api', (_, res) => {
+    res.json('👋 Howdy from the server :)')
+  })
+
+  app.get('/words', (_, res) => {
+    res.send(words[Math.floor(Math.random() * words.length)])
+  })
+
+  if (isDev) {
     vite = await createViteServer({
       server: { middlewareMode: true },
       root: srcPath,
@@ -33,45 +40,31 @@ async function startServer() {
     })
 
     app.use(vite.middlewares)
-  }
-
-  app.get('/api', (_, res) => {
-    res.json('👋 Howdy from the server :)')
-  })
-
-  if (!isDev())
+    app.use('/assets', express.static(path.resolve(srcPath, 'src/assets')))
+  } else {
     app.use('/assets', express.static(path.resolve(distPath, 'assets')))
-  else app.use('/assets', express.static(path.resolve(srcPath, 'src/assets')))
-
-  app.get('/get/word', (_, res) => {
-    res.send(words[Math.floor(Math.random() * words.length)])
-  })
+  }
 
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
 
     try {
       let template: string
+      let render: () => Promise<string>
 
-      if (!isDev()) {
+      if (isDev) {
+        template = fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
+
+        template = await vite!.transformIndexHtml(url, template)
+        render = (
+          await vite!.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
+        ).render
+      } else {
         template = fs.readFileSync(
           path.resolve(distPath, 'index.html'),
           'utf-8'
         )
-      } else {
-        template = fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
-
-        template = await vite!.transformIndexHtml(url, template)
-      }
-
-      let render: () => Promise<string>
-
-      if (!isDev()) {
         render = (await import(ssrClientPath)).render
-      } else {
-        render = (
-          await vite!.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).render
       }
 
       const appHtml = await render()
@@ -80,7 +73,7 @@ async function startServer() {
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
-      if (isDev()) {
+      if (isDev) {
         vite!.ssrFixStacktrace(e as Error)
       }
       next(e)
