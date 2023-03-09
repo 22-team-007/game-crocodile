@@ -58,7 +58,7 @@ class Sound {
                   a({
                     arrayBuffer: () => {
                       return new Promise(b => {
-                        b('')
+                        b(url)
                       })
                     },
                   })
