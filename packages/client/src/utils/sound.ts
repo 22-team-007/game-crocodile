@@ -2,7 +2,6 @@ interface CrocoSound {
   fileName: string
   buffer: ArrayBuffer | undefined
 }
-
 class Sound {
   protected soundCtx: AudioContext | undefined
 
@@ -50,7 +49,23 @@ class Sound {
       const nameLoadingFile = this.sounds[key].fileName
 
       try {
-        return fetch(nameLoadingFile)
+        const fetch2 =
+          typeof fetch === 'undefined'
+            ? function (
+                url: string
+              ): Promise<{ arrayBuffer: () => Promise<any> }> {
+                return new Promise(a => {
+                  a({
+                    arrayBuffer: () => {
+                      return new Promise(b => {
+                        b('')
+                      })
+                    },
+                  })
+                })
+              }
+            : fetch
+        return fetch2(`/assets/${nameLoadingFile}`)
           .then(res => res.arrayBuffer())
           .then(audioData => (this.sounds[key].buffer = audioData))
       } catch (e) {

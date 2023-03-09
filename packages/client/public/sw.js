@@ -19,10 +19,12 @@ self.addEventListener('install', event => {
       cache.addAll([
         '/',
         '/sw.js',
-        '/vite.svg',
+        '/assets/vite.svg',
         '/assets/index.css',
         '/assets/index.js',
         '/assets/arrow.svg',
+        '/assets/FullScreen_In.mp3',
+        '/assets/FullScreen_Out.mp3',
       ])
     })
   )

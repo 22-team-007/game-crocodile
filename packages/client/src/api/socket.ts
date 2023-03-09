@@ -1,7 +1,18 @@
-export default class Socket extends WebSocket implements SocketAPIType {
+const WebSocket2 = typeof WebSocket === 'undefined' ? class {} : WebSocket
+
+export default class Socket extends WebSocket2 implements SocketAPIType {
   protected static instance: Socket
   protected static userId: number
   protected static chatId: number
+  protected url: string
+  protected readyState: number = 0
+  protected OPEN: number = 0
+  public close() {
+    super.close()
+  }
+  public addEventListener(...p: unknown[]) {
+    super.addEventListener(...p)
+  }
 
   static connect(userId: number, chatId: number, token: string): Socket {
     const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`
@@ -18,6 +29,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
 
   private constructor(url: string) {
     super(url)
+    this.url = url
     super.addEventListener('message', this.handler)
   }
 

@@ -14,7 +14,6 @@ import { validation } from '../../utils'
 import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
 
-
 const Login = () => {
   const {
     register,

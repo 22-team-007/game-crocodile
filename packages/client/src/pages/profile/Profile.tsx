@@ -69,10 +69,7 @@ export const Profile = () => {
                 />
               )}
               {page === Pages.Edit && (
-                <FormEdit
-                  fields={fields}
-                  close={onCloseEdit}
-                />
+                <FormEdit fields={fields} close={onCloseEdit} />
               )}
             </Col>
           </Row>

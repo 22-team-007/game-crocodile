@@ -4,13 +4,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --config ssr.config.ts && vite build --config vite.config.ts",
     "preview": "vite preview",
     "lint": "eslint ./src/**/*.ts?",
     "format": "prettier --write .",
     "test": "jest ./"
   },
   "dependencies": {
+    "@types/websocket": "^1.0.5",
     "bootstrap": "5.2.3",
     "dotenv": "16.0.2",
     "eslint-config-prettier": "8.5.0",
