@@ -19,7 +19,7 @@ async function startServer() {
   app.use(cors())
   const port = Number(process.env.SERVER_PORT) || 3001
 
-  let vite: ViteDevServer | undefined
+  let vite: ViteDevServer
   const distPath = path.dirname(require.resolve('client/dist/index.html'))
   const srcPath = path.dirname(require.resolve('client'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
@@ -38,7 +38,8 @@ async function startServer() {
       root: srcPath,
       appType: 'custom',
     })
-
+    if(!vite)
+      throw new Error("Can't create ViteServer")
     app.use(vite.middlewares)
     app.use('/assets', express.static(path.resolve(srcPath, 'src/assets')))
   } else {
@@ -53,9 +54,9 @@ async function startServer() {
       let render: () => Promise<string>
 
       if (isDev) {
-        template = await vite!.transformIndexHtml(url, fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8'))
+        template = await vite.transformIndexHtml(url, fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8'))
         render = (
-          await vite!.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
+          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
         ).render
       } else {
         template = fs.readFileSync(path.resolve(distPath, 'index.html'), 'utf-8')
@@ -69,7 +70,7 @@ async function startServer() {
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
       if (isDev) {
-        vite!.ssrFixStacktrace(e as Error)
+        vite.ssrFixStacktrace(e as Error)
       }
       next(e)
     }
