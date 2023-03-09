@@ -12,7 +12,7 @@ dotenv.config()
 
 //createClientAndConnect()
 
-const isDev = (process.env.NODE_ENV === 'development')
+const isDev = process.env.NODE_ENV === 'development'
 
 async function startServer() {
   const app = express()
@@ -21,7 +21,7 @@ async function startServer() {
 
   let vite: ViteDevServer
   const distPath = path.dirname(require.resolve('client/dist/index.html'))
-  const srcPath = path.dirname(require.resolve('client'))
+  const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
   app.get('/api', (_, res) => {
@@ -38,28 +38,66 @@ async function startServer() {
       root: srcPath,
       appType: 'custom',
     })
-    if(!vite)
-      throw new Error("Can't create ViteServer")
+    if (!vite) throw new Error("Can't create ViteServer")
     app.use(vite.middlewares)
     app.use('/assets', express.static(path.resolve(srcPath, 'src/assets')))
   } else {
     app.use('/assets', express.static(path.resolve(distPath, 'assets')))
   }
 
+  app.get('/sw.js', async (_, res, next) => {
+    try {
+      let fileName: string
+      if (isDev) {
+        fileName = path.resolve(srcPath, `public/sw.js`)
+      } else {
+        fileName = path.resolve(distPath, `sw.js`)
+      }
+      res.sendFile(fileName)
+    } catch (e) {
+      if (isDev) {
+        vite.ssrFixStacktrace(e as Error)
+      }
+      next(e)
+    }
+  })
+
+  app.get('/:file.mp3', async (req, res, next) => {
+    try {
+      let fileName: string
+      if (isDev) {
+        fileName = path.resolve(srcPath, `public/${req.params.file}.mp3`)
+      } else {
+        fileName = path.resolve(distPath, `${req.params.file}.mp3`)
+      }
+      res.sendFile(fileName)
+    } catch (e) {
+      if (isDev) {
+        vite.ssrFixStacktrace(e as Error)
+      }
+      next(e)
+    }
+  })
+
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
-
     try {
       let template: string
       let render: () => Promise<string>
 
       if (isDev) {
-        template = await vite.transformIndexHtml(url, fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8'))
+        template = await vite.transformIndexHtml(
+          url,
+          fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
+        )
         render = (
           await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
         ).render
       } else {
-        template = fs.readFileSync(path.resolve(distPath, 'index.html'), 'utf-8')
+        template = fs.readFileSync(
+          path.resolve(distPath, 'index.html'),
+          'utf-8'
+        )
         render = (await import(ssrClientPath)).render
       }
 

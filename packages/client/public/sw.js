@@ -15,16 +15,20 @@ self.addEventListener('activate', event => {
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log(cache)
       cache.addAll([
         '/',
+        '/signin',
+        '/signup',
+        '/leaders',
+        '/forum',
+        '/game',
         '/sw.js',
+        '/FullScreen_In.mp3',
+        '/FullScreen_Out.mp3',
         '/assets/vite.svg',
         '/assets/index.css',
         '/assets/index.js',
         '/assets/arrow.svg',
-        '/assets/FullScreen_In.mp3',
-        '/assets/FullScreen_Out.mp3',
       ])
     })
   )

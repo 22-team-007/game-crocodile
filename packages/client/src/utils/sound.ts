@@ -65,7 +65,7 @@ class Sound {
                 })
               }
             : fetch
-        return fetch2(`/assets/${nameLoadingFile}`)
+        return fetch2(`/${nameLoadingFile}`)
           .then(res => res.arrayBuffer())
           .then(audioData => (this.sounds[key].buffer = audioData))
       } catch (e) {
