@@ -13,11 +13,15 @@ import { validation } from '../../utils'
 
 import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
+import api from '../../api'
 
 const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
 const OAuthClientId = 'f3bbe3b52066448bb9000ac7fa16bd93'
+const redirectURI = window.location.host
 
 const Login = () => {
+  
+
   const {
     register,
     handleSubmit,
@@ -71,8 +75,15 @@ const Login = () => {
                 Нет аккаунта?
               </Button>
             </NavLink>
-            <Link to={`${OAuthUrl}&client_id=${OAuthClientId}`}>
-              <Button className="w-100" size="sm" variant="link">
+            <Link to={`${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`}>
+            
+              <Button className="w-100" size="sm" variant="link" 
+              // onClick={async () => {
+              //   debugger
+              //   const OAuthClientId = await api.oauth.setvice(redirectURI)
+              //   window.location.replace(`${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`)
+              // }}
+              >
                 Яндекс Id
               </Button>
             </Link>

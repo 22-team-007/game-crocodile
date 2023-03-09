@@ -54,7 +54,7 @@ export function getRouterConf(forTest = "") {
       errorElement: <ErrorPage />,
       loader: async ({ request }:any) => {
         const code = new URL(request.url).searchParams.get('code');
-        const redirectURI = window.location.host
+        const redirectURI = `https://${window.location.host}`
 
         if(code) { 
           const resp = await api.oauth.signIn(code, redirectURI)
