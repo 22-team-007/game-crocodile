@@ -38,7 +38,7 @@ export enum Routes {
   E500 = '500',
 }
 
-export function getRouterConf(forTest: string) {
+export function getRouterConf(forTest: string = "") {
   let dispatch: (arg0: UserLogoutAction) => any
 
   if (!forTest) {
