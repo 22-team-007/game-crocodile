@@ -15,6 +15,7 @@ export default class Socket extends WebSocket2 implements SocketAPIType {
     const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`
     if (this.instance === null || this.instance === undefined)
       this.instance = new this(url)
+    //@ts-ignore
     else if (this.instance.url !== url) {
       this.instance.close()
       this.instance = new this(url)
@@ -26,7 +27,6 @@ export default class Socket extends WebSocket2 implements SocketAPIType {
 
   private constructor(url: string) {
     super(url)
-    this.url = url
     super.addEventListener('message', this.handler)
   }
 
@@ -58,6 +58,7 @@ export default class Socket extends WebSocket2 implements SocketAPIType {
   }
 
   private send2(c: SocketContent) {
+    //@ts-ignore
     if (this.readyState === this.OPEN && self.navigator.onLine === true)
       super.send(JSON.stringify(c))
     else {
