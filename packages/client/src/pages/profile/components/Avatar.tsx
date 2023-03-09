@@ -8,6 +8,7 @@ interface AvatarProps {
 }
 
 const Avatar: FC<AvatarProps> = ({ src, setValue }) => {
+
   const selectAvatar = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]

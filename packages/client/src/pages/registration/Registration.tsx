@@ -103,8 +103,7 @@ const Registration = () => {
               isPassword
               register={register('password_repeat', {
                 required: 'Обязательное поле.',
-                validate: value =>
-                  onValidateRepeatPassword(watch('password'), value),
+                validate: value => onValidateRepeatPassword(watch('password'), value),
               })}
               errorMsg={errors?.password_repeat?.message}
             />
