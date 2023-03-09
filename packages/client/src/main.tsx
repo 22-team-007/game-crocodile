@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root') as Element).render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <Index/>
+        <Index />
       </PersistGate>
     </Provider>
   </React.StrictMode>

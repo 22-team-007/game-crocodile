@@ -6,38 +6,41 @@ import { getRouterConf } from './router'
 // @ts-ignore
 document.fullscreenElement = jest.fn(() => Promise.resolve())
 
-const MockedNavigate = jest.fn();
+const MockedNavigate = jest.fn()
 
 jest.mock('react-router-dom', () => ({
-   ...jest.requireActual('react-router-dom') as any,
-  Navigate: (props:any) => {
+  ...(jest.requireActual('react-router-dom') as any),
+  Navigate: (props: any) => {
     MockedNavigate(props.to)
-    return 
+    return
   },
-}));
+}))
 
 let userId = 1
 
-  jest.mock('./hooks/useAppSelector', () => ({
-    useAppSelector: () => { return userId },
-  }));
+jest.mock('./hooks/useAppSelector', () => ({
+  useAppSelector: () => {
+    return userId
+  },
+}))
 
 jest.mock('./utils/sound', () => ({
-  fullScreenIn: () => { return },
-  fullScreenOut: () => { return }
-}));
+  fullScreenIn: () => {
+    return
+  },
+  fullScreenOut: () => {
+    return
+  },
+}))
 
-
-const Testconf = [... getRouterConf("forTest")]
+const Testconf = [...getRouterConf('forTest')]
 
 describe('Testing router ', () => {
-
   afterEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   test('Get index page', async () => {
-
     const router = createMemoryRouter(Testconf, {
       initialEntries: ['/'],
     })
@@ -50,14 +53,13 @@ describe('Testing router ', () => {
     expect(element).toMatchSnapshot()
   })
 
-
   test('Private route with registered user', async () => {
     //user is registerd id - 1
     userId = 1
 
     // @ts-ignore
     global.fetch = jest.fn(() =>
-    // fetch empty list of game
+      // fetch empty list of game
       Promise.resolve({ json: () => Promise.resolve([]) })
     )
 
@@ -72,7 +74,6 @@ describe('Testing router ', () => {
     const element = screen.getByText('Создать игру')
     expect(element).toMatchSnapshot()
   })
-
 
   test('Private route with unregistered user', async () => {
     //user is unregistered id - 0

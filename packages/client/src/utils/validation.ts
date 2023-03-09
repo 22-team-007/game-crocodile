@@ -46,8 +46,11 @@ export const validation: Record<
   },
 }
 
-export const onValidateRepeatPassword = (newPassword: string | undefined, repeatPassword: string | undefined) => {
-  if (newPassword === repeatPassword){
+export const onValidateRepeatPassword = (
+  newPassword: string | undefined,
+  repeatPassword: string | undefined
+) => {
+  if (newPassword === repeatPassword) {
     return true
   }
   return 'пароли не совпадают'

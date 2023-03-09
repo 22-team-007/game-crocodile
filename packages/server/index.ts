@@ -34,3 +34,29 @@ app.get('/:page', (req, res) => {
 app.listen(port, () => {
   console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
 })
+
+import { dbConnect, ForumRecord } from './db_connect'
+dbConnect().then(() => {
+  ForumRecord.create({
+    parent_id: null,
+    subject: 'text',
+    description: 'text2',
+    author_id: 123,
+  }).then(m => {
+    const id = m.dataValues.id
+    ForumRecord.findOne({ where: { id } }).then(() => {
+      ForumRecord.update(
+        {
+          subject: 'new subject',
+        },
+        {
+          where: { id },
+        }
+      ).then(() => {
+        ForumRecord.destroy({
+          where: { id },
+        })
+      })
+    })
+  })
+})
