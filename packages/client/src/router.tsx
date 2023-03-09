@@ -21,7 +21,8 @@ import {
 import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
-import { UserLogoutAction } from './store/actions/types'
+import { UserLogoutAction, UserDataAction } from './store/actions/types'
+import { userTypes } from './store/actions/user'
 
 export enum Routes {
   Index = '/',
@@ -40,7 +41,7 @@ export enum Routes {
 
 export function getRouterConf(forTest: string = "") {
 
-  let dispatch: (arg0: UserLogoutAction) => any
+  let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
 
   if(!forTest) {
     dispatch = useAppDispatch()
@@ -51,6 +52,22 @@ export function getRouterConf(forTest: string = "") {
       path: Routes.Index,
       element: <App />,
       errorElement: <ErrorPage />,
+      loader: async ({ params }:any) => {
+        if(typeof params.code !== 'undefined') {
+          const authorizationGrant = params.code
+          const redirectURI = 'https://game-crocodile-client.vercel.app'
+          
+          const resp = await api.oauth.signIn(authorizationGrant, redirectURI)
+          debugger
+          if(resp === 'ok') {
+            const user = await api.auth.user()
+            
+            dispatch({ type: userTypes.SET_USER_DATA, payload: user })
+          }
+        }
+
+        return null
+      },
       children: [
         {
           index: true,

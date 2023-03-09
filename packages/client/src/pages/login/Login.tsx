@@ -1,7 +1,7 @@
 // React-Hook-Form
 import { useForm } from 'react-hook-form'
 // Router
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { Routes } from '../../router'
 import WithAuth from '../../hoc/withAuth'
 // components
@@ -14,6 +14,8 @@ import { validation } from '../../utils'
 import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
 
+const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
+const OAuthClientId = 'f3bbe3b52066448bb9000ac7fa16bd93'
 
 const Login = () => {
   const {
@@ -69,6 +71,11 @@ const Login = () => {
                 Нет аккаунта?
               </Button>
             </NavLink>
+            <Link to={`${OAuthUrl}&client_id=${OAuthClientId}`}>
+              <Button className="w-100" size="sm" variant="link">
+                Яндекс Id
+              </Button>
+            </Link>
           </Card.Footer>
         </Card>
       </Form>
