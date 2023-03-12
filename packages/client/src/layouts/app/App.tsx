@@ -7,10 +7,11 @@ import FullScreen from '../../components/FullScreen/fullScreen'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './app.scss'
 import { useAppSelector } from '../../hooks/useAppSelector'
-import { selectUserId } from '../../store/selectors'
+import { selectUserId, selectTheme } from '../../store/selectors'
 
 const App = () => {
   const userId = useAppSelector(selectUserId)
+  const appTheme = useAppSelector(selectTheme)
 
   const availableLinks = useMemo(
     () =>
@@ -23,9 +24,9 @@ const App = () => {
       ),
     [userId]
   )
-
+ 
   return (
-    <div className="App">
+    <div className={`App ${appTheme}`}>
       <Navbar fixed="top" className="mb-4" bg="light">
         <Container>
           <NavLink className="navbar-brand" to="/">

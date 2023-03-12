@@ -1,4 +1,5 @@
 import { userTypes } from './user'
+import { themeTypes } from './theme'
 
 export type UserDataAction = {
   type: userTypes.SET_USER_DATA
@@ -17,6 +18,11 @@ export type UserProfileAction = {
 
 export type UserAvatarAction = {
   type: userTypes.SET_USER_AVATAR
+  payload: string
+}
+
+export type UserThemeAction = {
+  type: themeTypes.SET_THEME
   payload: string
 }
 
