@@ -98,7 +98,7 @@ declare interface TopLeaderProp extends TopUser {
 
 declare type Coordinate = [x: number, y: number]
 
-declare interface SocketAPIType extends WebSocket {
+declare interface SocketAPIType {
   sendContent: (type: string, content: Omit<SocketContent, 'type'>) => void
   sendImage: (content: string) => void
   getMessages: (content: string) => void

@@ -11,11 +11,12 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
 }
 
-ReactDOM.createRoot(document.getElementById('root') as Element).render(
+ReactDOM.hydrateRoot(
+  document.getElementById('root') as HTMLElement,
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <Index/>
+        <Index />
       </PersistGate>
     </Provider>
   </React.StrictMode>

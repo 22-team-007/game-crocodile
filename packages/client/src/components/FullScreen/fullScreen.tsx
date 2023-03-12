@@ -12,9 +12,10 @@ const FullScreen = () => {
   })
 
   const toggleFS = () => {
-    if (!document.fullscreenElement 
-      && document.documentElement.requestFullscreen) {
-
+    if (
+      !document.fullscreenElement &&
+      document.documentElement.requestFullscreen
+    ) {
       document.documentElement.requestFullscreen()
       sound.fullScreenIn()
       setIsFs(true)

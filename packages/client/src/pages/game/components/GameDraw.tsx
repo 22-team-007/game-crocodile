@@ -53,7 +53,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
 
       brush.current.lineWidth = Number(brushWidth)
 
-      localStorage.setItem('brushWidth', brushWidth);
+      localStorage.setItem('brushWidth', brushWidth)
     }
   }
 
@@ -64,7 +64,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
       brush.current.strokeColor = brushColor
       brush.current.fillColor = brushColor
 
-      localStorage.setItem('brushColor', brushColor);
+      localStorage.setItem('brushColor', brushColor)
     }
   }
 
@@ -85,7 +85,6 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
           min={1}
           max={20}
         />
-
       </div>
       <canvas ref={canvasRef} width={650} height={600} />
     </div>
