@@ -8,7 +8,12 @@ export default class Oauth extends ApiBase implements OauthAPIType {
     const r = await this.POST('/api/v2/oauth/yandex', {
       body: JSON.stringify({ code, redirect_uri }),
     })
-    return await r.text()
+
+    if (r.ok) { 
+      return Promise.resolve({reason: 'ok'}) 
+    }
+
+    return  await r.json()
   }
 
   public async setvice(redirect_uri: string): Promise<string> {

@@ -21,7 +21,8 @@ import {
 import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
-import { UserLogoutAction } from './store/actions/types'
+import { UserLogoutAction, UserDataAction } from './store/actions/types'
+import { userTypes } from './store/actions/user'
 
 export enum Routes {
   Index = '/',
@@ -39,10 +40,30 @@ export enum Routes {
 }
 
 export function getRouterConf(forTest = '') {
-  let dispatch: (arg0: UserLogoutAction) => any
+  let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
+  let indexLoader: ((arg0: {request: Request}) => any ) | undefined
 
   if (!forTest) {
     dispatch = useAppDispatch()
+
+    indexLoader = async ({ request }: {request: Request}) => {
+      const code = new URL(request.url).searchParams.get('code');
+      const redirectURI = `${window.location.origin}`
+      
+      if(code) { 
+        const resp = await api.oauth.signIn(code, redirectURI)
+        
+        if(resp.reason === 'ok' || resp.reason === 'User already in system') {
+          const user = await api.auth.user()
+          
+          dispatch({ type: userTypes.SET_USER_DATA, payload: user })
+          return redirect('/')
+        }
+      }
+      return null
+    }
+  } else {
+    indexLoader = undefined
   }
 
   const routerConf = [
@@ -53,6 +74,7 @@ export function getRouterConf(forTest = '') {
       children: [
         {
           index: true,
+          loader: indexLoader,
           element: (
             <Page title="Крокодил - Главная страница">
               <StartPage />
