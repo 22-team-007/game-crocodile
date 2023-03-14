@@ -93,7 +93,8 @@ const ForumController = async (app: Express) => {
   app.post('/forum/:id/comment', async (req, res) => {
     try {
       const perent_id = Number(req.params.id)
-      if (perent_id === 0 || isNaN(perent_id)) {
+      const data = req.body
+      if (perent_id === 0 || isNaN(perent_id) || perent_id !== Number(data.perent_id)) {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })
@@ -101,7 +102,6 @@ const ForumController = async (app: Express) => {
         return
       }
 
-      const data = Object.assign(req.body, { perent_id })
       const id = Number(data.id)
       if (isNaN(id)) {
         res

@@ -11,7 +11,11 @@ import {
 } from 'react-bootstrap'
 
 import { mockTopics, mockMessages } from './mockData'
+import api from '../../api'
 import './style.scss'
+
+api.forum.get(2).then(console.log).catch(console.error)
+api.forum.comments(2).then(console.log).catch(console.error)
 
 const Forum = () => {
   const [show, setShow] = useState(false)
