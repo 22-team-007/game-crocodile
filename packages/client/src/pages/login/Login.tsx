@@ -15,8 +15,18 @@ import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
 import api from '../../api'
 
-const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
-const redirectURI = window.location.origin
+
+const auth = async () => {
+  const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
+  const redirectURI = 'http://localhost:3000/oauth'
+  
+  const OAuthClientId = await api.oauth.setvice(redirectURI)
+  const goTo = `${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`
+
+  if(typeof window !== 'undefined') {
+    window.location.replace(goTo)
+  }
+}
 
 const Login = () => {
   const {
@@ -76,12 +86,7 @@ const Login = () => {
               className="w-100"
               size="sm"
               variant="link"
-              onClick={async () => {
-                const OAuthClientId = await api.oauth.setvice(redirectURI)
-                const goTo = `${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`
-
-                window.location.replace(goTo)
-              }}>
+              onClick={auth}>
               Яндекс Id
             </Button>
           </Card.Footer>

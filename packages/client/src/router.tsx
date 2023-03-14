@@ -37,33 +37,42 @@ export enum Routes {
   Forum = 'forum',
   E404 = '404',
   E500 = '500',
+  OAuth = 'oauth'
 }
 
 export function getRouterConf(forTest = '') {
   let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
-  let indexLoader: ((arg0: {request: Request}) => any ) | undefined
+  let OAuthLoader: ((arg0: {request: Request}) => any ) | undefined
 
   if (!forTest) {
     dispatch = useAppDispatch()
 
-    indexLoader = async ({ request }: {request: Request}) => {
+    OAuthLoader = async ({ request }: {request: Request}) => {
       const code = new URL(request.url).searchParams.get('code');
-      const redirectURI = `${window.location.origin}`
       
       if(code) { 
-        const resp = await api.oauth.signIn(code, redirectURI)
-        
-        if(resp.reason === 'ok' || resp.reason === 'User already in system') {
+        const redirectURI = 'http://localhost:3000/oauth'
+
+        let resp = await api.oauth.signIn(code, redirectURI)
+
+        // try log out and enter again
+        if(resp.reason === 'User already in system') {
+          await api.auth.logOut();
+          resp = await api.oauth.signIn(code, redirectURI)
+        }
+
+        if(resp.reason === 'ok') {
           const user = await api.auth.user()
           
-          dispatch({ type: userTypes.SET_USER_DATA, payload: user })
-          return redirect('/')
+          if(user?.id) {
+            dispatch({ type: userTypes.SET_USER_DATA, payload: user })
+          }
         }
       }
-      return null
+      return redirect('/')
     }
   } else {
-    indexLoader = undefined
+    OAuthLoader = undefined
   }
 
   const routerConf = [
@@ -74,7 +83,6 @@ export function getRouterConf(forTest = '') {
       children: [
         {
           index: true,
-          loader: indexLoader,
           element: (
             <Page title="Крокодил - Главная страница">
               <StartPage />
@@ -173,6 +181,10 @@ export function getRouterConf(forTest = '') {
         </Page>
       ),
     },
+    {
+      path: Routes.OAuth,
+      loader: OAuthLoader
+    }
   ]
 
   return routerConf
