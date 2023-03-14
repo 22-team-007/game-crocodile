@@ -1,5 +1,3 @@
-import ForumController from "./ForumController";
+import ForumController from './ForumController'
 
-export {
-    ForumController
-}
+export { ForumController }
