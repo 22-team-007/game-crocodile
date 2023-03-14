@@ -124,11 +124,16 @@ async function startServer() {
         render = (await import(ssrClientPath)).render
       }
 
+      const initialState = {theme: 'dark-theme'}
+
+      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(initialState)}</script>`
+
       const appHtml = await render()
 
-      const html = template.replace(`<!--ssr-outlet-->`, appHtml)
+      const html = template.replace(`<!--ssr-outlet-->`, stateMarkup + appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+
     } catch (e) {
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
