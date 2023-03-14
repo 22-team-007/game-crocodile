@@ -1,24 +1,20 @@
-/*
-компонент создания и редактирования сделать общим, если атрибут id=0, то создание, иначе редактирование
-
-
-
-
-POST /forum/:id/comment - добавление/редактирование сообщения
-*/
 import { dbConnect, ForumRecord } from '../db'
 import type { Express } from 'express';
 const ForumController = async (app: Express)=>{
   await dbConnect()
-  
+
   //GET /forum/:id/info - получение полной информации о теме
   app.get('/forum/:id/info', async (req, res) => {
-    console.log(12,req.cookies,34)
     try{
       const id = Number(req.params.id)
+      if(id===0 || isNaN(id)){
+        res.status(404).set({ 'Content-Type': 'text/plain' }).end(`Тема не найдена`)
+        return
+      }
+
       const rec = await ForumRecord.findOne({ where: { id, parent_id: null } })
       if(rec!==null)
-        res.status(200).set({ 'Content-Type': 'application/json' }).end(JSON.stringify(rec))
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
       else
         res.status(404).set({ 'Content-Type': 'text/plain' }).end("Запись не найдена")
     }
@@ -31,14 +27,15 @@ const ForumController = async (app: Express)=>{
   app.post('/forum/:id', async (req, res)=>{
     try {
       const id = Number(req.params.id)
-      const data = req.body
-      let rec
-      if(id===0)
-        rec = await ForumRecord.create(data)
-      else{
-        rec = await ForumRecord.update(data, { where: { id } })
+      if(isNaN(id)){
+        res.status(404).set({ 'Content-Type': 'text/plain' }).end(`Тема не найдена`)
+        return
       }
-      res.status(200).set({ 'Content-Type': 'application/json' }).end(JSON.stringify(rec))
+
+      const data = req.body
+      const rec = (id===0 ? await ForumRecord.create(data) : await ForumRecord.update(data, { where: { id } }))
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     }
     catch(e){
       res.status(500).set({ 'Content-Type': 'text/plain' }).end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
@@ -49,14 +46,45 @@ const ForumController = async (app: Express)=>{
   app.get('/forum/:id/comments', async (req, res) => {
     try{
       const parent_id = Number(req.params.id)
+      if(parent_id===0 || isNaN(parent_id)){
+        res.status(404).set({ 'Content-Type': 'text/plain' }).end(`Тема не найдена`)
+        return
+      }
+
       const rec = await ForumRecord.findAll({ where: { parent_id } })
+
       if(rec!==null)
-        res.status(200).set({ 'Content-Type': 'application/json' }).end(JSON.stringify(rec))
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
       else
         res.status(404).set({ 'Content-Type': 'text/plain' }).end("Запись не найдена")
     }
     catch(e){
-      res.status(500).set({ 'Content-Type': 'text/plain' }).end(`Возникла ошибак при поиске темы ${(e as Error).message}`)
+      res.status(500).set({ 'Content-Type': 'text/plain' }).end(`Возникла ошибак при загрузке комментариев ${(e as Error).message}`)
+    }
+  })
+
+  //POST /forum/:id/comment - добавление/редактирование сообщения
+  app.post('/forum/:id/comment', async (req, res)=>{
+    try {
+      const perent_id = Number(req.params.id)
+      if(perent_id===0 || isNaN(perent_id)){
+        res.status(404).set({ 'Content-Type': 'text/plain' }).end(`Тема не найдена`)
+        return
+      }
+
+      const data = Object.assign(req.body,{ perent_id })
+      const id = Number(data.id)
+      if(isNaN(id)){
+        res.status(404).set({ 'Content-Type': 'text/plain' }).end(`Сообщение не найдено`)
+        return
+      }
+
+      const rec = (id===0 ? await ForumRecord.create(data) : await ForumRecord.update(data, { where: { perent_id, id } }))
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+    }
+    catch(e){
+      res.status(500).set({ 'Content-Type': 'text/plain' }).end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
     }
   })
 }

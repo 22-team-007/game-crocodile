@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "1.1.1",
+    "@types/express-session": "^1.17.6",
     "@types/pg": "8.6.6",
     "lerna": "5.4.3"
   },

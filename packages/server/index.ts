@@ -3,7 +3,6 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import path from 'path'
 import express from 'express'
-import session from 'express-session'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 
@@ -15,18 +14,16 @@ const isDev = process.env.NODE_ENV === 'development'
 
 async function startServer() {
   const app = express()
-  app.use(cors())
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: true }))
-  app.use(session({
-    secret: 'keyboard cat',
-    cookie: { secure: true }
-  }))
   const port = Number(process.env.SERVER_PORT) || 3001
-  let vite: ViteDevServer
   const distPath = path.dirname(require.resolve('client/dist/index.html'))
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
+
+  app.use(cors())
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+
+  let vite: ViteDevServer
 
   app.get('/api', (_, res) => {
     res.json('👋 Howdy from the server :)')
