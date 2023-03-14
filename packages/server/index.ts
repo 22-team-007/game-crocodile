@@ -3,35 +3,11 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import path from 'path'
 import express from 'express'
+import session from 'express-session'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 
-/*import { dbConnect, ForumRecord } from './db'
-//Пример основных методов CRUD
-dbConnect().then(() => {
-  ForumRecord.create({
-    parent_id: null,
-    subject: 'text',
-    description: 'text2',
-    author_id: 123,
-  }).then(m => {
-    const id = m.dataValues.id
-    ForumRecord.findOne({ where: { id } }).then(() => {
-      ForumRecord.update(
-        {
-          subject: 'new subject',
-        },
-        {
-          where: { id },
-        }
-      ).then(() => {
-        ForumRecord.destroy({
-          where: { id },
-        })
-      })
-    })
-  })
-})*/
+import { ForumController } from './controllers'
 import words from './words'
 dotenv.config()
 
@@ -40,8 +16,13 @@ const isDev = process.env.NODE_ENV === 'development'
 async function startServer() {
   const app = express()
   app.use(cors())
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+  app.use(session({
+    secret: 'keyboard cat',
+    cookie: { secure: true }
+  }))
   const port = Number(process.env.SERVER_PORT) || 3001
-
   let vite: ViteDevServer
   const distPath = path.dirname(require.resolve('client/dist/index.html'))
   const srcPath = path.dirname(require.resolve('client/index.html'))
@@ -101,6 +82,8 @@ async function startServer() {
       next(e)
     }
   })
+
+  await ForumController(app)
 
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
