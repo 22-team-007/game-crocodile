@@ -22,13 +22,11 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "1.1.1",
-    "@types/express-session": "^1.17.6",
     "@types/pg": "8.6.6",
     "lerna": "5.4.3"
   },
   "dependencies": {
     "bootstrap": "5.2.3",
-    "express-session": "^1.17.3",
     "pg": "8.10.0",
     "react-bootstrap": "2.7.0",
     "react-dom": "18.2.0",
