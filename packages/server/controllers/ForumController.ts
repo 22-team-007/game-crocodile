@@ -89,7 +89,7 @@ const ForumController = async (app: Express) => {
     }
   })
 
-  //POST /forum/:id/comment - добавление/редактирование сообщения
+  //POST /forum/:id/comment - добавление/редактирование комментария
   app.post('/forum/:id/comment', async (req, res) => {
     try {
       const perent_id = Number(req.params.id)
@@ -121,7 +121,7 @@ const ForumController = async (app: Express) => {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
+        .end(`Возникла ошибак при изменении комментария ${(e as Error).message}`)
     }
   })
 }
