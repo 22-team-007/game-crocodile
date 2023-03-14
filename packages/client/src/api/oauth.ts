@@ -10,7 +10,7 @@ export default class Oauth extends ApiBase implements OauthAPIType {
     })
 
     if (r.ok) { 
-      return Promise.resolve({reason: 'ok'}) 
+      return { reason: 'ok' }  
     }
 
     return  await r.json()
