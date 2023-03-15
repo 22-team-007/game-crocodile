@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
 import api from '../../api'
 
+
 const auth = async () => {
   const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
   const redirectURI = 'http://localhost:3000/oauth'

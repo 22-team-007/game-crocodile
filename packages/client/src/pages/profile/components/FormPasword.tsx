@@ -54,7 +54,8 @@ const FormPassword: FC<FormPasswordProps> = ({ close }) => {
         placeholder={'****************'}
         register={register('repeatPassword', {
           required: 'Обязательное поле.',
-          validate: value => onValidateRepeatPassword(watch('newPassword'), value)
+          validate: value =>
+            onValidateRepeatPassword(watch('newPassword'), value),
         })}
         errorMsg={errors?.repeatPassword?.message}
       />

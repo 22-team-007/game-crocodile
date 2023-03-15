@@ -119,3 +119,7 @@ declare type SocketContent = {
 declare type SocketMessage = SocketContent & {
   user: UserType
 }
+
+declare interface Window {
+  __INITIAL_STATE__?: object
+}
