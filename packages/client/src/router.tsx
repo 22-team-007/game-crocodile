@@ -21,7 +21,8 @@ import {
 import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
-import { UserLogoutAction } from './store/actions/types'
+import { UserLogoutAction, UserDataAction } from './store/actions/types'
+import { userTypes } from './store/actions/user'
 
 export enum Routes {
   Index = '/',
@@ -36,13 +37,42 @@ export enum Routes {
   Forum = 'forum',
   E404 = '404',
   E500 = '500',
+  OAuth = 'oauth'
 }
 
 export function getRouterConf(forTest = '') {
-  let dispatch: (arg0: UserLogoutAction) => any
+  let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
+  let OAuthLoader: ((arg0: {request: Request}) => any ) | undefined
 
   if (!forTest) {
     dispatch = useAppDispatch()
+
+    OAuthLoader = async ({ request }: {request: Request}) => {
+      const code = new URL(request.url).searchParams.get('code');
+      
+      if(code) { 
+        const redirectURI = 'http://localhost:3000/oauth'
+
+        let resp = await api.oauth.signIn(code, redirectURI)
+
+        // try log out and enter again
+        if(resp.reason === 'User already in system') {
+          await api.auth.logOut();
+          resp = await api.oauth.signIn(code, redirectURI)
+        }
+
+        if(resp.reason === 'ok') {
+          const user = await api.auth.user()
+          
+          if(user?.id) {
+            dispatch({ type: userTypes.SET_USER_DATA, payload: user })
+          }
+        }
+      }
+      return redirect('/')
+    }
+  } else {
+    OAuthLoader = undefined
   }
 
   const routerConf = [
@@ -151,6 +181,10 @@ export function getRouterConf(forTest = '') {
         </Page>
       ),
     },
+    {
+      path: Routes.OAuth,
+      loader: OAuthLoader
+    }
   ]
 
   return routerConf

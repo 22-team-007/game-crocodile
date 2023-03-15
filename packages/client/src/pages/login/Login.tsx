@@ -13,6 +13,20 @@ import { validation } from '../../utils'
 
 import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
+import api from '../../api'
+
+
+const auth = async () => {
+  const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
+  const redirectURI = 'http://localhost:3000/oauth'
+
+  const OAuthClientId = await api.oauth.setvice(redirectURI)
+  const goTo = `${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`
+
+  if (typeof window !== 'undefined') {
+    window.location.replace(goTo)
+  }
+}
 
 const Login = () => {
   const {
@@ -68,6 +82,9 @@ const Login = () => {
                 Нет аккаунта?
               </Button>
             </NavLink>
+            <Button className="w-100" size="sm" variant="link" onClick={auth}>
+              Яндекс Id
+            </Button>
           </Card.Footer>
         </Card>
       </Form>
