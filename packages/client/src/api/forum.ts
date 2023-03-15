@@ -1,6 +1,7 @@
 import ApiBase from './api_base'
 type ForumAPIType = {
   get: (id: number) => Promise<ForumRecord>,
+  list: () => Promise<ForumList>,
   create: (record: ForumRecord) => Promise<ForumRecord|string>,
   update: (id: number, record: ForumRecord) => Promise<ForumRecord>,
   comments: (id: number) => Promise<ForumRecord[]>,
@@ -11,6 +12,11 @@ export default class Forum extends ApiBase implements ForumAPIType {
   protected host = ''
   public async get(id: number): Promise<ForumRecord> {
     const r = await this.GET(`/forum/${id}/info`)
+    return await r.json()
+  }
+
+  public async list(): Promise<ForumList> {
+    const r = await this.GET(`/forum/list`)
     return await r.json()
   }
 

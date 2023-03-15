@@ -1,7 +1,36 @@
-import { dbConnect, ForumRecord } from '../db'
+import { dbConnect, ForumRecord, sequelize } from '../db'
 import type { Express } from 'express'
 const ForumController = async (app: Express) => {
   await dbConnect()
+
+  //GET /forum/list - получение списка тем
+  app.get('/forum/list', async (_, res) => {
+    try {
+      const rec = await ForumRecord.findAll({ 
+        attributes: [
+          'id',
+          'subject',
+          [
+            sequelize.literal(`(select count(*) from "ForumRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`),
+            'comments'
+          ]
+        ],
+        where: { parent_id: null }
+      })
+      if (rec !== null)
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+      else
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end('Записи не найдены')
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибак при поиске тем ${(e as Error).message}`)
+    }
+  })
 
   //GET /forum/:id/info - получение полной информации о теме
   app.get('/forum/:id/info', async (req, res) => {
