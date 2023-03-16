@@ -11,6 +11,10 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
 }
 
+// const PersistGateServer: React.FC<{children: React.FC}> = ({children}) => {
+//     return  children
+// }
+
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,
   <React.StrictMode>

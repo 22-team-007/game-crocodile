@@ -56,7 +56,7 @@ class Sound {
   public async init() {
     const promises = Object.keys(this.sounds).map(key => {
       if (this.sounds[key].fileName.length === 0) {
-        return Promise.resolve()
+        return 
       }
 
       const nameLoadingFile = this.sounds[key].fileName
@@ -76,6 +76,8 @@ class Sound {
 
 const sound = new Sound()
 
-;(async () => await sound.init())()
+if(typeof window !== 'undefined') {
+  (async () => await sound.init())()
+}
 
 export default sound
