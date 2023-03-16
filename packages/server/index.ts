@@ -103,20 +103,26 @@ async function startServer() {
   })
 
   app.use('*', async (req, res, next) => {
+    console.log(`get request ${req.originalUrl}`);
     const url = req.originalUrl
     try {
       let template: string
-      let render: () => Promise<string>
-
+      let render: (url:string) => Promise<string>
+      
       if (isDev) {
+        console.log('dev');
+        template = fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
+        console.log(template);
+        
         template = await vite.transformIndexHtml(
           url,
-          fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
-        )
-        render = (
-          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).render
-      } else {
+          template
+          )
+          render = (
+            await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
+            ).render
+          } else {
+        console.log('build');
         template = fs.readFileSync(
           path.resolve(distPath, 'index.html'),
           'utf-8'
@@ -126,10 +132,13 @@ async function startServer() {
 
       const initialState = {theme: 'dark-theme'}
 
-      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(initialState)}</script>`
+      // const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(initialState)}</script>`
+      const stateMarkup = ''
 
-      const appHtml = await render()
-
+      const appHtml = await render(url)
+      // console.log(`my appHTML is: ${appHtml}`);
+      
+      
       const html = template.replace(`<!--ssr-outlet-->`, stateMarkup + appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
