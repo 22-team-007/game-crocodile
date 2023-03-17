@@ -20,6 +20,7 @@ const ForumMessages = () => {
         {
           themes.map(theme =>
             <ListGroup.Item
+              key={`theme-${theme.id}`}
               as="li"
               className="d-flex align-items-center justify-content-between"
               onClick={() => navigate(`${theme.id}`)}

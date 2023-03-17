@@ -1,14 +1,21 @@
-import React, { useCallback, useRef } from 'react'
+import { FC, useCallback, useRef } from 'react'
 import { Button, Form, Tab, Tabs } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import MarkDown from './MarkDown'
 import MessageToolbar, { TextFormattingType } from './MessageToolbar'
 
+interface MessageFormProps {
+  defaultValue?: string
+  editMode?: boolean
+}
 
+const MessageForm: FC<MessageFormProps> = ({ defaultValue, editMode = false }) => {
 
-const MessageForm = () => {
-
-  const {register, setValue, watch} = useForm();
+  const { register, setValue, watch } = useForm({
+    defaultValues: {
+      message: defaultValue || ''
+    }
+  })
   const messageRef = useRef<HTMLTextAreaElement | null>(null)
 
   const applyFormattingText = useCallback((type: TextFormattingType = 'insertText', value?: string | number) => {
@@ -39,11 +46,11 @@ const MessageForm = () => {
           selectionOffset = 2
           break
         case 'header':
-          finText = messageRef.current.value.substring(0, start) + '#'.repeat(value as number) + " " + selection + messageRef.current.value.substring(end)
+          finText = messageRef.current.value.substring(0, start) + '#'.repeat(value as number) + ' ' + selection + messageRef.current.value.substring(end)
           selectionOffset = selection.length + (value as number)
           break
         case 'color':
-          finText = messageRef.current.value.substring(0, start) + `<span style="color:${value}">${selection}</span>` + messageRef.current.value.substring(end)
+          finText = messageRef.current.value.substring(0, start) + `<span style='color:${value}'>${selection}</span>` + messageRef.current.value.substring(end)
           break
         case 'link':
           finText = messageRef.current.value.substring(0, start) + `[${selection}](url)` + messageRef.current.value.substring(end)
@@ -62,39 +69,49 @@ const MessageForm = () => {
       setValue('message', finText)
 
       // возвращаем фокус на элемент
-      messageRef.current.focus();
+      messageRef.current.focus()
 
       // возвращаем курсор на место - учитываем выделили ли текст или просто курсор поставили
-      messageRef.current.selectionEnd = ( start == end )? (end + selectionOffset) : end ;
+      messageRef.current.selectionEnd = (start == end) ? (end + selectionOffset) : end
     }
-  },[])
+  }, [])
 
   return (
-    <Tabs defaultActiveKey="message" className="mb-3 mt-3">
-      <Tab eventKey="message" title="Комментарий">
-        <Form>
-          <Form.Group className="mb-3" controlId="comment">
-            <MessageToolbar
-              applyFormattingText={applyFormattingText}
-            />
-            <Form.Control
-              as="textarea"
-              placeholder="Ваше сообщение"
-              {...register('message')}
-              ref={(e: HTMLTextAreaElement | null) => {
-                register('message').ref(e)
-                messageRef.current = e
-              }}
-            />
-          </Form.Group>
-          <Button variant="primary">Отправить</Button>
-        </Form>
-      </Tab>
+    <>
+      <Tabs defaultActiveKey='message' className='mb-3 mt-3'>
+        <Tab eventKey='message' title={editMode ? 'Содержание темы' : 'Комментарий'}>
+          <Form>
+            <Form.Group className='mb-3' controlId='comment'>
+              <MessageToolbar
+                applyFormattingText={applyFormattingText}
+              />
+              <Form.Control
+                style={{ height: '200px' }}
+                as='textarea'
+                placeholder='Ваше сообщение'
+                {...register('message')}
+                ref={(e: HTMLTextAreaElement | null) => {
+                  register('message').ref(e)
+                  messageRef.current = e
+                }}
+              />
+            </Form.Group>
+          </Form>
+        </Tab>
 
-      <Tab eventKey="preview" title="Предпросмотр">
-        <MarkDown text={watch('message')}/>
-      </Tab>
-    </Tabs>
+        <Tab className='preview-block' eventKey='preview' title='Предпросмотр'>
+          {
+            watch('message') ?
+              <MarkDown text={watch('message')} />
+              :
+              <p>Для отображения предпросмотра напишите комментарий в соседней вкладке</p>
+          }
+        </Tab>
+      </Tabs>
+      <div className='d-flex justify-content-end'>
+        <Button variant='primary' disabled={!watch('message')}>{editMode ? 'Применить' : 'Отправить'}</Button>
+      </div>
+    </>
   )
 }
 

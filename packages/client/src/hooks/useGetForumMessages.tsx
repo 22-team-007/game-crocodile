@@ -1,12 +1,17 @@
 // import { useLocation } from 'react-router-dom'
 
-// import api from '../api'
+import api from '../api'
+import { useState } from 'react'
 
-const UseGetForumMessages = () => {
+const useGetForumMessages = () => {
 
   // const { pathname } = useLocation()
   // const themeId = pathname.split('/').at(-1)
+  const [users, setUsers] = useState<any>({})
+  const [loading, setLoading] = useState<boolean>(true)
 
+  // mockData
+  // todo заменить на данные с бэка как будет готов
   const messages = [
     {
       id: 12,
@@ -55,18 +60,24 @@ const UseGetForumMessages = () => {
       author_id: 35558
     }
   ]
-  // const users = {}
+
   const usersId = new Set<number>
   messages.forEach(message => usersId.add(message.author_id))
 
-  // usersId.forEach(user => {
-  //   api.users.get(user)
-  // })
-  //
-  // console.log(users)
+  const userPromises: Promise<unknown>[] = []
+  usersId.forEach(user => {
+    userPromises.push(api.users.get(user).then(value => {
+      users[user] = value
+      setUsers(users)
+    }))
+  })
+  Promise.all(userPromises).then(() => setLoading(false))
+
   return {
-    messages
+    messages,
+    users,
+    loading,
   }
 }
 
-export default UseGetForumMessages
+export default useGetForumMessages
