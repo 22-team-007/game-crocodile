@@ -16,6 +16,7 @@ import {
   Forum,
   Registration,
   Page,
+  ForumTheme,
 } from './pages'
 
 import api from './api'
@@ -35,6 +36,7 @@ export enum Routes {
   ProfileId = 'profile/:profileId',
   Leaderboard = 'leaders',
   Forum = 'forum',
+  ForumTheme = 'forum/:id',
   E404 = '404',
   E500 = '500',
   OAuth = 'oauth'
@@ -152,6 +154,14 @@ export function getRouterConf(forTest = '') {
           element: (
             <Page title="Крокодил - Форум">
               <Forum />
+            </Page>
+          ),
+        },
+        {
+          path: Routes.ForumTheme,
+          element: (
+            <Page title="Крокодил - Форум">
+              <ForumTheme />
             </Page>
           ),
         },

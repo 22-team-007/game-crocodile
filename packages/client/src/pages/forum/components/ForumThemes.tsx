@@ -1,59 +1,50 @@
-import { FC, memo } from 'react'
+import { memo } from 'react'
 import { ListGroup, Image } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
+import useGetForumThemes from '../../../hooks/useGetForumThemes'
 
-const ForumMessages: FC<ForumThemesProps> = () => {
+
+const ForumMessages = () => {
+
+  const navigate = useNavigate()
+  const { themes } = useGetForumThemes();
+
   return (
     <>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between mt-3">
         <h5>Последние темы</h5>
         <span>Ответы</span>
       </div>
 
       <ListGroup as="nav" className="forum-themes">
-        <ListGroup.Item
-          as="li"
-          className="d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center left">
-            <Image
-              width={30}
-              height={30}
-              rounded={true}
-              src="https://place-hold.it/30x30/000"
-              alt="theme-image"
-            />
-            <div className="d-flex flex-column">
-              <span>Обсуждение темы 1</span>
-              <div>
-                user1 <small>(5 минут назад)</small>
+        {
+          themes.map(theme =>
+            <ListGroup.Item
+              as="li"
+              className="d-flex align-items-center justify-content-between"
+              onClick={() => navigate(`${theme.id}`)}
+            >
+              <div className="d-flex align-items-center left">
+                <Image
+                  width={30}
+                  height={30}
+                  rounded={true}
+                  src="https://place-hold.it/30x30/000"
+                  alt="theme-image"
+                />
+                <div className="d-flex flex-column">
+                  <span>{theme.subject}</span>
+                  <div>
+                    user1 <small>(5 минут назад)</small>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="right">
-            <b>3</b>
-          </div>
-        </ListGroup.Item>
-        <ListGroup.Item
-          as="li"
-          className="d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center left">
-            <Image
-              width={30}
-              height={30}
-              rounded={true}
-              src="https://place-hold.it/30x30/000"
-              alt="theme-image"
-            />
-            <div className="d-flex flex-column">
-              <span>Обсуждение темы 2</span>
-              <div>
-                user2 <small>(15 минут назад)</small>
+              <div className="right">
+                <b>3</b>
               </div>
-            </div>
-          </div>
-          <div className="right">
-            <b>1</b>
-          </div>
-        </ListGroup.Item>
+            </ListGroup.Item>
+          )
+        }
       </ListGroup>
     </>
   )

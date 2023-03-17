@@ -67,24 +67,8 @@ declare type LeaderType = {
   score: number
 }
 
-declare interface Message {
-  chat_id: number
-  time: string
-  type: string
-  user_id: number
-  content: string
-  file?: ResourceType
-}
 
-declare interface ForumMessagesProps {
-  selectedChat: number | undefined
-  messages: Message[]
-  userId: number
-}
 
-declare interface ForumThemesProps {
-  chats: GameType[]
-}
 
 declare interface LeaderProps extends UserType {
   score: number
