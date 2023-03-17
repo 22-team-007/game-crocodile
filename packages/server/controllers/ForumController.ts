@@ -1,10 +1,9 @@
-import { dbConnect, ForumRecord, sequelize } from '../db'
-import type { Express } from 'express'
-const ForumController = async (app: Express) => {
-  await dbConnect()
+import { ForumRecord, sequelize } from '../db'
+import type { Response, Request } from 'express'
 
+class ForumController {
   //GET /forum/list - получение списка тем
-  app.get('/forum/list', async (_, res) => {
+  public static async getThemeList (_: Request, res: Response) {
     try {
       const rec = await ForumRecord.findAll({ 
         attributes: [
@@ -30,10 +29,9 @@ const ForumController = async (app: Express) => {
         .set({ 'Content-Type': 'text/plain' })
         .end(`Возникла ошибак при поиске тем ${(e as Error).message}`)
     }
-  })
-
+  }
   //GET /forum/:id/info - получение полной информации о теме
-  app.get('/forum/:id/info', async (req, res) => {
+  public static async getTheme (req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
       if (id === 0 || isNaN(id)) {
@@ -58,10 +56,10 @@ const ForumController = async (app: Express) => {
         .set({ 'Content-Type': 'text/plain' })
         .end(`Возникла ошибак при поиске темы ${(e as Error).message}`)
     }
-  })
+  }
 
   //POST /forum/:id - передача на сервер, если id=0 - создание, иначе редактирование
-  app.post('/forum/:id', async (req, res) => {
+  public static async postTheme (req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
       if (isNaN(id)) {
@@ -85,10 +83,10 @@ const ForumController = async (app: Express) => {
         .set({ 'Content-Type': 'text/plain' })
         .end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
     }
-  })
+  }
 
   //GET /forum/:id/comments - запрос массива комментариев.
-  app.get('/forum/:id/comments', async (req, res) => {
+  public static async getComments (req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
       if (parent_id === 0 || isNaN(parent_id)) {
@@ -116,10 +114,10 @@ const ForumController = async (app: Express) => {
           `Возникла ошибак при загрузке комментариев ${(e as Error).message}`
         )
     }
-  })
+  }
 
   //POST /forum/:id/comment - добавление/редактирование комментария
-  app.post('/forum/:id/comment', async (req, res) => {
+  public static async postComment (req: Request, res: Response) {
     try {
       const perent_id = Number(req.params.id)
       const data = req.body
@@ -152,6 +150,7 @@ const ForumController = async (app: Express) => {
         .set({ 'Content-Type': 'text/plain' })
         .end(`Возникла ошибак при изменении комментария ${(e as Error).message}`)
     }
-  })
+  }
 }
+
 export default ForumController

@@ -6,7 +6,8 @@ import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 
-import { ForumController } from './controllers'
+import { dbConnect } from './db'
+import ApiRouter from './routers/api_router'
 import words from './words'
 dotenv.config()
 
@@ -25,9 +26,8 @@ async function startServer() {
 
   let vite: ViteDevServer
 
-  app.get('/api', (_, res) => {
-    res.json('👋 Howdy from the server :)')
-  })
+  await dbConnect()
+  app.use('/api', ApiRouter)
 
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
@@ -79,8 +79,6 @@ async function startServer() {
       next(e)
     }
   })
-
-  await ForumController(app)
 
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
