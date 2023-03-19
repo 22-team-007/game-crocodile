@@ -1,3 +1,4 @@
+import { FC } from 'react'
 import { Button } from 'react-bootstrap'
 import Moon from '../moon'
 import MoonFill from '../moon-fill'
@@ -8,10 +9,15 @@ import { useAppSelector } from '../../hooks/useAppSelector'
 import { selectTheme } from '../../store/selectors'
 
 const ThemeSwitcher = () => {
-  const appTheme = useAppSelector(selectTheme)
 
-  const dispatch: (arg0: UserThemeAction) => any
-   = useAppDispatch()
+  let appTheme: string, dispatch: (arg0: UserThemeAction) => any
+
+  if (typeof window === 'undefined') {
+    appTheme = useAppSelector(selectTheme) as string
+    dispatch = useAppDispatch()
+  } else {
+    appTheme = ''
+  }
 
   const toggleTheme = () => {
 
