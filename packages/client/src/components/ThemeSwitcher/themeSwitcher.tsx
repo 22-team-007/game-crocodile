@@ -12,7 +12,7 @@ const ThemeSwitcher = () => {
 
   let appTheme: string, dispatch: (arg0: UserThemeAction) => any
 
-  if (typeof window === 'undefined') {
+  if (typeof window !== 'undefined' && typeof window.test === 'undefined') {
     appTheme = useAppSelector(selectTheme) as string
     dispatch = useAppDispatch()
   } else {
@@ -20,7 +20,6 @@ const ThemeSwitcher = () => {
   }
 
   const toggleTheme = () => {
-
     if (appTheme === 'white-theme' || appTheme === '') {
       dispatch(setTheme('dark-theme'))
     } else {
