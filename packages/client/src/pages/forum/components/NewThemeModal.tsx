@@ -1,5 +1,7 @@
 import { FC } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
+import { MessageForm } from './index'
+import { useForm } from 'react-hook-form'
 
 interface NewThemeModalProps {
   show: boolean
@@ -7,30 +9,35 @@ interface NewThemeModalProps {
 }
 
 const NewThemeModal: FC<NewThemeModalProps> = ({
-  show,
-  switchModal
-  }) => {
+     show,
+     switchModal
+   }) => {
+
+  const {register, setValue} = useForm()
 
   const createTopicHandler = () => {
     switchModal()
   }
 
   return (
-    <Modal show={show} onHide={switchModal}>
+    <Modal size='xl' show={show} onHide={switchModal}>
       <Modal.Header closeButton>
         <Modal.Title>Введите название темы</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="text-center">
+      <Modal.Body>
         <Form>
-          <Form.Group className="mb-4" controlId="topicName">
+          <Form.Group className='mb-4' controlId='topicName'>
             <Form.Control
-              placeholder="Название темы"
+              placeholder='Название темы'
+              {...register('subject')}
             />
           </Form.Group>
-
-          <Button variant="primary" onClick={createTopicHandler}>
-            Создать
-          </Button>
+          <MessageForm />
+          <div className='d-flex justify-content-center'>
+            <Button variant='primary' onClick={createTopicHandler}>
+              Создать
+            </Button>
+          </div>
         </Form>
       </Modal.Body>
     </Modal>
