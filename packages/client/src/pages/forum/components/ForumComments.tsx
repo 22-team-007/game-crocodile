@@ -1,8 +1,11 @@
+// React
 import { memo } from 'react'
+// Components
 import { ListGroup, Image } from 'react-bootstrap'
-import MarkDown from './MarkDown'
+import { MarkDown } from './index'
+// Hooks
 import useGetForumMessages from '../../../hooks/useGetForumMessages'
-
+// Api
 import api from '../../../api'
 
 const ForumComments = () => {

@@ -1,5 +1,8 @@
+// React
 import { memo } from 'react'
+// Components
 import { ListGroup, Image } from 'react-bootstrap'
+// Hooks
 import { useNavigate } from 'react-router-dom'
 import useGetForumThemes from '../../../hooks/useGetForumThemes'
 

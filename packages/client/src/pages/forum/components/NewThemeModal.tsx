@@ -1,6 +1,9 @@
+// React
 import { FC } from 'react'
+// Components
 import { Button, Form, Modal } from 'react-bootstrap'
 import { MessageForm } from './index'
+// Hooks
 import { useForm } from 'react-hook-form'
 
 interface NewThemeModalProps {

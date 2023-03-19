@@ -1,4 +1,6 @@
+// React
 import { useState } from 'react'
+// Components
 import { ForumThemes, NewThemeModal } from './components'
 import {
   Card,
@@ -7,10 +9,10 @@ import {
   Button,
   InputGroup
 } from 'react-bootstrap'
-
+// SVG
 import svgSearch from '../../assets/msgToolbar/search.svg'
 import svgClose from '../../assets/msgToolbar/close.svg'
-
+// style
 import './style.scss'
 
 const Forum = () => {

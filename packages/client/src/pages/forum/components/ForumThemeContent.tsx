@@ -1,8 +1,10 @@
-import { FC, memo } from 'react'
+// React
+import { FC } from 'react'
+// Components
 import { Image, ListGroup } from 'react-bootstrap'
+import { MarkDown, MessageForm } from './index'
+// Api
 import api from '../../../api'
-import MarkDown from './MarkDown'
-import { MessageForm } from './index'
 
 interface ForumThemeContentProps {
   themeContent: any

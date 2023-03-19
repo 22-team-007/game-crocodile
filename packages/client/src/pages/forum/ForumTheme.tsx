@@ -1,9 +1,12 @@
+// React
 import React, { useState } from 'react'
+// Components
 import { Card, Container, Dropdown } from 'react-bootstrap'
-import { ForumComments, ForumThemeContent } from './components'
-import MessageForm from './components/MessageForm'
-import svgMore from '../../assets/msgToolbar/more.svg'
+import { ForumComments, ForumThemeContent, MessageForm } from './components'
+// Hooks
 import useGetForumTheme from '../../hooks/useGetForumTheme'
+// SVG
+import svgMore from '../../assets/msgToolbar/more.svg'
 
 const ForumTheme = () => {
 

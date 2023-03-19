@@ -1,7 +1,8 @@
+// React
+import { FC } from 'react'
 import rehypeRaw from 'rehype-raw'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import ReactMarkdown from 'react-markdown'
-import { FC } from 'react'
 
 interface MarkDownProps {
   text: string
