@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 import { RootState } from './store'
 
-const getTheme = (state: RootState) => state.theme
+const getTheme = (state: RootState) => state.theme.name
 const getUser = (state: RootState) => state.userData.user
 const getAvatar = (state: RootState) => state.userData.user?.avatar
 

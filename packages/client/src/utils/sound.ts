@@ -76,6 +76,8 @@ class Sound {
 
 const sound = new Sound()
 
-;(async () => await sound.init())()
+if(typeof window !== 'undefined') {
+  (async () => await sound.init())()
+}
 
 export default sound
