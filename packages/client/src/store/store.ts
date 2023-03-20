@@ -27,7 +27,7 @@ const persistConfig = {
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
-
+debugger
 const store = createStore(
   persistedReducer,
   initialData,
