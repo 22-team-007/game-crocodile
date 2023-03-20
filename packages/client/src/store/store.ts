@@ -10,12 +10,11 @@ import { CookieStorage } from 'redux-persist-cookie-storage'
 import Cookies from 'cookies-js'
 import rootReducer from './reducers'
 
-
-let initialData 
+let initialData
 
 if (typeof window !== 'undefined') {
   initialData = window.__INITIAL_STATE__
-  delete  window.__INITIAL_STATE__
+  delete window.__INITIAL_STATE__
 } else {
   initialData = {}
 }
@@ -28,18 +27,12 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
-const store = createStore(
-  persistedReducer,
-  initialData,
-  compose(
-    applyMiddleware(thunk),
-    typeof window !== 'undefined' &&
-      // @ts-ignore
-      window.__REDUX_DEVTOOLS_EXTENSION__ &&
-      // @ts-ignore
-      window.__REDUX_DEVTOOLS_EXTENSION__()
-  )
-)
+// @ts-ignore
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+const enhancer = composeEnhancers(applyMiddleware(thunk))
+
+const store = createStore(persistedReducer, initialData, enhancer)
 
 export const persistor = persistStore(store)
 

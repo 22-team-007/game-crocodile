@@ -3,7 +3,6 @@ import { Container, Navbar, Nav } from 'react-bootstrap'
 import { NavLink, Outlet } from 'react-router-dom'
 import { LINKS } from './constants'
 import FullScreen from '../../components/FullScreen/fullScreen'
-import ThemeSwitcher from '../../components/ThemeSwitcher/themeSwitcher'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './app.scss'
@@ -25,7 +24,7 @@ const App = () => {
       ),
     [userId]
   )
- 
+
   return (
     <div className={`App ${appTheme}`}>
       <Navbar fixed="top" className="mb-4" bg="light">
@@ -41,7 +40,6 @@ const App = () => {
                 </NavLink>
               ))}
               <FullScreen />
-              <ThemeSwitcher />
             </Nav>
           </Navbar.Collapse>
         </Container>
