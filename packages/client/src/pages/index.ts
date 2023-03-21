@@ -8,6 +8,7 @@ import ErrorPage from './error/Error'
 import LeaderBoard, { leaderBoardLoader } from './leaderBoard/LeaderBoard'
 import Forum from './forum/Forum'
 import Page from './page/Page'
+import ForumTheme from './forum/ForumTheme'
 
 export {
   Registration,
@@ -22,4 +23,5 @@ export {
   GameList,
   Forum,
   Page,
+  ForumTheme,
 }
