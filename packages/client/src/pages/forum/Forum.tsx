@@ -1,5 +1,5 @@
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 // Components
 import { ForumThemes, NewThemeModal } from './components'
 import {
@@ -14,6 +14,7 @@ import svgSearch from '../../assets/msgToolbar/search.svg'
 import svgClose from '../../assets/msgToolbar/close.svg'
 // style
 import './style.scss'
+import api from '../../api'
 
 const Forum = () => {
   const [show, setShow] = useState(false)

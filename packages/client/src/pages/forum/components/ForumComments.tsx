@@ -16,7 +16,7 @@ const ForumComments = () => {
     <ListGroup className='theme-messages'>
       <h5 className='mt-3'>Комментарии: </h5>
       {
-        !loading && messages.map((message, index) =>
+        !loading && messages?.map((message, index) =>
           <ListGroup.Item key={`message-${message.id}`} className='d-flex justify-content-between'>
             <div className='d-flex left'>
               <div className='d-flex flex-column align-items-center'>

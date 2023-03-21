@@ -1,18 +1,27 @@
 // React
-import { FC } from 'react'
+import React, { FC } from 'react'
 // Components
-import { Image, ListGroup } from 'react-bootstrap'
+import { Button, Image, ListGroup } from 'react-bootstrap'
 import { MarkDown, MessageForm } from './index'
 // Api
 import api from '../../../api'
+import { useForm } from 'react-hook-form'
 
 interface ForumThemeContentProps {
   themeContent: any
   loading: boolean
   editMode: boolean
+  setEditMode: () => void
 }
 
-const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, editMode }) => {
+const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, editMode, setEditMode }) => {
+
+  const {control, watch} = useForm<FormFieldsTheme>()
+
+  const handleUpdateTheme = () => {
+    alert('updateTheme')
+  }
+
   return (
     <ListGroup className='theme-messages'>
       {
@@ -24,22 +33,48 @@ const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, 
                 width={50}
                 height={50}
                 rounded={true}
-                src={api.resources.url(themeContent?.avatar)}
+                src={api.resources.url(themeContent?.user?.avatar)}
                 alt='user-avatar'
               />
-              <div>{themeContent?.login}</div>
+              <div>{themeContent?.user?.login}</div>
             </div>
             <div className='message-text w-100'>
               {
                 !editMode ?
                   <>
                     <div className='message-number'></div>
-                    <MarkDown text={themeContent.description} />
+                    <MarkDown text={themeContent?.theme?.description} />
                   </>
                   :
-                  <MessageForm editMode={editMode} defaultValue={themeContent.description} />
+                  <>
+                    <MessageForm
+                      mode={'edit'}
+                      customRegister={{
+                        name: 'description',
+                        defaultValue: themeContent?.theme?.description,
+                        control
+                      }}
+                    />
+                    <div className='d-flex justify-content-end'>
+                      <Button
+                        variant='primary'
+                        onClick={setEditMode}
+                        className='mx-2'
+                      >
+                        Отмена
+                      </Button>
+                      <Button
+                        variant='primary'
+                        disabled={!watch('description')}
+                        onClick={handleUpdateTheme}
+                      >
+                        Применить
+                      </Button>
+                    </div>
+                  </>
               }
             </div>
+
           </div>
           <div className='right'>
             <small>5 минут назад</small>

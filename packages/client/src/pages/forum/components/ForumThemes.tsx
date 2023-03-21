@@ -21,7 +21,7 @@ const ForumMessages = () => {
 
       <ListGroup as="nav" className="forum-themes">
         {
-          themes.map(theme =>
+          themes?.map(theme =>
             <ListGroup.Item
               key={`theme-${theme.id}`}
               as="li"
@@ -44,7 +44,7 @@ const ForumMessages = () => {
                 </div>
               </div>
               <div className="right">
-                <b>3</b>
+                <b>{theme.comments}</b>
               </div>
             </ListGroup.Item>
           )

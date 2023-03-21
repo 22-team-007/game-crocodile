@@ -11,25 +11,25 @@ export interface IForumRecord {
 
 export const formRecordModel: ModelAttributes<Model, IForumRecord> = {
   id: {
-    type: DataType.NUMBER,
+    type: DataType.INTEGER,
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
   },
   parent_id: {
-    type: DataType.NUMBER,
+    type: DataType.INTEGER,
     allowNull: true,
   },
   subject: {
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   },
   description: {
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   },
   author_id: {
-    type: DataType.NUMBER,
+    type: DataType.INTEGER,
     allowNull: false,
   },
 }

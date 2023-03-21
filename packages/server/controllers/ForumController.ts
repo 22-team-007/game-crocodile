@@ -1,6 +1,6 @@
 import { ForumRecord, sequelize } from '../db'
 import type { Response, Request } from 'express'
-
+// todo Никита отрефактори пожалуйста с этим невозможно работать
 class ForumController {
   //GET /forum/list - получение списка тем
   public static async getThemeList (_: Request, res: Response) {
@@ -119,9 +119,9 @@ class ForumController {
   //POST /forum/:id/comment - добавление/редактирование комментария
   public static async postComment (req: Request, res: Response) {
     try {
-      const perent_id = Number(req.params.id)
+      const parent_id = Number(req.params.id)
       const data = req.body
-      if (perent_id === 0 || isNaN(perent_id) || perent_id !== Number(data.perent_id)) {
+      if (parent_id === 0 || isNaN(parent_id) || parent_id !== Number(data.parent_id)) {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })
@@ -137,11 +137,12 @@ class ForumController {
           .end(`Сообщение не найдено`)
         return
       }
-
+      const isCreate = id === 0
+      delete data.id
       const rec =
-        id === 0
+        isCreate
           ? await ForumRecord.create(data)
-          : await ForumRecord.update(data, { where: { perent_id, id } })
+          : await ForumRecord.update(data, { where: { parent_id, id } })
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {

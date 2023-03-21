@@ -67,9 +67,6 @@ declare type LeaderType = {
   score: number
 }
 
-
-
-
 declare interface LeaderProps extends UserType {
   score: number
 }
@@ -109,7 +106,7 @@ declare interface Window {
 }
 
 declare type ForumRecord = {
-  id: number
+  id?: number
   parent_id: number|null
   subject: string
   description: string
@@ -121,3 +118,9 @@ declare type ForumList = {
   subject: string
   comments: string
 }[]
+
+declare interface FormFieldsTheme {
+  subject: string
+  description: string
+}
+

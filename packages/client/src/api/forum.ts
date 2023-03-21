@@ -9,7 +9,7 @@ type ForumAPIType = {
   update_comment: (record: ForumRecord) => Promise<ForumRecord>
 }
 export default class Forum extends ApiBase implements ForumAPIType {
-  protected host = '/api'
+  protected host = 'http://localhost:3001/api'
   public async get(id: number): Promise<ForumRecord> {
     const r = await this.GET(`/forum/${id}`)
     return await r.json()
@@ -21,7 +21,6 @@ export default class Forum extends ApiBase implements ForumAPIType {
   }
 
   public async create(record: ForumRecord): Promise<ForumRecord> {
-    record.id = 0
     const r = await this.POST(`/forum/0`, {
       body: JSON.stringify(record)
     })

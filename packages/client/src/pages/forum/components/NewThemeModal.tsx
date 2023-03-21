@@ -5,6 +5,11 @@ import { Button, Form, Modal } from 'react-bootstrap'
 import { MessageForm } from './index'
 // Hooks
 import { useForm } from 'react-hook-form'
+import { useAppSelector } from '../../../hooks/useAppSelector'
+import { selectUser } from '../../../store/selectors'
+// Api
+import api from '../../../api'
+import { useNavigate } from 'react-router-dom'
 
 interface NewThemeModalProps {
   show: boolean
@@ -16,10 +21,28 @@ const NewThemeModal: FC<NewThemeModalProps> = ({
      switchModal
    }) => {
 
-  const {register, setValue} = useForm()
+  const navigate = useNavigate()
 
-  const createTopicHandler = () => {
-    switchModal()
+  const {register, control, handleSubmit} = useForm<FormFieldsTheme>({
+    defaultValues: {
+      subject: '',
+      description: ''
+    }
+  })
+  const user = useAppSelector(selectUser)
+
+  const createTopicHandler = (data: FormFieldsTheme) => {
+    if (user) {
+      api.forum.create({
+        author_id: user.id,
+        parent_id: null,
+        description: data.description,
+        subject: data.subject
+      }).then((result) => {
+        switchModal()
+        navigate(`${result.id as number}`)
+      })
+    }
   }
 
   return (
@@ -32,12 +55,21 @@ const NewThemeModal: FC<NewThemeModalProps> = ({
           <Form.Group className='mb-4' controlId='topicName'>
             <Form.Control
               placeholder='Название темы'
-              {...register('subject')}
+              {...register('subject', {required: 'Обязательное поле'})}
             />
           </Form.Group>
-          <MessageForm />
+          <MessageForm
+            mode={'create'}
+            customRegister={{
+              name: 'description',
+              control,
+              rules: {
+                required: true
+              }
+            }}
+          />
           <div className='d-flex justify-content-center'>
-            <Button variant='primary' onClick={createTopicHandler}>
+            <Button variant='primary' onClick={handleSubmit(createTopicHandler)}>
               Создать
             </Button>
           </div>

@@ -1,24 +1,24 @@
 // React
-import { FC, useCallback, useRef } from 'react'
+import { ChangeEvent, FC, useCallback, useRef } from 'react'
 // Components
 import { Button, Form, Tab, Tabs } from 'react-bootstrap'
 import { MarkDown, MessageToolbar } from './index'
 import { TextFormattingType } from './MessageToolbar'
 // Hooks
-import { useForm } from 'react-hook-form'
+import { useController, UseControllerProps } from 'react-hook-form'
+
+type MessageFormType = 'create' | 'edit' | 'comment'
 
 interface MessageFormProps {
-  defaultValue?: string
   editMode?: boolean
+  mode?: MessageFormType
+  customRegister: UseControllerProps<FormFieldsTheme>
 }
 
-const MessageForm: FC<MessageFormProps> = ({ defaultValue, editMode = false }) => {
+const MessageForm: FC<MessageFormProps> = ({ mode = 'comment', customRegister }) => {
 
-  const { register, setValue, watch } = useForm({
-    defaultValues: {
-      message: defaultValue || ''
-    }
-  })
+  const {field: messageField} = useController(customRegister)
+
   const messageRef = useRef<HTMLTextAreaElement | null>(null)
 
   const applyFormattingText = useCallback((type: TextFormattingType = 'insertText', value?: string | number) => {
@@ -69,7 +69,7 @@ const MessageForm: FC<MessageFormProps> = ({ defaultValue, editMode = false }) =
       }
 
       // подмена значения
-      setValue('message', finText)
+      messageField.onChange(finText)
 
       // возвращаем фокус на элемент
       messageRef.current.focus()
@@ -79,10 +79,14 @@ const MessageForm: FC<MessageFormProps> = ({ defaultValue, editMode = false }) =
     }
   }, [])
 
+  const onChangeMessageHandler = (event: ChangeEvent) => {
+    messageField.onChange(event)
+  }
+
   return (
     <>
       <Tabs defaultActiveKey='message' className='mb-3 mt-3'>
-        <Tab eventKey='message' title={editMode ? 'Содержание темы' : 'Комментарий'}>
+        <Tab eventKey='message' title={mode === 'comment' ? 'Комментарий' : 'Содержание темы'}>
           <Form>
             <Form.Group className='mb-3' controlId='comment'>
               <MessageToolbar
@@ -92,11 +96,9 @@ const MessageForm: FC<MessageFormProps> = ({ defaultValue, editMode = false }) =
                 style={{ height: '200px' }}
                 as='textarea'
                 placeholder='Ваше сообщение'
-                {...register('message')}
-                ref={(e: HTMLTextAreaElement | null) => {
-                  register('message').ref(e)
-                  messageRef.current = e
-                }}
+                ref={messageRef}
+                value={messageField.value}
+                onChange={onChangeMessageHandler}
               />
             </Form.Group>
           </Form>
@@ -104,16 +106,13 @@ const MessageForm: FC<MessageFormProps> = ({ defaultValue, editMode = false }) =
 
         <Tab className='preview-block' eventKey='preview' title='Предпросмотр'>
           {
-            watch('message') ?
-              <MarkDown text={watch('message')} />
+            messageField.value ?
+              <MarkDown text={messageField.value} />
               :
-              <p>Для отображения предпросмотра напишите комментарий в соседней вкладке</p>
+              <p>Для отображения предпросмотра напишите сообщение в соседней вкладке</p>
           }
         </Tab>
       </Tabs>
-      <div className='d-flex justify-content-end'>
-        <Button variant='primary' disabled={!watch('message')}>{editMode ? 'Применить' : 'Отправить'}</Button>
-      </div>
     </>
   )
 }

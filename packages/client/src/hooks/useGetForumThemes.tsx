@@ -1,32 +1,22 @@
+import { useState } from 'react'
+import api from '../api'
 
 const UseGetForumThemes = () => {
 
-  const themes = [
-    {
-      id: 21,
-      parent_id: null,
-      subject: 'Обсуждение новой игры.',
-      description: 'Выход игры уже рядом, время обсуждать.',
-      author_id: 543281
-    },
-    {
-      id: 22,
-      parent_id: null,
-      subject: 'Обсуждение найденных ошибок.',
-      description: 'Выход игры уже рядом, время обсуждать.',
-      author_id: 543281
-    },
-    {
-      id: 33,
-      parent_id: null,
-      subject: 'Тема для предложения идей.',
-      description: 'Выход игры уже рядом, время обсуждать.',
-      author_id: 543281
-    },
-  ]
+  const [themes, setThemes] = useState<ForumList | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+
+  if (loading) {
+    console.log('forum fetch')
+    api.forum.list().then(value => {
+      setThemes(value)
+      setLoading(false)
+    }).catch((e) => console.error(e.message))
+  }
 
   return {
-    themes
+    themes,
+    loading
   }
 }
 
