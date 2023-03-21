@@ -143,12 +143,12 @@ async function startServer() {
 
       let preloadedState
       try {
-        preloadedState = await getStoredState(persistConfig) as any
+        preloadedState = (await getStoredState(persistConfig)) as any
         if (typeof preloadedState === 'undefined') {
           throw new Error()
         }
 
-        if(preloadedState._persist) {
+        if (preloadedState._persist) {
           delete preloadedState._persist
         }
 
@@ -160,15 +160,19 @@ async function startServer() {
         }
       }
 
-      res.removeHeader('Set-Cookie');
+      res.removeHeader('Set-Cookie')
 
-      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(preloadedState)}</script>`
+      preloadedState.theme.xss = "</script><script>alert('hello')</script>"
+
+      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
+        preloadedState
+      ).replace(/</g, '\\u003c')} // xss protect
+      )}</script>`
 
       const appHtml = await render(url, { persistConfig, preloadedState })
 
       template = template.replace('<!--ssr-init-state-->', stateMarkup)
       const html = template.replace('<!--ssr-outlet-->', appHtml)
-
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
