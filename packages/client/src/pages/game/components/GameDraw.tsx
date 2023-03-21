@@ -4,11 +4,12 @@ import { Form } from 'react-bootstrap'
 import Brush from '../../../utils/tools/Brush'
 
 interface GameDrawProps {
-  currentUserId: number
-  socket?: SocketAPIType
+  currentUserId: number,
+  socket?: SocketAPIType,
+  disabled: boolean
 }
 
-const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
+const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const brush = useRef<Brush>()
 
@@ -86,7 +87,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
           max={20}
         />
       </div>
-      <canvas ref={canvasRef} width={650} height={600} />
+      <canvas className={`${disabled ? 'readonly' : ''}`} ref={canvasRef} width={650} height={600} />
     </div>
   )
 }

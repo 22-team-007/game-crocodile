@@ -112,7 +112,7 @@ declare type SocketContent = {
   user_id?: number
   id?: number
   color?: string
-  content?: string | Coordinate[] | SocketContent
+  content?: string | number | Coordinate[] | SocketContent
   file?: ResourceType
 }
 

@@ -78,6 +78,8 @@ const Game = () => {
   const { chatId } = useParams()
 
   const [webSocket, setWebSocket] = useState<SocketAPIType>()
+  const [isDisabledCanvas, setDisabledCanvas] = useState(true)
+  const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
@@ -93,6 +95,42 @@ const Game = () => {
     }
   }, [currentUser, chatId])
 
+  useEffect(() => {
+    if (webSocket !== undefined) {
+      setLeadingPlayer(gamePlayers[0].id)
+      webSocket.on<SocketContent>('text', checkWord)
+      webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
+    }
+  }, [webSocket])
+
+
+  const checkWord = (res: SocketContent) => {
+    if ( res.user_id !== undefined && res?.content?.toString().toLowerCase() === 'арбуз') {
+      if (res.user_id === currentUser?.id) {
+        alert('Вы угадали!')
+        //начисляем баллы
+      }
+      setLeadingPlayer(res.user_id)
+    }
+  }
+  const onSetLeading = (res: SocketContent) => {
+    //смотреть лида в свойстве контент
+    if (res.user_id !== undefined && res.content === currentUser?.id) {
+      //переделать alert на вызов модального окна
+      alert('вы ведущий - нарисуйте слово Арбуз')
+      //разрешаем рисовать, запрещаем писать
+      setDisabledCanvas(false)
+      setDisabledChat(true)
+    } else {
+      setDisabledCanvas(true)
+      setDisabledChat(false)
+    }
+  }
+  const setLeadingPlayer = (id: number) => {
+    webSocket!.sendContent('setLeadingPlayer', {
+      content: id,
+    })
+  }
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value
     if (v && v.length >= 3) api.users.search(v).then(setSearchedPlayers)
@@ -110,7 +148,11 @@ const Game = () => {
       <div className="game-container">
         <div className="game-wrapper">
           {currentUser && (
-            <GameDraw currentUserId={currentUser.id} socket={webSocket} />
+            <GameDraw
+              disabled={isDisabledCanvas}
+              currentUserId={currentUser.id}
+              socket={webSocket}
+            />
           )}
           <div className="chatting">
             <div className="leader-board">
@@ -174,7 +216,7 @@ const Game = () => {
                 ))}
               </ListGroup>
             </div>
-            <GameChat chatId={Number(chatId)} socket={webSocket} />
+            <GameChat disabled={isDisabledChat} chatId={Number(chatId)} socket={webSocket} />
           </div>
         </div>
         <StartEndGame />
