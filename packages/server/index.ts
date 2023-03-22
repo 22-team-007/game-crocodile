@@ -162,8 +162,6 @@ async function startServer() {
 
       res.removeHeader('Set-Cookie')
 
-      preloadedState.theme.xss = "</script><script>alert('hello')</script>"
-
       const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
         preloadedState
       ).replace(/</g, '\\u003c')} // xss protect
