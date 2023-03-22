@@ -10,8 +10,7 @@
     "test": "lerna run test",
     "lint": "lerna run lint",
     "format": "lerna run format",
-    "preview": "lerna run preview",
-    "db-migration": "psql -U postgres -f ./create-db.sql && psql -d game-crocodile -U postgres -f ./create-table.sql"
+    "preview": "lerna run preview"
   },
   "license": "MIT",
   "workspaces": [

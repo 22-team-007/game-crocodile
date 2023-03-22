@@ -2,8 +2,8 @@ import { ForumRecord, sequelize } from '../db'
 import type { Response, Request } from 'express'
 
 class ForumController {
-  //GET /forum/list - получение списка тем
-  public static async getThemeList (_: Request, res: Response) {
+  //GET /forum - получение списка тем
+  public static async getThemes (_: Request, res: Response) {
     try {
       const rec = await ForumRecord.findAll({ 
         attributes: [
@@ -30,7 +30,24 @@ class ForumController {
         .end(`Возникла ошибак при поиске тем ${(e as Error).message}`)
     }
   }
-  //GET /forum/:id/info - получение полной информации о теме
+
+  //PUT /forum - создание темы
+  public static async putTheme (req: Request, res: Response) {
+    try {
+      const data = req.body
+      delete data.id
+      const rec = await ForumRecord.create(data)
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибак при создании темы ${(e as Error).message}`)
+    }
+  }
+
+  //GET /forum/:id - получение полной информации о теме
   public static async getTheme (req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
@@ -58,7 +75,7 @@ class ForumController {
     }
   }
 
-  //POST /forum/:id - передача на сервер, если id=0 - создание, иначе редактирование
+  //POST /forum/:id - редактирование темы
   public static async postTheme (req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
@@ -71,10 +88,8 @@ class ForumController {
       }
 
       const data = req.body
-      const rec =
-        id === 0
-          ? await ForumRecord.create(data)
-          : await ForumRecord.update(data, { where: { id } })
+      delete data.id
+      const rec = await ForumRecord.update(data, { where: { id } })
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
@@ -85,7 +100,7 @@ class ForumController {
     }
   }
 
-  //GET /forum/:id/comments - запрос массива комментариев.
+  //GET /forum/:id/comment - запрос массива комментариев.
   public static async getComments (req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
@@ -116,7 +131,7 @@ class ForumController {
     }
   }
 
-  //POST /forum/:id/comment - добавление/редактирование комментария
+  //POST /forum/:id/comment - редактирование комментария
   public static async postComment (req: Request, res: Response) {
     try {
       const perent_id = Number(req.params.id)
@@ -134,14 +149,12 @@ class ForumController {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })
-          .end(`Сообщение не найдено`)
+          .end(`Комментарий не найден`)
         return
       }
 
-      const rec =
-        id === 0
-          ? await ForumRecord.create(data)
-          : await ForumRecord.update(data, { where: { perent_id, id } })
+      delete data.id
+      const rec = ForumRecord.update(data, { where: { perent_id, id } })
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
@@ -149,6 +162,31 @@ class ForumController {
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
         .end(`Возникла ошибак при изменении комментария ${(e as Error).message}`)
+    }
+  }
+  
+  //PUT /forum/:id/comment - добавление комментария
+  public static async putComment (req: Request, res: Response) {
+    try {
+      const perent_id = Number(req.params.id)
+      const data = req.body
+      if (perent_id === 0 || isNaN(perent_id) || perent_id !== Number(data.perent_id)) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Тема не найдена`)
+        return
+      }
+
+      delete data.id
+      const rec = await ForumRecord.create(data)
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибак при создании комментария ${(e as Error).message}`)
     }
   }
 }
