@@ -1,26 +1,38 @@
-import { legacy_createStore as createStore, applyMiddleware } from 'redux'
-import rootReducer from './reducers'
+import {
+  legacy_createStore as createStore,
+  applyMiddleware,
+  compose,
+} from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import thunk from 'redux-thunk'
-import storage from 'redux-persist/lib/storage'
+// @ts-ignore (can't import types)
+import { CookieStorage } from 'redux-persist-cookie-storage'
+import Cookies from 'cookies-js'
+import rootReducer from './reducers'
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  whitelist: ['userData', 'theme'],
-}
-
-let initialData 
+let initialData
 
 if (typeof window !== 'undefined') {
   initialData = window.__INITIAL_STATE__
-  delete  window.__INITIAL_STATE__
+  delete window.__INITIAL_STATE__
 } else {
   initialData = {}
 }
 
+const persistConfig = {
+  key: 'root',
+  storage: new CookieStorage(Cookies, {}),
+  whitelist: ['userData', 'theme'],
+}
+
 const persistedReducer = persistReducer(persistConfig, rootReducer)
-const store = createStore(persistedReducer, initialData, applyMiddleware(thunk))
+
+// @ts-ignore
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+const enhancer = composeEnhancers(applyMiddleware(thunk))
+
+const store = createStore(persistedReducer, initialData, enhancer)
 
 export const persistor = persistStore(store)
 

@@ -3,11 +3,11 @@ import { themeTypes } from '../actions/theme'
 import { UserThemeAction } from '../actions/types'
 
 const initState = {
-  theme: '',
+  name: '',
 }
 
 type ThemeState = {
-  theme: string
+  name: string
 }
 
 export function themeReducer(
@@ -18,7 +18,7 @@ export function themeReducer(
     case themeTypes.SET_THEME:
       return {
         ...state,
-        theme: payload,
+        name: payload,
       }
     default:
       return state

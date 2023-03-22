@@ -1,19 +1,24 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-
+import { legacy_createStore as createStore } from 'redux'
+import { persistReducer } from 'redux-persist'
 import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
-import store, { persistor } from './store/store'
 
-import { Index } from './router'
+import rootReducer from './store/reducers'
+import { IndexSSR } from './router'
 
-export function render() {
+export function render(
+  url: string,
+  { persistConfig, preloadedState }: any
+): string {
+  const SSRReducer = persistReducer(persistConfig, rootReducer)
+
+  const reduxStore = createStore(SSRReducer, preloadedState)
+
   return renderToString(
     <React.StrictMode>
-      <Provider store={store}>
-        <PersistGate persistor={persistor}>
-          <Index />
-        </PersistGate>
+      <Provider store={reduxStore}>
+        <IndexSSR url={url} />
       </Provider>
     </React.StrictMode>
   )

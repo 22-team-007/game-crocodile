@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "bootstrap": "5.2.3",
+    "cookies-js": "^1.2.3",
     "dotenv": "16.0.2",
     "eslint-config-prettier": "8.5.0",
     "prettier": "2.7.1",
@@ -24,6 +25,7 @@
     "react-router-dom": "6.8.0",
     "redux": "4.2.1",
     "redux-persist": "6.0.0",
+    "redux-persist-cookie-storage": "^1.0.0",
     "redux-thunk": "2.4.2",
     "reselect": "4.1.7",
     "sass": "1.58.0"

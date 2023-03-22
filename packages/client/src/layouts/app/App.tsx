@@ -24,7 +24,7 @@ const App = () => {
       ),
     [userId]
   )
- 
+
   return (
     <div className={`App ${appTheme}`}>
       <Navbar fixed="top" className="mb-4" bg="light">
