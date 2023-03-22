@@ -10,32 +10,8 @@ import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
 import Cookies from 'cookies'
 import { getStoredState } from 'redux-persist'
 
-/*import { dbConnect, ForumRecord } from './db'
-//Пример основных методов CRUD
-dbConnect().then(() => {
-  ForumRecord.create({
-    parent_id: null,
-    subject: 'text',
-    description: 'text2',
-    author_id: 123,
-  }).then(m => {
-    const id = m.dataValues.id
-    ForumRecord.findOne({ where: { id } }).then(() => {
-      ForumRecord.update(
-        {
-          subject: 'new subject',
-        },
-        {
-          where: { id },
-        }
-      ).then(() => {
-        ForumRecord.destroy({
-          where: { id },
-        })
-      })
-    })
-  })
-})*/
+import { dbConnect } from './db'
+import ApiRouter from './routers/api_router'
 import words from './words'
 dotenv.config()
 
@@ -43,17 +19,19 @@ const isDev = process.env.NODE_ENV === 'development'
 
 async function startServer() {
   const app = express()
-  app.use(cors())
   const port = Number(process.env.SERVER_PORT) || 3001
-
-  let vite: ViteDevServer
   const distPath = path.dirname(require.resolve('client/dist/index.html'))
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  app.get('/api', (_, res) => {
-    res.json('👋 Howdy from the server :)')
-  })
+  app.use(cors())
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+
+  let vite: ViteDevServer
+
+  await dbConnect()
+  app.use('/api', ApiRouter)
 
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])

@@ -123,3 +123,17 @@ declare type SocketMessage = SocketContent & {
 declare interface Window {
   __INITIAL_STATE__?: object
 }
+
+declare type ForumRecord = {
+  id: number
+  parent_id: number|null
+  subject: string
+  description: string
+  author_id: number
+}
+
+declare type ForumList = {
+  id: number
+  subject: string
+  comments: string
+}[]
