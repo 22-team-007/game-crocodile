@@ -164,6 +164,4 @@ async function startServer() {
   })
 }
 
-//@ts-ignore
-global.fetch = (_: RequestInfo | URL, __?: RequestInit | undefined) => { }
 startServer()
