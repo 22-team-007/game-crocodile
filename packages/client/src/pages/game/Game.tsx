@@ -81,8 +81,12 @@ const Game = () => {
   const [isDisabledCanvas, setDisabledCanvas] = useState(true)
   const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
+  const [lead,  setLeading] = useState<number>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
+
+  const [ seconds, setSeconds ] = useState(0);
+  const [ timerActive, setTimerActive ] = useState(false);
 
   useEffect(() => {
     if (chatId) {
@@ -96,16 +100,33 @@ const Game = () => {
   }, [currentUser, chatId])
 
   useEffect(() => {
-    if (webSocket !== undefined) {
+    if (webSocket !== undefined && gamePlayers[1]) {
       setLeadingPlayer(gamePlayers[0].id)
+      setLeading(gamePlayers[0].id)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
     }
   }, [webSocket])
 
+  useEffect(() => {
+   
+    if (webSocket !== undefined && timerActive) {
+      if (seconds > 0 ) {
+        setTimeout(setSeconds, 1000, seconds - 1)
+      } else {
+        console.log("вы не успели, переход хода")
+        const randomPlayer = gamePlayers.filter((player) => {
+          return player.id !== currentUser?.id
+        })
+        
+        setLeadingPlayer(randomPlayer[0].id)
+      }
+    }
+  }, [ seconds, webSocket, timerActive ]);
+
 
   const checkWord = (res: SocketContent) => {
-    if ( res.user_id !== undefined && res?.content?.toString().toLowerCase() === 'арбуз') {
+    if ( res.user_id !== undefined && res?.content?.toString().toLowerCase() === '1') {
       if (res.user_id === currentUser?.id) {
         alert('Вы угадали!')
         //начисляем баллы
@@ -117,19 +138,26 @@ const Game = () => {
     //смотреть лида в свойстве контент
     if (res.user_id !== undefined && res.content === currentUser?.id) {
       //переделать alert на вызов модального окна
-      alert('вы ведущий - нарисуйте слово Арбуз')
+      console.log('вы ведущий - нарисуйте слово Арбуз')
+      setLeading(res.content)
+      setSeconds(6)
+      setTimerActive(true)
       //разрешаем рисовать, запрещаем писать
       setDisabledCanvas(false)
       setDisabledChat(true)
     } else {
+      setSeconds(0)
+      setTimerActive(false)
       setDisabledCanvas(true)
       setDisabledChat(false)
     }
   }
   const setLeadingPlayer = (id: number) => {
+      
     webSocket!.sendContent('setLeadingPlayer', {
       content: id,
     })
+    
   }
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value
@@ -146,6 +174,7 @@ const Game = () => {
   return (
     <Container className="d-flex justify-content-center align-items-center">
       <div className="game-container">
+      { lead === currentUser?.id && seconds}
         <div className="game-wrapper">
           {currentUser && (
             <GameDraw
