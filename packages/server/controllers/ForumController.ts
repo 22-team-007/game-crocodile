@@ -3,18 +3,20 @@ import type { Response, Request } from 'express'
 
 class ForumController {
   //GET /forum - получение списка тем
-  public static async getThemes (_: Request, res: Response) {
+  public static async getThemes(_: Request, res: Response) {
     try {
-      const rec = await ForumRecord.findAll({ 
+      const rec = await ForumRecord.findAll({
         attributes: [
           'id',
           'subject',
           [
-            sequelize.literal(`(select count(*) from "ForumRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`),
-            'comments'
-          ]
+            sequelize.literal(
+              `(select count(*) from "ForumRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`
+            ),
+            'comments',
+          ],
         ],
-        where: { parent_id: null }
+        where: { parent_id: null },
       })
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
@@ -32,7 +34,7 @@ class ForumController {
   }
 
   //PUT /forum - создание темы
-  public static async putTheme (req: Request, res: Response) {
+  public static async putTheme(req: Request, res: Response) {
     try {
       const data = req.body
       delete data.id
@@ -48,7 +50,7 @@ class ForumController {
   }
 
   //GET /forum/:id - получение полной информации о теме
-  public static async getTheme (req: Request, res: Response) {
+  public static async getTheme(req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
       if (id === 0 || isNaN(id)) {
@@ -76,7 +78,7 @@ class ForumController {
   }
 
   //POST /forum/:id - редактирование темы
-  public static async postTheme (req: Request, res: Response) {
+  public static async postTheme(req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
       if (isNaN(id)) {
@@ -101,7 +103,7 @@ class ForumController {
   }
 
   //GET /forum/:id/comment - запрос массива комментариев.
-  public static async getComments (req: Request, res: Response) {
+  public static async getComments(req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
       if (parent_id === 0 || isNaN(parent_id)) {
@@ -132,11 +134,15 @@ class ForumController {
   }
 
   //POST /forum/:id/comment - редактирование комментария
-  public static async postComment (req: Request, res: Response) {
+  public static async postComment(req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
       const data = req.body
-      if (parent_id === 0 || isNaN(parent_id) || parent_id !== Number(data.parent_id)) {
+      if (
+        parent_id === 0 ||
+        isNaN(parent_id) ||
+        parent_id !== Number(data.parent_id)
+      ) {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })
@@ -161,16 +167,22 @@ class ForumController {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при изменении комментария ${(e as Error).message}`)
+        .end(
+          `Возникла ошибак при изменении комментария ${(e as Error).message}`
+        )
     }
   }
-  
+
   //PUT /forum/:id/comment - добавление комментария
-  public static async putComment (req: Request, res: Response) {
+  public static async putComment(req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
       const data = req.body
-      if (parent_id === 0 || isNaN(parent_id) || parent_id !== Number(data.parent_id)) {
+      if (
+        parent_id === 0 ||
+        isNaN(parent_id) ||
+        parent_id !== Number(data.parent_id)
+      ) {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })

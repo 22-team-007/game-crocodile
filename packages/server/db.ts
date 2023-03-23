@@ -1,6 +1,12 @@
 import { Sequelize } from 'sequelize-typescript'
 import { formRecordModel } from './models/ForumRecord'
-const { POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT } = process.env
+const {
+  POSTGRES_HOST,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB,
+  POSTGRES_PORT,
+} = process.env
 
 export const sequelize = new Sequelize({
   host: POSTGRES_HOST,
