@@ -46,7 +46,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
 
   const onUserConnected = async (c: SocketContent) => {
     // нужен ведущий игрок, пока true
-    if (currentUserId === c.user_id) {
+    if (currentUserId !== c.user_id) {
       const canvas = canvasRef.current as HTMLCanvasElement
 
       try {
