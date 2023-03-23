@@ -1,5 +1,5 @@
 // React
-import { memo } from 'react'
+import { FC, memo } from 'react'
 // Components
 import { ListGroup, Image } from 'react-bootstrap'
 import { MarkDown } from './index'
@@ -8,15 +8,18 @@ import useGetForumMessages from '../../../hooks/useGetForumMessages'
 // Api
 import api from '../../../api'
 
-const ForumComments = () => {
+interface ForumCommentsProps {
+  messages: ForumRecord[]
+  users: any
+}
 
-  const { messages, users, loading } = useGetForumMessages()
+const ForumComments: FC<ForumCommentsProps> = ({messages, users}) => {
 
   return (
     <ListGroup className='theme-messages'>
       <h5 className='mt-3'>Комментарии: </h5>
       {
-        !loading && messages?.map((message, index) =>
+        messages?.map((message, index) =>
           <ListGroup.Item key={`message-${message.id}`} className='d-flex justify-content-between'>
             <div className='d-flex left'>
               <div className='d-flex flex-column align-items-center'>

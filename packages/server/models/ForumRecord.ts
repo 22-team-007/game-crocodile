@@ -21,11 +21,11 @@ export const formRecordModel: ModelAttributes<Model, IForumRecord> = {
     allowNull: true,
   },
   subject: {
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   },
   description: {
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   },
   author_id: {

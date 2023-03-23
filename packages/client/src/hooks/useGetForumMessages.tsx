@@ -11,9 +11,7 @@ const useGetForumMessages = () => {
   const [users, setUsers] = useState<any>({})
   const [loading, setLoading] = useState<boolean>(true)
 
-  const [messages, setMessages] = useState<ForumRecord[]>()
-
-
+  const [messages, setMessages] = useState<ForumRecord[]>([])
 
   if (loading){
     api.forum.comments(Number(themeId)).then(result => {
@@ -32,9 +30,20 @@ const useGetForumMessages = () => {
     })
   }
 
+  const createComment = async (data: ForumRecord) => {
+    api.forum.create_comment(data).then((comment) => {
+      if (messages) {
+        setMessages(prevState => [...prevState, comment])
+      } else {
+        setMessages([comment])
+      }
+    })
+  }
+
   return {
     messages,
     users,
+    createComment,
     loading,
   }
 }

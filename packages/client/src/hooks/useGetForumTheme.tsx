@@ -27,8 +27,15 @@ const useGetForumTheme = () => {
     })
   }
 
+  const update = (data: ForumRecord) => {
+    api.forum.update(data).then(theme => {
+      setThemeContent(prevState => ({...prevState, theme}))
+    })
+  }
+
   return {
     themeContent,
+    update,
     loading
   }
 }

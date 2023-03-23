@@ -5,16 +5,18 @@ import { Button, Card, Container, Dropdown } from 'react-bootstrap'
 import { ForumComments, ForumThemeContent, MessageForm } from './components'
 // Hooks
 import useGetForumTheme from '../../hooks/useGetForumTheme'
-// SVG
-import svgMore from '../../assets/msgToolbar/more.svg'
 import { useForm } from 'react-hook-form'
-import api from '../../api'
 import { useAppSelector } from '../../hooks/useAppSelector'
 import { selectUser } from '../../store/selectors'
+import useGetForumMessages from '../../hooks/useGetForumMessages'
+// SVG
+import svgMore from '../../assets/msgToolbar/more.svg'
 
 const ForumTheme = () => {
 
-  const { themeContent, loading } = useGetForumTheme()
+  const { themeContent, loading, update } = useGetForumTheme()
+  const { messages, users, createComment } = useGetForumMessages()
+
   const [editMode, setEditMode] = useState<boolean>(false)
 
   const {control, watch, setValue} = useForm<FormFieldsTheme>()
@@ -28,7 +30,7 @@ const ForumTheme = () => {
 
   const handleSendComment = () => {
     if (user && themeContent?.theme?.id) {
-      api.forum.create_comment({
+      createComment({
         subject: '',
         description: watch('description'),
         parent_id: themeContent?.theme?.id,
@@ -61,12 +63,16 @@ const ForumTheme = () => {
 
         <Card.Body>
           <ForumThemeContent
+            updateTheme={update}
             themeContent={themeContent}
             loading={loading}
             editMode={editMode}
             setEditMode={handleToggleEditMode}
           />
-          <ForumComments />
+          <ForumComments
+            messages={messages}
+            users={users}
+          />
           <MessageForm
             customRegister={{
               name: 'description',

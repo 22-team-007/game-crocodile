@@ -12,14 +12,18 @@ interface ForumThemeContentProps {
   loading: boolean
   editMode: boolean
   setEditMode: () => void
+  updateTheme: (data: ForumRecord) => void;
 }
 
-const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, editMode, setEditMode }) => {
+const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, editMode, setEditMode, updateTheme }) => {
 
   const {control, watch} = useForm<FormFieldsTheme>()
 
   const handleUpdateTheme = () => {
-    alert('updateTheme')
+    updateTheme({
+      ...themeContent.theme, description: watch('description')
+    })
+    setEditMode()
   }
 
   return (

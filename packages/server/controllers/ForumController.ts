@@ -76,12 +76,18 @@ class ForumController {
           ? await ForumRecord.create(data)
           : await ForumRecord.update(data, { where: { id } })
 
-      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+      if (id !== 0) {
+        const result = await ForumRecord.findOne({where: { id }})
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(result)
+      } else {
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+      }
+
     } catch (e) {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
+        .end(`Возникла ошибка при изменении темы ${(e as Error).message}`)
     }
   }
 
@@ -111,7 +117,7 @@ class ForumController {
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
         .end(
-          `Возникла ошибак при загрузке комментариев ${(e as Error).message}`
+          `Возникла ошибка при загрузке комментариев ${(e as Error).message}`
         )
     }
   }
@@ -149,7 +155,7 @@ class ForumController {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при изменении комментария ${(e as Error).message}`)
+        .end(`Возникла ошибка при изменении комментария ${(e as Error).message}`)
     }
   }
 }
