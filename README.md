@@ -19,10 +19,8 @@
 И для клиента и для сервера
 ```yarn lerna add {your_dep}```
 
-
 Если вы хотите добавить dev зависимость, проделайте то же самое, но с флагом `dev`
 ```yarn lerna add {your_dep} --dev --scope server```
-
 
 ### Тесты
 
@@ -44,7 +42,6 @@
 
 И чтобы посмотреть что получилось
 
-
 `yarn preview --scope client`
 `yarn preview --scope server`
 
@@ -52,25 +49,12 @@
 В проекте используется [lefthook](https://github.com/evilmartians/lefthook)
 Если очень-очень нужно пропустить проверки, используйте `--no-verify` (но не злоупотребляйте :)
 
-## Ой, ничего не работает :(
-
-Откройте issue, я приду :)
-
-## Автодеплой статики на vercel
-Зарегистрируйте аккаунт на [vercel](https://vercel.com/)
-Следуйте [инструкции](https://vitejs.dev/guide/static-deploy.html#vercel-for-git)
-В качестве `root directory` укажите `packages/client`
-
-Все ваши PR будут автоматически деплоиться на vercel. URL вам предоставит деплоящий бот
-
 ## Production окружение в докере
 Перед первым запуском выполните `node init.js`
 
-
-`docker compose up` - запустит три сервиса
-1. nginx, раздающий клиентскую статику (client)
-2. node, ваш сервер (server)
-3. postgres, вашу базу данных (postgres)
+`docker compose up` - запустит два сервиса
+1. node, ваш сервер с SSR (server)
+2. postgres, вашу базу данных (postgres)
 
 Если вам понадобится только один сервис, просто уточните какой в команде
 `docker compose up {sevice_name}`, например `docker compose up server`
