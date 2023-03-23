@@ -100,7 +100,7 @@ declare type Coordinate = [x: number, y: number]
 
 declare interface SocketAPIType {
   sendContent: (type: string, content: Omit<SocketContent, 'type'>) => void
-  sendImage: (content: string) => void
+  sendImage: (content: Pick<SocketContent, 'type' | 'content'>) => void
   getMessages: (content: string) => void
   on<T>(event: string, handler: (res: T) => void): void
 }
@@ -126,7 +126,7 @@ declare interface Window {
 
 declare type ForumRecord = {
   id: number
-  parent_id: number|null
+  parent_id: number | null
   subject: string
   description: string
   author_id: number
