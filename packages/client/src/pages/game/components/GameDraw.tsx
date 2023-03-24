@@ -4,8 +4,8 @@ import { Form } from 'react-bootstrap'
 import Brush from '../../../utils/tools/Brush'
 
 interface GameDrawProps {
-  currentUserId: number,
-  socket?: SocketAPIType,
+  currentUserId: number
+  socket?: SocketAPIType
   disabled: boolean
 }
 
@@ -30,8 +30,15 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
 
     if (socket !== undefined) {
       socket.on<SocketContent>('coordinates', onCoordinates)
+      socket.on<SocketContent>('clear', onClear)
     }
   }, [socket])
+
+  const clear = () => {
+    if (brush.current && socket !== undefined) {
+      socket.sendContent('clear', {})
+    }
+  }
 
   const sendCoordinates = (content: Coordinate[]) => {
     if (brush.current && socket !== undefined) {
@@ -39,6 +46,12 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
         content,
         color: brush.current.strokeColor,
       })
+    }
+  }
+
+  const onClear = () => {
+    if (brush.current) {
+      brush.current.clear()
     }
   }
 
@@ -72,6 +85,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
   return (
     <div>
       <div className="d-flex">
+        {!disabled && <button onClick={clear}>clear</button>}
         <Form.Control
           type="color"
           onChange={changeColor}
