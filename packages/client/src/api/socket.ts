@@ -75,7 +75,6 @@ export default class Socket extends WebSocket implements SocketAPIType {
     })
   }
 
-  // public sendImage(content: Pick<SocketContent, 'type' | 'content'>) {
   public sendImage(content: string) {
     this.send2({
       type: 'file',
