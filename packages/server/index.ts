@@ -142,8 +142,8 @@ async function startServer() {
 
       const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
         preloadedState
-      ).replace(/</g, '\\u003c')} // xss protect
-      )}</script>`
+      ).replace(/</g, '\\u003c')}
+      </script>`
 
       const appHtml = await render(url, { persistConfig, preloadedState })
 

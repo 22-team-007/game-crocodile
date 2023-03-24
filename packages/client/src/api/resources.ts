@@ -15,6 +15,6 @@ export default class Resources extends ApiBase implements ResourceAPIType {
     body.append('resource', file)
     const r = await this.FORMPOST('/api/v2/resources', body)
     const resource = await r.json()
-    return resource.path
+    return resource.id
   }
 }

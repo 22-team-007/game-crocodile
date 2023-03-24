@@ -55,12 +55,9 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
         )) as Blob
 
         // pass our image to yandex server as resource
-        const path = await api.resources.add(imageBlob)
+        const id = await api.resources.add(imageBlob)
         // send all users id of loaded resource
-        socket!.sendImage({
-          type: 'file',
-          content: path,
-        })
+        socket!.sendImage(id)
       } catch {
         console.log('fail send starting image to new user')
       }
@@ -79,7 +76,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket }) => {
         ctx.drawImage(img, 0, 0)
       })
       // img.crossOrigin = 'anonymous'
-      img.src = api.resources.url(c.content as string)
+      img.src = api.resources.url(c.file!.path as string)
     }
   }
 
