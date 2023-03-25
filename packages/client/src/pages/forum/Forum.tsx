@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ForumThemes, ForumMessages } from './components'
 import {
   Card,
@@ -11,12 +11,7 @@ import {
 } from 'react-bootstrap'
 
 import { mockTopics, mockMessages } from './mockData'
-import api from '../../api'
 import './style.scss'
-
-api.forum.list().then(console.log).catch(console.error)
-api.forum.get(2).then(console.log).catch(console.error)
-api.forum.comments(2).then(console.log).catch(console.error)
 
 const Forum = () => {
   const [show, setShow] = useState(false)

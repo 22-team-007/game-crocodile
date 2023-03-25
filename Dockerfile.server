@@ -1,7 +1,7 @@
 ARG NODE_VERSION=16
 ARG SERVER_PORT=3001
 
-FROM node:$NODE_VERSION-buster-slim as base
+FROM node:$NODE_VERSION-alpine as base
 
 WORKDIR /app
 

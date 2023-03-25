@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize-typescript'
 import { formRecordModel } from './models/ForumRecord'
+import { commentRecordModel } from './models/CommentRecord'
 const {
   POSTGRES_HOST,
   POSTGRES_USER,
@@ -18,6 +19,7 @@ export const sequelize = new Sequelize({
 })
 
 export const ForumRecord = sequelize.define('ForumRecord', formRecordModel, {})
+export const CommentRecord = sequelize.define('CommentRecord', commentRecordModel, {})
 
 export const dbConnect = async () => {
   try {

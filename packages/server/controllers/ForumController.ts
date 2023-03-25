@@ -1,4 +1,4 @@
-import { ForumRecord, sequelize } from '../db'
+import { ForumRecord, CommentRecord, sequelize } from '../db'
 import type { Response, Request } from 'express'
 
 class ForumController {
@@ -114,7 +114,7 @@ class ForumController {
         return
       }
 
-      const rec = await ForumRecord.findAll({ where: { parent_id } })
+      const rec = await CommentRecord.findAll({ where: { parent_id } })
 
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
@@ -160,7 +160,7 @@ class ForumController {
       }
 
       delete data.id
-      const rec = ForumRecord.update(data, { where: { parent_id, id } })
+      const rec = CommentRecord.update(data, { where: { parent_id, id } })
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
@@ -191,7 +191,7 @@ class ForumController {
       }
 
       delete data.id
-      const rec = await ForumRecord.create(data)
+      const rec = await CommentRecord.create(data)
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {

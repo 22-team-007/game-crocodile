@@ -40,6 +40,18 @@ services:
       - prakticum-network
     depends_on:
       - postgres
+  nginx:
+    container_name: prakticum-nginx
+    build:
+        context : .
+        dockerfile: Dockerfile.nginx
+    depends_on:
+      - server
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - prakticum-network
 
 networks:
   prakticum-network:
