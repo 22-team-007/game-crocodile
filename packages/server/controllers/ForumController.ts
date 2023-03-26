@@ -91,7 +91,8 @@ class ForumController {
 
       const data = req.body
       delete data.id
-      const rec = await ForumRecord.update(data, { where: { id } })
+      await ForumRecord.update(data, { where: { id } })
+      const rec = await ForumRecord.findOne({where: { id }})
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
@@ -160,7 +161,8 @@ class ForumController {
       }
 
       delete data.id
-      const rec = CommentRecord.update(data, { where: { parent_id, id } })
+      await CommentRecord.update(data, { where: { parent_id, id } })
+      const rec = await CommentRecord.findOne({where: { id }})
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
