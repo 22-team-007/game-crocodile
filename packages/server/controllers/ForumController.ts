@@ -11,7 +11,7 @@ class ForumController {
           'subject',
           [
             sequelize.literal(
-              `(select count(*) from "ForumRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`
+              `(select count(*) from "CommentRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`
             ),
             'comments',
           ],
