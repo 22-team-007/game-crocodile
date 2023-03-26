@@ -1,20 +1,22 @@
-import { ForumRecord, sequelize } from '../db'
+import { ForumRecord, CommentRecord, sequelize } from '../db'
 import type { Response, Request } from 'express'
-// todo Никита отрефактори пожалуйста с этим невозможно работать
+
 class ForumController {
-  //GET /forum/list - получение списка тем
-  public static async getThemeList (_: Request, res: Response) {
+  //GET /forum - получение списка тем
+  public static async getThemes(_: Request, res: Response) {
     try {
-      const rec = await ForumRecord.findAll({ 
+      const rec = await ForumRecord.findAll({
         attributes: [
           'id',
           'subject',
           [
-            sequelize.literal(`(select count(*) from "ForumRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`),
-            'comments'
-          ]
+            sequelize.literal(
+              `(select count(*) from "CommentRecords" as "f2" where "f2"."parent_id"="ForumRecord"."id")`
+            ),
+            'comments',
+          ],
         ],
-        where: { parent_id: null }
+        where: { parent_id: null },
       })
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
@@ -30,8 +32,25 @@ class ForumController {
         .end(`Возникла ошибак при поиске тем ${(e as Error).message}`)
     }
   }
-  //GET /forum/:id/info - получение полной информации о теме
-  public static async getTheme (req: Request, res: Response) {
+
+  //PUT /forum - создание темы
+  public static async putTheme(req: Request, res: Response) {
+    try {
+      const data = req.body
+      delete data.id
+      const rec = await ForumRecord.create(data)
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибак при создании темы ${(e as Error).message}`)
+    }
+  }
+
+  //GET /forum/:id - получение полной информации о теме
+  public static async getTheme(req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
       if (id === 0 || isNaN(id)) {
@@ -58,8 +77,8 @@ class ForumController {
     }
   }
 
-  //POST /forum/:id - передача на сервер, если id=0 - создание, иначе редактирование
-  public static async postTheme (req: Request, res: Response) {
+  //POST /forum/:id - редактирование темы
+  public static async postTheme(req: Request, res: Response) {
     try {
       const id = Number(req.params.id)
       if (isNaN(id)) {
@@ -71,28 +90,20 @@ class ForumController {
       }
 
       const data = req.body
-      const rec =
-        id === 0
-          ? await ForumRecord.create(data)
-          : await ForumRecord.update(data, { where: { id } })
+      delete data.id
+      const rec = await ForumRecord.update(data, { where: { id } })
 
-      if (id !== 0) {
-        const result = await ForumRecord.findOne({where: { id }})
-        res.status(200).set({ 'Content-Type': 'application/json' }).json(result)
-      } else {
-        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
-      }
-
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибка при изменении темы ${(e as Error).message}`)
+        .end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
     }
   }
 
-  //GET /forum/:id/comments - запрос массива комментариев.
-  public static async getComments (req: Request, res: Response) {
+  //GET /forum/:id/comment - запрос массива комментариев.
+  public static async getComments(req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
       if (parent_id === 0 || isNaN(parent_id)) {
@@ -103,7 +114,7 @@ class ForumController {
         return
       }
 
-      const rec = await ForumRecord.findAll({ where: { parent_id } })
+      const rec = await CommentRecord.findAll({ where: { parent_id } })
 
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
@@ -117,17 +128,21 @@ class ForumController {
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
         .end(
-          `Возникла ошибка при загрузке комментариев ${(e as Error).message}`
+          `Возникла ошибак при загрузке комментариев ${(e as Error).message}`
         )
     }
   }
 
-  //POST /forum/:id/comment - добавление/редактирование комментария
-  public static async postComment (req: Request, res: Response) {
+  //POST /forum/:id/comment - редактирование комментария
+  public static async postComment(req: Request, res: Response) {
     try {
       const parent_id = Number(req.params.id)
       const data = req.body
-      if (parent_id === 0 || isNaN(parent_id) || parent_id !== Number(data.parent_id)) {
+      if (
+        parent_id === 0 ||
+        isNaN(parent_id) ||
+        parent_id !== Number(data.parent_id)
+      ) {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })
@@ -140,22 +155,50 @@ class ForumController {
         res
           .status(404)
           .set({ 'Content-Type': 'text/plain' })
-          .end(`Сообщение не найдено`)
+          .end(`Комментарий не найден`)
         return
       }
-      const isCreate = id === 0
+
       delete data.id
-      const rec =
-        isCreate
-          ? await ForumRecord.create(data)
-          : await ForumRecord.update(data, { where: { parent_id, id } })
+      const rec = CommentRecord.update(data, { where: { parent_id, id } })
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибка при изменении комментария ${(e as Error).message}`)
+        .end(
+          `Возникла ошибак при изменении комментария ${(e as Error).message}`
+        )
+    }
+  }
+
+  //PUT /forum/:id/comment - добавление комментария
+  public static async putComment(req: Request, res: Response) {
+    try {
+      const parent_id = Number(req.params.id)
+      const data = req.body
+      if (
+        parent_id === 0 ||
+        isNaN(parent_id) ||
+        parent_id !== Number(data.parent_id)
+      ) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Тема не найдена`)
+        return
+      }
+
+      delete data.id
+      const rec = await CommentRecord.create(data)
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибак при создании комментария ${(e as Error).message}`)
     }
   }
 }

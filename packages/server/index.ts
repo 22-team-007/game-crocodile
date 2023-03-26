@@ -5,6 +5,10 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
+// @ts-ignore (can't import types)
+import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
+import Cookies from 'cookies'
+import { getStoredState } from 'redux-persist'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
@@ -87,7 +91,7 @@ async function startServer() {
     const url = req.originalUrl
     try {
       let template: string
-      let render: () => Promise<string>
+      let render: (url: string, initialState: any) => Promise<string>
 
       if (isDev) {
         template = await vite.transformIndexHtml(
@@ -105,15 +109,49 @@ async function startServer() {
         render = (await import(ssrClientPath)).render
       }
 
-      const initialState = { theme: 'dark-theme' }
+      // @ts-ignore
+      const cookieJar = new NodeCookiesWrapper(new Cookies(req, res))
+
+      const persistConfig = {
+        key: 'root',
+        storage: new CookieStorage(cookieJar),
+        whitelist: ['userData', 'theme'],
+        // @ts-ignore
+        stateReconciler(inboundState: any, originalState: any) {
+          return originalState
+        },
+      }
+
+      let preloadedState
+      try {
+        preloadedState = (await getStoredState(persistConfig)) as any
+        if (typeof preloadedState === 'undefined') {
+          throw new Error()
+        }
+
+        if (preloadedState._persist) {
+          delete preloadedState._persist
+        }
+
+        // place to check or modify cookies
+      } catch (e) {
+        preloadedState = {
+          theme: { name: 'white-theme' },
+          userData: { user: null },
+        }
+      }
+
+      res.removeHeader('Set-Cookie')
 
       const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
-        initialState
+        preloadedState
+      ).replace(/</g, '\\u003c')} // xss protect
       )}</script>`
 
-      const appHtml = await render()
+      const appHtml = await render(url, { persistConfig, preloadedState })
 
-      const html = template.replace(`<!--ssr-outlet-->`, stateMarkup + appHtml)
+      template = template.replace('<!--ssr-init-state-->', stateMarkup)
+      const html = template.replace('<!--ssr-outlet-->', appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
