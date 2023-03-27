@@ -52,4 +52,11 @@ export default class Forum extends ApiBase implements ForumAPIType {
     })
     return await r.json()
   }
+
+  public async create_reaction(data: Omit<EmojiRecord, 'id'>): Promise<EmojiRecord> {
+    const r = await this.POST('/forum/comment/emoji', {
+      body: JSON.stringify(data)
+    })
+    return await r.json()
+  }
 }

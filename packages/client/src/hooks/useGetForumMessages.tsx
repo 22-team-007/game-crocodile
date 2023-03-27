@@ -14,6 +14,10 @@ const useGetForumMessages = () => {
   const [messages, setMessages] = useState<ForumRecord[]>([])
 
   if (loading){
+    fetchComments()
+  }
+
+  function fetchComments() {
     api.forum.comments(Number(themeId)).then(result => {
       const usersId = new Set<number>;
       result.forEach(message => usersId.add(message.author_id))
@@ -31,12 +35,26 @@ const useGetForumMessages = () => {
   }
 
   const createComment = async (data: ForumRecord) => {
+
+    if (!users[data.author_id]) {
+      await api.users.get(data.author_id).then(value => {
+        users[data.author_id] = value
+        setUsers(users)
+      })
+    }
+
     api.forum.create_comment(data).then((comment) => {
       if (messages) {
         setMessages(prevState => [...prevState, comment])
       } else {
         setMessages([comment])
       }
+    })
+  }
+
+  const createReaction = async (data: EmojiRecord) => {
+    api.forum.create_reaction(data).then(() => {
+      fetchComments()
     })
   }
 

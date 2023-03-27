@@ -113,6 +113,22 @@ declare type ForumRecord = {
   author_id: number
 }
 
+declare type CommentRecord = {
+  id: number
+  parent_id: number|null
+  subject: string
+  description: string
+  author_id: number
+  EmojiRecords?: EmojiRecord[]
+}
+
+declare type EmojiRecord = {
+  id: number
+  comment_id: number
+  author_id: number
+  emoji: string
+}
+
 declare type ForumList = {
   id: number
   subject: string
