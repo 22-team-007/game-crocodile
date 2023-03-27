@@ -34,7 +34,7 @@ export default class Forum extends ApiBase implements ForumAPIType {
     return await r.json()
   }
 
-  public async comments(parent_id: number): Promise<ForumRecord[]> {
+  public async comments(parent_id: number): Promise<CommentRecord[]> {
     const r = await this.GET(`/forum/${parent_id}/comment`)
     return await r.json()
   }

@@ -69,12 +69,11 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReact
                     }
                   </Dropdown.Menu>
                 </Dropdown>
-
-                <span className='emoji-item'>😀 1</span>
-                <span className='emoji-item'>😧 1</span>
-                <span className='emoji-item'>🧡 1</span>
-                <span className='emoji-item'>👍 1</span>
-                <span className='emoji-item'>👎 1</span>
+                {
+                  message.emojis?.map(emoji =>
+                    <span className='emoji-item'>{emoji.emoji} {emoji.count}</span>
+                  )
+                }
               </div>
             </div>
           </ListGroup.Item>

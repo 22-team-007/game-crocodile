@@ -18,6 +18,28 @@ const useGetForumMessages = () => {
     fetchComments()
   },[])
 
+  function getEmojis(EmojiRecords?: EmojiRecord[]){
+    if (!EmojiRecords) return []
+
+    const resultArr: any[] = []
+
+    EmojiRecords.forEach((item) => {
+      const { emoji, author_id } = item;
+      const foundIndex = resultArr.findIndex((resultItem) => resultItem.emoji === emoji);
+      if (foundIndex === -1) {
+        resultArr.push({
+          emoji,
+          users: [author_id],
+          count: 1
+        });
+      } else {
+        resultArr[foundIndex].users.push(author_id);
+        resultArr[foundIndex].count += 1;
+      }
+    });
+
+    return resultArr
+  }
 
   // запрос комментариев
   function fetchComments() {
@@ -25,8 +47,11 @@ const useGetForumMessages = () => {
     api.forum.comments(Number(themeId)).then(result => {
       const usersId = new Set<number>;
       
-      result.forEach(message => usersId.add(message.author_id))
-
+      result.forEach((message, index) => {
+        usersId.add(message.author_id)
+        const emojis = getEmojis(message.EmojiRecords)
+        result[index].emojis = emojis
+      })
 
       // массив запросов для получения изображений пользователей
       const userPromises: Promise<unknown>[] = []
