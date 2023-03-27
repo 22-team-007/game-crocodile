@@ -10,7 +10,7 @@ import { faFaceSmile } from '@fortawesome/free-regular-svg-icons'
 import { getFormatDateString } from '../../../utils/getFormatDateString'
 
 interface ForumCommentsProps {
-  messages: ForumRecord[]
+  messages: CommentRecord[]
   users: UsersType | null
   handleSendReaction: (emoji: string, comment_id: number) => void
 }
@@ -70,8 +70,8 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReact
                   </Dropdown.Menu>
                 </Dropdown>
                 {
-                  message.emojis?.map(emoji =>
-                    <span className='emoji-item'>{emoji.emoji} {emoji.count}</span>
+                  message.emojis && Object.entries(message.emojis).map(emoji =>
+                    <span key={`emoji-${emoji[0]}`} className='emoji-item'>{emoji[0]} {emoji[1]}</span>
                   )
                 }
               </div>

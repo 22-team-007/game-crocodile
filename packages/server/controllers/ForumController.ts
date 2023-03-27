@@ -1,5 +1,6 @@
 import { ForumRecord, CommentRecord, EmojiRecord, sequelize } from '../db'
 import type { Response, Request } from 'express'
+import { QueryTypes } from 'sequelize'
 
 class ForumController {
   //GET /forum - получение списка тем
@@ -115,16 +116,24 @@ class ForumController {
         return
       }
 
-      const rec = await CommentRecord.findAll({
-        where: { parent_id },
-        include: [
-          {
-            model: EmojiRecord,
-            attributes: ['id', 'emoji', 'author_id', 'comment_id']
-          }
-        ],
-        order: ['id']
-      })
+      const rec = await sequelize.query(`select "a".*,"c"."emojis"
+        from "CommentRecords" as "a"
+        left join (select
+            "comment_id",
+            json_object_agg("emoji","emoji_kol") "emojis"
+          from  (select        
+          "comment_id",
+          "emoji",        
+          count("emoji") "emoji_kol"
+          from "EmojiRecords"      
+          group by "comment_id", "emoji") as "b"
+        group by "comment_id") as "c" on "c"."comment_id"="a"."id"
+        where "a"."parent_id" = :parent_id`,
+        {
+          replacements: { parent_id },
+          type: QueryTypes.SELECT
+        }
+      )
 
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)

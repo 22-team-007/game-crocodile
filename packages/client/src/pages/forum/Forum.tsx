@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 // Components
 import { ForumThemes, NewThemeModal } from './components'
 import {

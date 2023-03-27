@@ -1,7 +1,7 @@
 // React
 import { FC, useRef } from 'react'
 // Components
-import { Button, ButtonGroup, ButtonToolbar, Dropdown, Form } from 'react-bootstrap'
+import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap'
 // SVG
 import svgH1 from './../../../assets/msgToolbar/format_h1.svg'
 import svgH2 from './../../../assets/msgToolbar/format_h2.svg'

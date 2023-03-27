@@ -122,7 +122,8 @@ declare type CommentRecord = {
   subject: string
   description: string
   author_id: number
-  EmojiRecords?: EmojiRecord[]
+  updatedAt?: string
+  emojis: Record<string, number> | null
 }
 
 declare type EmojiRecord = {

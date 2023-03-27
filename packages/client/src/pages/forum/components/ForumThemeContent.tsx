@@ -6,6 +6,7 @@ import { MarkDown, MessageForm } from './index'
 // Api
 import api from '../../../api'
 import { useForm } from 'react-hook-form'
+import { getFormatDateString } from '../../../utils/getFormatDateString'
 
 interface ForumThemeContentProps {
   themeContent: any
@@ -81,7 +82,7 @@ const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, 
 
           </div>
           <div className='right'>
-            <small>5 минут назад</small>
+            <small>{getFormatDateString(themeContent?.theme?.updatedAt)}</small>
           </div>
         </ListGroup.Item>
       }

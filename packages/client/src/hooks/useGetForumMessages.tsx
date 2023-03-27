@@ -12,34 +12,11 @@ const useGetForumMessages = () => {
   const [users, setUsers] = useState<UsersType | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
-  const [messages, setMessages] = useState<ForumRecord[]>([])
+  const [messages, setMessages] = useState<CommentRecord[]>([])
 
   useEffect(() => {
     fetchComments()
   },[])
-
-  function getEmojis(EmojiRecords?: EmojiRecord[]){
-    if (!EmojiRecords) return []
-
-    const resultArr: any[] = []
-
-    EmojiRecords.forEach((item) => {
-      const { emoji, author_id } = item;
-      const foundIndex = resultArr.findIndex((resultItem) => resultItem.emoji === emoji);
-      if (foundIndex === -1) {
-        resultArr.push({
-          emoji,
-          users: [author_id],
-          count: 1
-        });
-      } else {
-        resultArr[foundIndex].users.push(author_id);
-        resultArr[foundIndex].count += 1;
-      }
-    });
-
-    return resultArr
-  }
 
   // запрос комментариев
   function fetchComments() {
@@ -47,11 +24,7 @@ const useGetForumMessages = () => {
     api.forum.comments(Number(themeId)).then(result => {
       const usersId = new Set<number>;
       
-      result.forEach((message, index) => {
-        usersId.add(message.author_id)
-        const emojis = getEmojis(message.EmojiRecords)
-        result[index].emojis = emojis
-      })
+      result.forEach((message) => usersId.add(message.author_id))
 
       // массив запросов для получения изображений пользователей
       const userPromises: Promise<unknown>[] = []
@@ -97,9 +70,9 @@ const useGetForumMessages = () => {
 
     api.forum.create_comment(data).then((comment) => {
       if (messages) {
-        setMessages(prevState => [...prevState, comment])
+        setMessages(prevState => [...prevState, (comment as CommentRecord)])
       } else {
-        setMessages([comment])
+        setMessages([(comment as CommentRecord)])
       }
     })
   }

@@ -1,7 +1,7 @@
 // React
 import { ChangeEvent, FC, useCallback, useRef } from 'react'
 // Components
-import { Button, Form, Tab, Tabs } from 'react-bootstrap'
+import { Form, Tab, Tabs } from 'react-bootstrap'
 import { MarkDown, MessageToolbar } from './index'
 import { TextFormattingType } from './MessageToolbar'
 // Hooks
