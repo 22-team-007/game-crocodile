@@ -1,45 +1,61 @@
+// Hooks
 import { useLocation } from 'react-router-dom'
-
+import { useEffect, useState } from 'react'
+// Api
 import api from '../api'
-import { useState } from 'react'
+
+type UsersType = Record<number, UserType>
 
 const useGetForumMessages = () => {
 
   const { pathname } = useLocation()
   const themeId = pathname.split('/').at(-1)
 
-  const [users, setUsers] = useState<any>({})
+  const [users, setUsers] = useState<UsersType | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
   const [messages, setMessages] = useState<ForumRecord[]>([])
 
-  if (loading){
+  useEffect(() => {
     fetchComments()
-  }
+  },[])
 
   function fetchComments() {
+    setLoading(true);
     api.forum.comments(Number(themeId)).then(result => {
       const usersId = new Set<number>;
       result.forEach(message => usersId.add(message.author_id))
-      setMessages(result)
+
 
       const userPromises: Promise<unknown>[] = []
+      const usersObj: UsersType = {}
+
       usersId.forEach(user => {
         userPromises.push(api.users.get(user).then(value => {
-          users[user] = value
-          setUsers(users)
+          usersObj[user] = value
         }))
       })
-      Promise.all(userPromises).then(() => setLoading(false))
+
+      Promise.all(userPromises).then(() => {
+        setUsers(usersObj)
+        setMessages(result)
+        setLoading(false)
+      })
     })
   }
 
   const createComment = async (data: ForumRecord) => {
 
-    if (!users[data.author_id]) {
+    if (!users?.[data.author_id]) {
       await api.users.get(data.author_id).then(value => {
-        users[data.author_id] = value
-        setUsers(users)
+        if (users) {
+          users[data.author_id] = value
+          setUsers(users)
+        } else {
+          const usersObj: UsersType = {}
+          usersObj[data.author_id] = value
+          setUsers(usersObj)
+        }
       })
     }
 

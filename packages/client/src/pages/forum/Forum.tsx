@@ -14,7 +14,6 @@ import svgSearch from '../../assets/msgToolbar/search.svg'
 import svgClose from '../../assets/msgToolbar/close.svg'
 // style
 import './style.scss'
-import api from '../../api'
 
 const Forum = () => {
   const [show, setShow] = useState(false)

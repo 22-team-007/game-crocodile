@@ -1,18 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import api from '../api'
 
-const UseGetForumThemes = () => {
+const useGetForumThemes = () => {
 
   const [themes, setThemes] = useState<ForumList | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
-  if (loading) {
-    console.log('forum fetch')
-    api.forum.list().then(value => {
-      setThemes(value)
-      setLoading(false)
-    }).catch((e) => console.error(e.message))
-  }
+  useEffect(() => {
+    if (loading) {
+      console.log('forum fetch', loading)
+      api.forum.list().then(value => {
+        setThemes(value)
+        setLoading(false)
+      }).catch((e) => console.error(e.message))
+    }
+  }, [])
 
   return {
     themes,
@@ -20,4 +22,4 @@ const UseGetForumThemes = () => {
   }
 }
 
-export default UseGetForumThemes
+export default useGetForumThemes

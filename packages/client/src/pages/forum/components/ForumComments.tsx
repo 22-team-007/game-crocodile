@@ -20,7 +20,7 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users}) => {
     <ListGroup className='theme-messages'>
       <h5 className='mt-3'>Комментарии: </h5>
       {
-        messages?.map((message, index) =>
+        users && messages?.map((message, index) =>
           <ListGroup.Item key={`message-${message.id}`} className='d-flex message'>
             <div className='d-flex left'>
               <div className='d-flex flex-column align-items-center'>

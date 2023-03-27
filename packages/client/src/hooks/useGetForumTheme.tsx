@@ -1,6 +1,6 @@
 // Hooks
 import { useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 // Api
 import api from '../api'
 
@@ -17,15 +17,17 @@ const useGetForumTheme = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [themeContent, setThemeContent] = useState<Partial<ThemeContentType> | null>()
 
-  if (loading) {
-    api.forum.get(Number(themeId)).then(theme => {
+  useEffect(() => {
+    if (loading) {
+      api.forum.get(Number(themeId)).then(theme => {
 
-      api.users.get(theme.author_id).then(user => {
-        setThemeContent({user, theme})
-        setLoading(false)
+        api.users.get(theme.author_id).then(user => {
+          setThemeContent({user, theme})
+          setLoading(false)
+        })
       })
-    })
-  }
+    }
+  }, [])
 
   const update = (data: ForumRecord) => {
     api.forum.update(data).then(theme => {
