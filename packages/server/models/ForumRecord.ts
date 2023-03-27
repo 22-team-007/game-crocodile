@@ -25,7 +25,7 @@ export const formRecordModel: ModelAttributes<Model, IForumRecord> = {
     allowNull: false,
   },
   description: {
-    type: DataType.STRING,
+    type: DataType.TEXT,
     allowNull: false,
   },
   author_id: {

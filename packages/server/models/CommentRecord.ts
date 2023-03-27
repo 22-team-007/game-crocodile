@@ -25,7 +25,7 @@ export const commentRecordModel: ModelAttributes<Model, ICommentRecord> = {
     allowNull: false,
   },
   description: {
-    type: DataType.STRING,
+    type: DataType.TEXT,
     allowNull: false,
   },
   author_id: {
