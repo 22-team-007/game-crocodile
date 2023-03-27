@@ -22,6 +22,10 @@ export default class ApiBase {
   protected FORM(path: string, body: FormData): Promise<Response> {
     return this.fetchRequest('PUT', path, { body, headers: undefined })
   }
+  protected FORMPOST(path: string, body: FormData): Promise<Response> {
+    return this.fetchRequest('POST', path, { body, headers: undefined })
+  }
+
   protected fetchRequest(
     method: string,
     path: string,

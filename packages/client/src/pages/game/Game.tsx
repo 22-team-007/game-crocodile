@@ -91,6 +91,8 @@ const Game = () => {
           .then(setWebSocket)
       }
     }
+
+    return () => webSocket?.close()
   }, [currentUser, chatId])
 
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
