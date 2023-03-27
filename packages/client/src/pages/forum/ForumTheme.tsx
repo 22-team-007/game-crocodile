@@ -1,5 +1,5 @@
 // React
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 // Components
 import { Button, Card, Container, Dropdown } from 'react-bootstrap'
 import { ForumComments, ForumThemeContent, MessageForm } from './components'
@@ -15,7 +15,7 @@ import svgMore from '../../assets/msgToolbar/more.svg'
 const ForumTheme = () => {
 
   const { themeContent, loading, update } = useGetForumTheme()
-  const { messages, users, createComment } = useGetForumMessages()
+  const { messages, users, createComment, createReaction } = useGetForumMessages()
 
   const [editMode, setEditMode] = useState<boolean>(false)
 
@@ -40,6 +40,16 @@ const ForumTheme = () => {
       })
     }
   }
+
+  const handleSendReaction = useCallback((emoji: string, comment_id: number) => {
+    if (user) {
+      createReaction({
+        author_id: user.id,
+        comment_id,
+        emoji
+      })
+    }
+  }, [])
 
   return (
     <Container className='forum-container'>
@@ -72,6 +82,7 @@ const ForumTheme = () => {
           <ForumComments
             messages={messages}
             users={users}
+            handleSendReaction={handleSendReaction}
           />
           <MessageForm
             customRegister={{

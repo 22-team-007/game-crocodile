@@ -105,12 +105,15 @@ declare interface Window {
   __INITIAL_STATE__?: object
 }
 
+declare type UsersType = Record<number, UserType>
+
 declare type ForumRecord = {
-  id?: number
+  id: number
   parent_id: number|null
   subject: string
   description: string
   author_id: number
+  updatedAt?: string
 }
 
 declare type CommentRecord = {

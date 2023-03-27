@@ -1,21 +1,30 @@
 // React
-import React, { FC, memo, useState } from 'react'
+import React, { FC, memo } from 'react'
 // Components
 import { ListGroup, Image, Dropdown } from 'react-bootstrap'
 import { MarkDown } from './index'
-// Hooks
-import useGetForumMessages from '../../../hooks/useGetForumMessages'
 // Api
 import api from '../../../api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFaceSmile } from '@fortawesome/free-regular-svg-icons'
+import { getFormatDateString } from '../../../utils/getFormatDateString'
 
 interface ForumCommentsProps {
   messages: ForumRecord[]
-  users: any
+  users: UsersType | null
+  handleSendReaction: (emoji: string, comment_id: number) => void
 }
 
-const ForumComments: FC<ForumCommentsProps> = ({messages, users}) => {
+const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReaction}) => {
+
+  const emojis = [
+    '😀',
+    '😧',
+    '🧡',
+    '👍',
+    '👎',
+  ]
+
   return (
     <ListGroup className='theme-messages'>
       <h5 className='mt-3'>Комментарии: </h5>
@@ -43,7 +52,7 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users}) => {
                 </div>
                 <div className='right'>
                   <small className='px-1 reaction'>ответить</small>
-                  <small>5 минут назад</small>
+                  <small>{getFormatDateString(message.updatedAt)}</small>
                 </div>
               </div>
               <div className='emoji'>
@@ -53,17 +62,17 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users}) => {
                     <FontAwesomeIcon icon={faFaceSmile} size={'lg'}/>
                   </Dropdown.Toggle>
                   <Dropdown.Menu className='emoji_dropdown'>
-                    <Dropdown.Item>😀</Dropdown.Item>
-                    <Dropdown.Item>😧</Dropdown.Item>
-                    <Dropdown.Item active>🧡</Dropdown.Item>
-                    <Dropdown.Item>👍</Dropdown.Item>
-                    <Dropdown.Item>👎</Dropdown.Item>
+                    {
+                      emojis.map(emoji =>
+                        <Dropdown.Item key={emoji} onClick={() => handleSendReaction(emoji, message.id)}>{emoji}</Dropdown.Item>
+                      )
+                    }
                   </Dropdown.Menu>
                 </Dropdown>
 
                 <span className='emoji-item'>😀 1</span>
                 <span className='emoji-item'>😧 1</span>
-                <span className='emoji-item active'>🧡 1</span>
+                <span className='emoji-item'>🧡 1</span>
                 <span className='emoji-item'>👍 1</span>
                 <span className='emoji-item'>👎 1</span>
               </div>

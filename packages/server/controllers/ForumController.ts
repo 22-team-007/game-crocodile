@@ -122,7 +122,8 @@ class ForumController {
             model: EmojiRecord,
             attributes: ['id', 'emoji', 'author_id', 'comment_id']
           }
-        ]
+        ],
+        order: ['id']
       })
 
       if (rec !== null)

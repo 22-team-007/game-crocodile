@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react'
 // Api
 import api from '../api'
 
-type UsersType = Record<number, UserType>
-
 const useGetForumMessages = () => {
 
   const { pathname } = useLocation()
@@ -20,16 +18,22 @@ const useGetForumMessages = () => {
     fetchComments()
   },[])
 
+
+  // запрос комментариев
   function fetchComments() {
     setLoading(true);
     api.forum.comments(Number(themeId)).then(result => {
       const usersId = new Set<number>;
+      
       result.forEach(message => usersId.add(message.author_id))
 
 
+      // массив запросов для получения изображений пользователей
       const userPromises: Promise<unknown>[] = []
+      // объект содержащий в себе key: id пользователя, value: данные пользователя
       const usersObj: UsersType = {}
 
+      // множественный запрос к Апи Яндекса для получения данных пользователей
       usersId.forEach(user => {
         userPromises.push(api.users.get(user).then(value => {
           usersObj[user] = value
@@ -44,7 +48,14 @@ const useGetForumMessages = () => {
     })
   }
 
-  const createComment = async (data: ForumRecord) => {
+  /**
+   * Метод, реализующий создание комментария. Если пользователя, который создает
+   * комментарий нет в объекте users, то делается запрос к Апи Яндекса и добавляем
+   * данного пользователя в объект для отображения его аватара
+   *
+   * @param data - данные создаваемого комментария
+   */
+  const createComment = async (data: Omit<ForumRecord, "id">) => {
 
     if (!users?.[data.author_id]) {
       await api.users.get(data.author_id).then(value => {
@@ -68,7 +79,11 @@ const useGetForumMessages = () => {
     })
   }
 
-  const createReaction = async (data: EmojiRecord) => {
+  /**
+   * Метод, реализующий добавление/изменение реакции на комментарий
+   * @param data
+   */
+  const createReaction = async (data: Omit<EmojiRecord, 'id'>) => {
     api.forum.create_reaction(data).then(() => {
       fetchComments()
     })
@@ -78,6 +93,7 @@ const useGetForumMessages = () => {
     messages,
     users,
     createComment,
+    createReaction,
     loading,
   }
 }
