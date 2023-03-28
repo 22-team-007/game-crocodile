@@ -1,7 +1,7 @@
 import { DataType, Model } from 'sequelize-typescript'
 import type { ModelAttributes } from 'sequelize'
 
-export interface IForumRecord {
+export interface ICommentRecord {
   id: number
   parent_id: number
   subject: string
@@ -9,7 +9,7 @@ export interface IForumRecord {
   author_id: number
 }
 
-export const formRecordModel: ModelAttributes<Model, IForumRecord> = {
+export const commentRecordModel: ModelAttributes<Model, ICommentRecord> = {
   id: {
     type: DataType.INTEGER,
     allowNull: false,

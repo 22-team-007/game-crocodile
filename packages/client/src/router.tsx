@@ -1,5 +1,5 @@
 import { redirect, RouterProvider } from 'react-router-dom'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, createMemoryRouter } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
 
@@ -193,4 +193,16 @@ export function Index() {
   const router = getRouterConf()
 
   return <RouterProvider router={createBrowserRouter(router)} />
+}
+
+export function IndexSSR({ url }: { url: string }) {
+  const router = getRouterConf()
+
+  return (
+    <RouterProvider
+      router={createMemoryRouter(router, {
+        initialEntries: [url],
+      })}
+    />
+  )
 }

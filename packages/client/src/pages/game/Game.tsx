@@ -101,6 +101,8 @@ const Game = () => {
           .then(setWebSocket)
       }
     }
+
+    return () => webSocket?.close()
   }, [currentUser, chatId])
 
   useEffect(() => {

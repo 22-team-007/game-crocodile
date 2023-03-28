@@ -1,0 +1,10 @@
+ARG VERSION=14
+ARG POSTGRES_PORT=5432
+
+FROM postgres:$VERSION as base
+
+COPY create-table.sql /docker-entrypoint-initdb.d/
+
+FROM base as production
+
+EXPOSE $POSTGRES_PORT

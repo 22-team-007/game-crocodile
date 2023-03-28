@@ -5,33 +5,13 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
+// @ts-ignore (can't import types)
+import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
+import Cookies from 'cookies'
+import { getStoredState } from 'redux-persist'
 
-/*import { dbConnect, ForumRecord } from './db'
-//Пример основных методов CRUD
-dbConnect().then(() => {
-  ForumRecord.create({
-    parent_id: null,
-    subject: 'text',
-    description: 'text2',
-    author_id: 123,
-  }).then(m => {
-    const id = m.dataValues.id
-    ForumRecord.findOne({ where: { id } }).then(() => {
-      ForumRecord.update(
-        {
-          subject: 'new subject',
-        },
-        {
-          where: { id },
-        }
-      ).then(() => {
-        ForumRecord.destroy({
-          where: { id },
-        })
-      })
-    })
-  })
-})*/
+import { dbConnect } from './db'
+import ApiRouter from './routers/api_router'
 import words from './words'
 dotenv.config()
 
@@ -39,17 +19,19 @@ const isDev = process.env.NODE_ENV === 'development'
 
 async function startServer() {
   const app = express()
-  app.use(cors())
   const port = Number(process.env.SERVER_PORT) || 3001
-
-  let vite: ViteDevServer
   const distPath = path.dirname(require.resolve('client/dist/index.html'))
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  app.get('/api', (_, res) => {
-    res.json('👋 Howdy from the server :)')
-  })
+  app.use(cors())
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+
+  let vite: ViteDevServer
+
+  await dbConnect()
+  app.use('/api', ApiRouter)
 
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
@@ -106,7 +88,7 @@ async function startServer() {
     const url = req.originalUrl
     try {
       let template: string
-      let render: () => Promise<string>
+      let render: (url: string, initialState: any) => Promise<string>
 
       if (isDev) {
         template = await vite.transformIndexHtml(
@@ -124,16 +106,51 @@ async function startServer() {
         render = (await import(ssrClientPath)).render
       }
 
-      const initialState = {theme: 'dark-theme'}
+      // @ts-ignore
+      const cookieJar = new NodeCookiesWrapper(new Cookies(req, res))
 
-      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(initialState)}</script>`
+      const persistConfig = {
+        key: 'root',
+        storage: new CookieStorage(cookieJar),
+        whitelist: ['userData', 'theme'],
+        // @ts-ignore
+        stateReconciler(inboundState: any, originalState: any) {
+          return originalState
+        },
+      }
 
-      const appHtml = await render()
+      let preloadedState
+      try {
+        preloadedState = (await getStoredState(persistConfig)) as any
+        if (typeof preloadedState === 'undefined') {
+          throw new Error()
+        }
 
-      const html = template.replace(`<!--ssr-outlet-->`, stateMarkup + appHtml)
+        if (preloadedState._persist) {
+          delete preloadedState._persist
+        }
+
+        // place to check or modify cookies
+      } catch (e) {
+        preloadedState = {
+          theme: { name: 'white-theme' },
+          userData: { user: null },
+        }
+      }
+
+      res.removeHeader('Set-Cookie')
+
+      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
+        preloadedState
+      ).replace(/</g, '\\u003c')}
+      </script>`
+
+      const appHtml = await render(url, { persistConfig, preloadedState })
+
+      template = template.replace('<!--ssr-init-state-->', stateMarkup)
+      const html = template.replace('<!--ssr-outlet-->', appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
-
     } catch (e) {
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
