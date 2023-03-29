@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { getFormatDateString } from '../../../utils/getFormatDateString'
 
 interface ForumThemeContentProps {
-  themeContent: Partial<ThemeContentType>
+  themeContent?: Partial<ThemeContentType> | null
   loading: boolean
   editMode: boolean
   setEditMode: () => void
@@ -21,7 +21,7 @@ const ForumThemeContent: FC<ForumThemeContentProps> = ({ themeContent, loading, 
   const {control, watch} = useForm<FormFieldsTheme>()
 
   const handleUpdateTheme = () => {
-    if (themeContent.theme) {
+    if (themeContent?.theme) {
       updateTheme({
         ...themeContent.theme, description: watch('description')
       })
