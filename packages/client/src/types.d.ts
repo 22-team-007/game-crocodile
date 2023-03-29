@@ -116,6 +116,11 @@ declare type ForumRecord = {
   updatedAt?: string
 }
 
+declare type ThemeContentType = {
+  theme: ForumRecord,
+  user: UserType
+}
+
 declare type CommentRecord = {
   id: number
   parent_id: number|null

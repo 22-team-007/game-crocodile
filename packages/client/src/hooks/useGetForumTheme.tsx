@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react'
 // Api
 import api from '../api'
 
-interface ThemeContentType {
-  theme: ForumRecord,
-  user: UserType
-}
+
 
 const useGetForumTheme = () => {
 
