@@ -12,6 +12,7 @@ global.fetch = jest.fn(() =>
 
 describe('Example test', () => {
   const initialState = {
+    theme: { name: 'white-theme' },
     userData: {
       user: {
         id: 1,

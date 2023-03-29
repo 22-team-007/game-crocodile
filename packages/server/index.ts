@@ -9,6 +9,7 @@ import type { ViteDevServer } from 'vite'
 import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
 import Cookies from 'cookies'
 import { getStoredState } from 'redux-persist'
+import { ThemeController } from './controllers'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
@@ -133,7 +134,7 @@ async function startServer() {
         // place to check or modify cookies
       } catch (e) {
         preloadedState = {
-          theme: { name: 'white-theme' },
+          theme: { name: ThemeController.getDefaultTheme() },
           userData: { user: null },
         }
       }
