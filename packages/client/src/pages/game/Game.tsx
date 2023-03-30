@@ -84,7 +84,7 @@ const Game = () => {
   const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
   const [lead, setLeading] = useState<number>()
-  const [leadingPlayerName, setLeadingPlayerName] = useState<String>()
+  const [leadingPlayerName, setLeadingPlayerName] = useState<string>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
   const [Word, setWord] = useState('')
