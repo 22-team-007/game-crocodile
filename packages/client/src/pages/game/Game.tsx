@@ -87,7 +87,7 @@ const Game = () => {
   const [leadingPlayerName, setLeadingPlayerName] = useState<string>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
-  const [Word, setWord] = useState('')
+  const varWord = useRef<string>('')
 
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
@@ -134,7 +134,7 @@ const Game = () => {
   const checkWord = (res: SocketContent) => {
     if (
       res.user_id !== undefined &&
-      res?.content?.toString().toLowerCase() === Word
+      res?.content?.toString().toLowerCase() === varWord.current.toLowerCase()
     ) {
       if (res.user_id === currentUser?.id) {
         alert('Вы угадали!')
@@ -145,14 +145,17 @@ const Game = () => {
   }
   const onSetLeading = (res: SocketContent) => {
     if (res.user_id !== undefined && res.content === currentUser?.id) {
-      api.games.getWord().then(setWord)
-      setLeading(res.content)
+      api.games.getWord().then(w=>{
+        varWord.current = w
+      })
+      setLeading(Number(res.content))
       setSeconds(TIME)
       setTimerActive(true)
       //разрешаем рисовать, запрещаем писать
       setDisabledCanvas(false)
       setDisabledChat(true)
     } else {
+      varWord.current = ''
       setSeconds(0)
       setTimerActive(false)
       setDisabledCanvas(true)
@@ -191,7 +194,7 @@ const Game = () => {
           {gamePlayers.length <= 1 && <span>Пригласите других игроков</span>}
           {lead === currentUser?.id && seconds > 0 && (
             <>
-              <span>Вы ведущий, ваше слово - {Word}</span>
+              <span>Вы ведущий, ваше слово - {varWord.current}</span>
               <span style={{ marginLeft: 150 }}>
                 Осталось времени: {seconds}
               </span>
