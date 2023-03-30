@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom'
-import { Row, Col } from 'react-bootstrap'
+import { Button, Card, Row, Col, Container } from 'react-bootstrap'
 import { Leader } from './components/Leader'
 import { TopLeader } from './components/TopLeader'
 
@@ -43,46 +43,54 @@ const LeaderBoard = () => {
   const othLeads = Sortedleaders.slice(3)
 
   return (
-    <div className="leaders container">
-      <h1 className="mt-4 text-center text-uppercase">Лидеры игры</h1>
-      <Row className="mt-5">
-        <Col className="mb-4 mb-md-5 col-md-12 d-flex justify-content-center">
-          {supLeads[0] && (
-            <div className="grand-place">
-              <TopLeader {...supLeads[0]} title="Первое место" />
-            </div>
-          )}
-        </Col>
-        <Col className="mb-4 col-md-6 d-flex justify-content-center">
-          {supLeads[1] && (
-            <div className="grand-place">
-              <TopLeader {...supLeads[1]} title="Второе место" />
-            </div>
-          )}
-        </Col>
-        <Col className="mb-4 col-md-6 d-flex justify-content-center">
-          {supLeads[2] && (
-            <div className="grand-place">
-              <TopLeader {...supLeads[2]} title="Третье место" />
-            </div>
-          )}
-        </Col>
-      </Row>
-      <Row className="list-hero mt-4">
-        {othLeads.map((leader, index) => {
-          return (
-            <Col
-              className="col-md-6 mt-3 d-flex justify-content-center"
-              key={leader.id}>
-              <div className="grand-place d-flex justify-content-center align-items-center">
-                <div className="position">{index + 4}:</div>
-                <Leader {...leader} />
-              </div>
+    <Container className="leaders container" style={{ maxWidth: '960px' }}>
+      <Card>
+        <Card.Header>
+          <Card.Title className="mt-2 text-center text-uppercase">
+            Лидеры игры
+          </Card.Title>
+        </Card.Header>
+        <Card.Body>
+          <Row className="mt-2">
+            <Col className="mb-3 mb-md-4 col-md-12 d-flex justify-content-center">
+              {supLeads[0] && (
+                <div className="grand-place">
+                  <TopLeader {...supLeads[0]} title="Первое место" />
+                </div>
+              )}
             </Col>
-          )
-        })}
-      </Row>
-    </div>
+            <Col className="mb-2 col-md-6 d-flex justify-content-center">
+              {supLeads[1] && (
+                <div className="grand-place">
+                  <TopLeader {...supLeads[1]} title="Второе место" />
+                </div>
+              )}
+            </Col>
+            <Col className="mb-2 col-md-6 d-flex justify-content-center">
+              {supLeads[2] && (
+                <div className="grand-place">
+                  <TopLeader {...supLeads[2]} title="Третье место" />
+                </div>
+              )}
+            </Col>
+          </Row>
+          <Row className="list-hero mt-3">
+            {othLeads.map((leader, index) => {
+              return (
+                <Col
+                  className="col-md-6 mt-3 d-flex justify-content-center"
+                  key={leader.id}>
+                  <div className="grand-place d-flex justify-content-center align-items-center">
+                    <div className="position">{index + 4}:</div>
+                    <Leader {...leader} />
+                  </div>
+                </Col>
+              )
+            })}
+          </Row>
+        </Card.Body>
+      </Card>
+    </Container>
   )
 }
 
