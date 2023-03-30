@@ -16,6 +16,7 @@ type GameAPIType = {
   includeUser: (chatId: number, users: number[]) => Promise<string>
   excludeUser: (chatId: number, users: number[]) => Promise<string>
   socketConnect: (userId: number, chatId: number) => Promise<Socket>
+  getWord: () => Promise<string>
 }
 export default class Games extends ApiBase implements GameAPIType {
   public async get(
@@ -100,4 +101,23 @@ export default class Games extends ApiBase implements GameAPIType {
       })
     })
   }
+
+  public async getWord(): Promise<string> {
+    let s:string|null = null
+    let a:string[] = typeof localStorage !== "undefined" && localStorage.getItem('words')?.split(';') || []
+    if (self.navigator.onLine === true) {
+      const r = await fetch(`/words`)
+      s = await r.text()
+      a.push(s)
+    }
+    else if (a.length < 5) {
+      while(s === null || s.length === 0)
+        s = prompt('Добавьте свое слово')
+      a.push(s)
+    }
+    a = a.sort(()=>Math.random()%2===0 ? 1 : -1)
+    typeof localStorage !== "undefined" && localStorage.setItem('words', a.join(';'))
+    return a[Math.floor(Math.random() * a.length)]
+  }
+
 }

@@ -1,14 +1,7 @@
-if (typeof global !== 'undefined') {
-  // @ts-ignore
-  global.WebSocket = class {}
-}
-
 export default class Socket extends WebSocket implements SocketAPIType {
   protected static instance: Socket
   protected static userId: number
   protected static chatId: number
-
-  public OPEN = 1
 
   static connect(userId: number, chatId: number, token: string): Socket {
     const url = `wss://ya-praktikum.tech/ws/chats/${userId}/${chatId}/${token}`

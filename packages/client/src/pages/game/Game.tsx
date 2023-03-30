@@ -87,6 +87,7 @@ const Game = () => {
   const [leadingPlayerName, setLeadingPlayerName] = useState<String>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
+  const [Word, setWord] = useState('')
 
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
@@ -133,7 +134,7 @@ const Game = () => {
   const checkWord = (res: SocketContent) => {
     if (
       res.user_id !== undefined &&
-      res?.content?.toString().toLowerCase() === 'арбуз'
+      res?.content?.toString().toLowerCase() === Word
     ) {
       if (res.user_id === currentUser?.id) {
         alert('Вы угадали!')
@@ -144,7 +145,7 @@ const Game = () => {
   }
   const onSetLeading = (res: SocketContent) => {
     if (res.user_id !== undefined && res.content === currentUser?.id) {
-      console.log('вы ведущий - нарисуйте слово Арбуз')
+      api.games.getWord().then(setWord)
       setLeading(res.content)
       setSeconds(TIME)
       setTimerActive(true)
@@ -190,7 +191,7 @@ const Game = () => {
           {gamePlayers.length <= 1 && <span>Пригласите других игроков</span>}
           {lead === currentUser?.id && seconds > 0 && (
             <>
-              <span>Вы ведущий, ваше слово - "Арбуз"</span>
+              <span>Вы ведущий, ваше слово - {Word}</span>
               <span style={{ marginLeft: 150 }}>
                 Осталось времени: {seconds}
               </span>
