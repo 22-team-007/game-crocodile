@@ -163,7 +163,7 @@ async function startServer() {
     console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
   })
 }
-
+/*
 //@ts-ignore для крректной работы SSR
 global.Request = global.WebSocket = <any> class extends EventTarget {
   public constructor() {
@@ -172,6 +172,6 @@ global.Request = global.WebSocket = <any> class extends EventTarget {
   public get signal() {
     return this
   }
-}
+}*/
 
 startServer()

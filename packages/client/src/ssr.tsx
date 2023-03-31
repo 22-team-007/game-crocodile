@@ -18,11 +18,11 @@ export function render(
 
   return renderToString(
     <React.StrictMode>
-      <SSRProvider>
-        <Provider store={reduxStore}>
+      <Provider store={reduxStore}>
+        <SSRProvider>
           <IndexSSR url={url} />
-        </Provider>
-      </SSRProvider>
+        </SSRProvider>
+      </Provider>
     </React.StrictMode>
   )
 }
