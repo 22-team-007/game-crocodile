@@ -7,7 +7,15 @@
     <!--ssr-init-state-->
   </head>
   <body>
-    <div id="root"><!--ssr-outlet--></div>
+    <div id="root" style="display: none;"><!--ssr-outlet--></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script id="post-work">
+      document.addEventListener("DOMContentLoaded",()=>{
+        if ('serviceWorker' in navigator)
+          navigator.serviceWorker.register('/sw.js')
+        document.getElementById('root').removeAttribute('style')
+        document.getElementById('post-work').remove()
+      })
+    </script>
   </body>
 </html>
