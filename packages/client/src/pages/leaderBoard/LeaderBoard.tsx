@@ -16,7 +16,7 @@ export async function leaderBoardLoader() {
     return null
   }
 
-  let rawLeaders: (LeaderUserType | undefined)[] = await Promise.all(
+  const rawLeaders: (LeaderUserType | undefined)[] = await Promise.all(
     leadsIdScore.map(async leader => {
       try {
         if (leader.id) {
@@ -29,7 +29,7 @@ export async function leaderBoardLoader() {
     })
   )
 
-  let leaders = rawLeaders.filter(
+  const leaders = rawLeaders.filter(
     leader => leader !== undefined
   ) as LeaderUserType[]
 
