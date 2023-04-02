@@ -1,14 +1,15 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FC, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import {
   Container,
   ListGroup,
   Image,
   Form,
-  Modal,
   Button,
   OverlayTrigger,
   Popover,
+  Toast,
+  ToastContainer,
 } from 'react-bootstrap'
 
 import withAuth from '../../hoc/withAuth'
@@ -20,56 +21,59 @@ import { GameChat, GameDraw } from './components'
 
 import './style.scss'
 
-function StartEndGame() {
-  const [showStart, setShowStart] = useState(false)
-  const handleCloseStart = () => setShowStart(false)
-  const handleShowStart = () => setShowStart(true)
+const WORD = 'арбуз'
 
-  const [showEnd, setShowEnd] = useState(false)
-  const handleCloseEnd = () => setShowEnd(false)
-  const handleShowEnd = () => setShowEnd(true)
+type AutohideToast = {
+  show: boolean
+  setShow: (value: boolean) => void,
+  text: string
+}
+function AutohideToast({ show, setShow, text }: AutohideToast) {
+  return (
+    <ToastContainer className="p-3" position={"top-center"}>
+      <Toast bg="info" onClose={() => setShow(false)} show={show} delay={4000} autohide>
+        <Toast.Header>
+          <h5 className="me-auto">{text}</h5>
+        </Toast.Header>
+        <Toast.Body>Продолжаем игру...</Toast.Body>
+      </Toast>
+    </ToastContainer>
+  )
+}
 
+interface GamePopupsProps {
+  currentUserId: number | undefined
+  lead: number | undefined
+  isActivePopup: boolean
+  secondsPopup: number
+  setIsActive: (value: boolean) => void
+}
+
+const GamePopup: FC<GamePopupsProps> = ({
+  lead,
+  currentUserId,
+  isActivePopup,
+  secondsPopup,
+  setIsActive,
+}) => {
   return (
     <>
-      <Button variant="primary" onClick={handleShowStart}>
-        Показать начало игры
-      </Button>
-      <Button variant="primary" onClick={handleShowEnd}>
-        Показать окончание игры
-      </Button>
-      <Modal show={showStart} onHide={handleCloseStart}>
-        <Modal.Header closeButton>
-          <Modal.Title>Игра началась!</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center">
-          Вы должны объяснить слово
-          <br />
-          <h1>Арбуз</h1>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseStart}>
-            Начать
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <Modal show={showEnd} onHide={handleCloseEnd}>
-        <Modal.Header closeButton>
-          <Modal.Title>Игра окончена!</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center">
-          Вам начислено
-          <br />
-          <h1>10 баллов!</h1>
-          <br />
-          Вы заняли
-          <h1>1 место!</h1>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseEnd}>
-            Начать новую игру
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {lead === currentUserId && isActivePopup && secondsPopup > 0 && (
+        <div className="popup-info">
+          <div className="popup-info__inner">
+            <h3>
+              Вы ведущий, объясните слово <br />
+              <strong>"{WORD}"</strong>
+            </h3>
+            <Button
+              onClick={() => setIsActive(false)}
+              className="mt-2"
+              variant="primary">
+              Начать игру {secondsPopup}
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   )
 }
@@ -78,19 +82,29 @@ const Game = () => {
   const { chatId } = useParams()
 
   const TIME = 60
+  const secondsToHidePopup = 10
 
   const [webSocket, setWebSocket] = useState<SocketAPIType>()
   const [isDisabledCanvas, setDisabledCanvas] = useState(true)
   const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
   const [lead, setLeading] = useState<number>()
-  const [leadingPlayerName, setLeadingPlayerName] = useState<String>()
+  const [leadingPlayerData, setLeadingPlayerData] = useState<UserType>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
+  const nextPlayer = gamePlayers.filter(player => {
+    return player.id !== currentUser?.id
+  })
 
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
-  const timeOut = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timeOutGame = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const timeOutPopup = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [secondsPopup, setSecondsPopup] = useState(0)
+  const [isActivePopup, setIsActivePopup] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const [toastText, setToastText] = useState("")
 
   useEffect(() => {
     if (chatId) {
@@ -107,7 +121,7 @@ const Game = () => {
 
   useEffect(() => {
     if (webSocket !== undefined && gamePlayers.length > 1) {
-      setLeadingPlayer(gamePlayers[gamePlayers.length - 1].id)
+      setLeadingPlayer(nextPlayer[0].id)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
     }
@@ -116,56 +130,77 @@ const Game = () => {
   useEffect(() => {
     if (webSocket !== undefined && timerActive) {
       if (seconds > 0) {
-        timeOut.current = setTimeout(setSeconds, 1000, seconds - 1)
-      } else {
-        console.log('вы не успели, переход хода')
-        const nextPlayer = gamePlayers.filter(player => {
-          return player.id !== currentUser?.id
-        })
+        timeOutGame.current = setTimeout(setSeconds, 1000, seconds - 1)
+      } else if (lead === currentUser?.id) {
+        setToastText("Вы не успели, переход хода")
+        setShowToast(true)
+        webSocket!.sendContent('clear', {})
         setLeadingPlayer(nextPlayer[0].id)
       }
     }
     return () => {
-      clearTimeout(timeOut.current as NodeJS.Timeout)
+      clearTimeout(timeOutGame.current as NodeJS.Timeout)
     }
   }, [seconds, webSocket, timerActive])
+
+  useEffect(() => {
+    if (webSocket !== undefined && isActivePopup) {
+      if (secondsPopup > 0) {
+        timeOutPopup.current = setTimeout(
+          setSecondsPopup,
+          1000,
+          secondsPopup - 1
+        )
+      } else {
+        setToastText("Превышено время ожидания старта")
+        setShowToast(true)
+        setIsActivePopup(false)
+        webSocket!.sendContent('clear', {})
+        setLeadingPlayer(nextPlayer[0].id)
+      }
+    }
+    return () => {
+      clearTimeout(timeOutPopup.current as NodeJS.Timeout)
+    }
+  }, [webSocket, secondsPopup, isActivePopup])
 
   const checkWord = (res: SocketContent) => {
     if (
       res.user_id !== undefined &&
-      res?.content?.toString().toLowerCase() === 'арбуз'
+      res?.content?.toString().toLowerCase() === WORD
     ) {
       if (res.user_id === currentUser?.id) {
-        alert('Вы угадали!')
+        setToastText("Вы выиграли, начислено 10 баллов!")
+        setShowToast(true)
         //начисляем баллы
       }
+      webSocket!.sendContent('clear', {})
       setLeadingPlayer(res.user_id)
     }
   }
   const onSetLeading = (res: SocketContent) => {
+    setSeconds(TIME)
+    setTimerActive(true)
     if (res.user_id !== undefined && res.content === currentUser?.id) {
-      console.log('вы ведущий - нарисуйте слово Арбуз')
       setLeading(res.content)
-      setSeconds(TIME)
-      setTimerActive(true)
+      setSecondsPopup(secondsToHidePopup)
+      setIsActivePopup(true)
+
       //разрешаем рисовать, запрещаем писать
       setDisabledCanvas(false)
       setDisabledChat(true)
     } else {
-      setSeconds(0)
-      setTimerActive(false)
       setDisabledCanvas(true)
       setDisabledChat(false)
     }
   }
+
   const setLeadingPlayer = (id: number) => {
     setLeading(id)
 
-    webSocket!.sendContent('clear', {})
-
     gamePlayers.filter(player => {
       if (player.id === id) {
-        setLeadingPlayerName(player.first_name)
+        setLeadingPlayerData(player)
       }
     })
     webSocket!.sendContent('setLeadingPlayer', {
@@ -186,28 +221,52 @@ const Game = () => {
   return (
     <Container className="d-flex justify-content-center align-items-center">
       <div className="game-container">
-        <div>
-          {gamePlayers.length <= 1 && <span>Пригласите других игроков</span>}
-          {lead === currentUser?.id && seconds > 0 && (
-            <>
-              <span>Вы ведущий, ваше слово - "Арбуз"</span>
-              <span style={{ marginLeft: 150 }}>
-                Осталось времени: {seconds}
-              </span>
-            </>
-          )}
-          {lead !== currentUser?.id && leadingPlayerName && (
-            <span>Рисует: {leadingPlayerName}</span>
-          )}
-        </div>
         <div className="game-wrapper">
-          {currentUser && (
-            <GameDraw
-              disabled={isDisabledCanvas}
-              currentUserId={currentUser.id}
-              socket={webSocket}
+          <div className={isActivePopup ? 'popup-active' : ''}>
+            <div className="d-flex justify-content-between align-items-center p-2">
+              {gamePlayers.length <= 1 && (
+                <span>Пригласите других игроков</span>
+              )}
+              {leadingPlayerData && (
+                <span>
+                  <Image
+                    width={50}
+                    height={50}
+                    src={api.resources.url(leadingPlayerData.avatar)}
+                    roundedCircle={true}
+                    alt="avatar"
+                  />
+                  <span style={{ marginLeft: 10 }}>
+                    {leadingPlayerData.first_name}
+                  </span>
+                </span>
+              )}
+              {lead === currentUser?.id && seconds > 0 && (
+                <>
+                  <ul className="word">
+                    {[...WORD].map(letter => (
+                      <li className="word-letter">{letter}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {seconds > 0 && <span className="timer">{seconds}</span>}
+            </div>
+            {currentUser && (
+              <GameDraw
+                disabled={isDisabledCanvas}
+                currentUserId={currentUser.id}
+                socket={webSocket}
+              />
+            )}
+            <GamePopup
+              lead={lead}
+              secondsPopup={secondsPopup}
+              setIsActive={setIsActivePopup}
+              isActivePopup={isActivePopup}
+              currentUserId={currentUser?.id}
             />
-          )}
+          </div>
           <div className="chatting">
             <div className="leader-board">
               <ListGroup variant="flush" className="leader-board_wrap">
@@ -277,7 +336,7 @@ const Game = () => {
             />
           </div>
         </div>
-        <StartEndGame />
+        <AutohideToast show={showToast} text={toastText} setShow={setShowToast} />
       </div>
     </Container>
   )
