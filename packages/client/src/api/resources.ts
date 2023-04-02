@@ -10,11 +10,11 @@ export default class Resources extends ApiBase implements ResourceAPIType {
     return `${this.host}/api/v2/resources${url || ''}`
   }
 
-  public async add(file: File): Promise<string> {
+  public async add(file: File | Blob): Promise<string> {
     const body: FormData = new FormData()
     body.append('resource', file)
-    const r = await this.FORM('/api/v2/resources', body)
+    const r = await this.FORMPOST('/api/v2/resources', body)
     const resource = await r.json()
-    return this.url(resource.path)
+    return resource.id
   }
 }

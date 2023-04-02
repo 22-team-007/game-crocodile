@@ -1,3 +1,4 @@
 import ForumController from './ForumController'
+import ThemeController from './ThemeController'
 
-export { ForumController }
+export { ForumController, ThemeController }

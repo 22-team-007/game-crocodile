@@ -12,6 +12,10 @@ export default class Brush extends Tool {
 
   public mouseDown = false
 
+  public clear() {
+    this.ctx!.clearRect(0, 0, this.canvas.width, this.canvas.height)
+  }
+  
   public drawArray(coordinates: Coordinate[], color: string) {
     const tmpStrokeColor = this.strokeColor
     const tmpfillColor = this.fillColor

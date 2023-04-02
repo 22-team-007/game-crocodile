@@ -79,7 +79,7 @@ declare interface TopLeaderProp extends TopUser {
 
 declare type Coordinate = [x: number, y: number]
 
-declare interface SocketAPIType {
+declare interface SocketAPIType extends WebSocket {
   sendContent: (type: string, content: Omit<SocketContent, 'type'>) => void
   sendImage: (content: string) => void
   getMessages: (content: string) => void
@@ -93,7 +93,7 @@ declare type SocketContent = {
   user_id?: number
   id?: number
   color?: string
-  content?: string | Coordinate[] | SocketContent
+  content?: string | number | Coordinate[] | SocketContent
   file?: ResourceType
 }
 
@@ -109,7 +109,7 @@ declare type UsersType = Record<number, UserType>
 
 declare type ForumRecord = {
   id: number
-  parent_id: number|null
+  parent_id: number | null
   subject: string
   description: string
   author_id: number
@@ -143,6 +143,13 @@ declare type ForumList = {
   subject: string
   comments: string
 }[]
+
+declare type ThemeType = {
+  name: string
+  themeClass: string
+  desc: string
+  ariaLabel: string
+}
 
 declare interface FormFieldsTheme {
   subject: string

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import {
   Container,
@@ -77,10 +77,20 @@ function StartEndGame() {
 const Game = () => {
   const { chatId } = useParams()
 
+  const TIME = 60
+
   const [webSocket, setWebSocket] = useState<SocketAPIType>()
+  const [isDisabledCanvas, setDisabledCanvas] = useState(true)
+  const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
+  const [lead, setLeading] = useState<number>()
+  const [leadingPlayerName, setLeadingPlayerName] = useState<String>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
+
+  const [seconds, setSeconds] = useState(0)
+  const [timerActive, setTimerActive] = useState(false)
+  const timeOut = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (chatId) {
@@ -91,8 +101,77 @@ const Game = () => {
           .then(setWebSocket)
       }
     }
+
+    return () => webSocket?.close()
   }, [currentUser, chatId])
 
+  useEffect(() => {
+    if (webSocket !== undefined && gamePlayers.length > 1) {
+      setLeadingPlayer(gamePlayers[gamePlayers.length - 1].id)
+      webSocket.on<SocketContent>('text', checkWord)
+      webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
+    }
+  }, [webSocket, gamePlayers])
+
+  useEffect(() => {
+    if (webSocket !== undefined && timerActive) {
+      if (seconds > 0) {
+        timeOut.current = setTimeout(setSeconds, 1000, seconds - 1)
+      } else {
+        console.log('вы не успели, переход хода')
+        const nextPlayer = gamePlayers.filter(player => {
+          return player.id !== currentUser?.id
+        })
+        setLeadingPlayer(nextPlayer[0].id)
+      }
+    }
+    return () => {
+      clearTimeout(timeOut.current as NodeJS.Timeout)
+    }
+  }, [seconds, webSocket, timerActive])
+
+  const checkWord = (res: SocketContent) => {
+    if (
+      res.user_id !== undefined &&
+      res?.content?.toString().toLowerCase() === 'арбуз'
+    ) {
+      if (res.user_id === currentUser?.id) {
+        alert('Вы угадали!')
+        //начисляем баллы
+      }
+      setLeadingPlayer(res.user_id)
+    }
+  }
+  const onSetLeading = (res: SocketContent) => {
+    if (res.user_id !== undefined && res.content === currentUser?.id) {
+      console.log('вы ведущий - нарисуйте слово Арбуз')
+      setLeading(res.content)
+      setSeconds(TIME)
+      setTimerActive(true)
+      //разрешаем рисовать, запрещаем писать
+      setDisabledCanvas(false)
+      setDisabledChat(true)
+    } else {
+      setSeconds(0)
+      setTimerActive(false)
+      setDisabledCanvas(true)
+      setDisabledChat(false)
+    }
+  }
+  const setLeadingPlayer = (id: number) => {
+    setLeading(id)
+
+    webSocket!.sendContent('clear', {})
+
+    gamePlayers.filter(player => {
+      if (player.id === id) {
+        setLeadingPlayerName(player.first_name)
+      }
+    })
+    webSocket!.sendContent('setLeadingPlayer', {
+      content: id,
+    })
+  }
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
     const v = event.target.value
     if (v && v.length >= 3) api.users.search(v).then(setSearchedPlayers)
@@ -104,13 +183,30 @@ const Game = () => {
       api.games.users(Number(chatId)).then(setGamePlayers)
     })
   }
-
   return (
     <Container className="d-flex justify-content-center align-items-center">
       <div className="game-container">
+        <div>
+          {gamePlayers.length <= 1 && <span>Пригласите других игроков</span>}
+          {lead === currentUser?.id && seconds > 0 && (
+            <>
+              <span>Вы ведущий, ваше слово - "Арбуз"</span>
+              <span style={{ marginLeft: 150 }}>
+                Осталось времени: {seconds}
+              </span>
+            </>
+          )}
+          {lead !== currentUser?.id && leadingPlayerName && (
+            <span>Рисует: {leadingPlayerName}</span>
+          )}
+        </div>
         <div className="game-wrapper">
           {currentUser && (
-            <GameDraw currentUserId={currentUser.id} socket={webSocket} />
+            <GameDraw
+              disabled={isDisabledCanvas}
+              currentUserId={currentUser.id}
+              socket={webSocket}
+            />
           )}
           <div className="chatting">
             <div className="leader-board">
@@ -174,7 +270,11 @@ const Game = () => {
                 ))}
               </ListGroup>
             </div>
-            <GameChat chatId={Number(chatId)} socket={webSocket} />
+            <GameChat
+              disabled={isDisabledChat}
+              chatId={Number(chatId)}
+              socket={webSocket}
+            />
           </div>
         </div>
         <StartEndGame />
