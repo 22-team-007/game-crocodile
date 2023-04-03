@@ -1,20 +1,19 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
+dotenv.config()
 import cors from 'cors'
 import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
+import { createFetchRequest, preparePersist } from './utils'
+
 // @ts-ignore (can't import types)
 import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
-import Cookies from 'cookies'
-import { getStoredState } from 'redux-persist'
-import { ThemeController } from './controllers'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'
-dotenv.config()
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -89,7 +88,11 @@ async function startServer() {
     const url = req.originalUrl
     try {
       let template: string
-      let render: (url: string, initialState: any) => Promise<string>
+      let render: (
+        path: string,
+        fetchReq: globalThis.Request,
+        initialState: any
+      ) => Promise<string>
 
       if (isDev) {
         template = await vite.transformIndexHtml(
@@ -107,46 +110,18 @@ async function startServer() {
         render = (await import(ssrClientPath)).render
       }
 
-      // @ts-ignore
-      const cookieJar = new NodeCookiesWrapper(new Cookies(req, res))
-
-      const persistConfig = {
-        key: 'root',
-        storage: new CookieStorage(cookieJar),
-        whitelist: ['userData', 'theme'],
-        // @ts-ignore
-        stateReconciler(inboundState: any, originalState: any) {
-          return originalState
-        },
-      }
-
-      let preloadedState
-      try {
-        preloadedState = (await getStoredState(persistConfig)) as any
-        if (typeof preloadedState === 'undefined') {
-          throw new Error()
-        }
-
-        if (preloadedState._persist) {
-          delete preloadedState._persist
-        }
-
-        // place to check or modify cookies
-      } catch (e) {
-        preloadedState = {
-          theme: { name: ThemeController.getDefaultTheme() },
-          userData: { user: null },
-        }
-      }
-
-      res.removeHeader('Set-Cookie')
+      const { persistConfig, preloadedState } = await preparePersist(req, res)
+      // convert express request into a Fetch request, for static handler
+      const fetchReq = createFetchRequest(req)
+      const appHtml = await render(req.originalUrl, fetchReq, {
+        persistConfig,
+        preloadedState,
+      })
 
       const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
         preloadedState
       ).replace(/</g, '\\u003c')}
       </script>`
-
-      const appHtml = await render(url, { persistConfig, preloadedState })
 
       template = template.replace('<!--ssr-init-state-->', stateMarkup)
       const html = template.replace('<!--ssr-outlet-->', appHtml)
@@ -160,7 +135,7 @@ async function startServer() {
     }
   })
 
-  app.listen(port, () => {
+  app.listen(port, '127.0.0.1', () => {
     console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
   })
 }

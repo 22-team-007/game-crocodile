@@ -4,22 +4,27 @@ import { Provider } from 'react-redux'
 import store, { persistor } from './store/store'
 import { Index } from './router'
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-}
+// if ('serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/sw.js')
+// }
 
-// hydrate page, only when persist store get initial data
-persistor.subscribe(() => {
-  const { bootstrapped } = persistor.getState()
-  
-  if (bootstrapped) {
-    ReactDOM.hydrateRoot(
-      document.getElementById('root') as HTMLElement,
+const root = document.getElementById('root') as HTMLElement
+const hydrate = window.__staticRouterHydrationData
+delete window.__staticRouterHydrationData
+
+typeof hydrate !== 'undefined'
+  ? ReactDOM.hydrateRoot(
+      root,
       <React.StrictMode>
         <Provider store={store}>
           <Index />
         </Provider>
       </React.StrictMode>
     )
-  }
-})
+  : ReactDOM.createRoot(root).render(
+      <React.StrictMode>
+        <Provider store={store}>
+          <Index />
+        </Provider>
+      </React.StrictMode>
+    )
