@@ -5,6 +5,8 @@ import { legacy_createStore as createStore } from 'redux'
 import { persistReducer } from 'redux-persist'
 import { Provider } from 'react-redux'
 
+import { matchRoutes } from 'react-router-dom'
+
 import {
   createStaticHandler,
   createStaticRouter,
@@ -12,7 +14,7 @@ import {
 } from 'react-router-dom/server'
 
 import rootReducer from './store/reducers'
-import { routerConf, routes } from './router-ssr'
+import { routerConf } from './router-ssr'
 
 export async function render(
   path: string,
@@ -38,7 +40,7 @@ export async function render(
   const router = createStaticRouter(dataRoutes, context)
 
   // if route not exist tell client app don't hydrate page
-  const routExist = routes.includes(path)
+  const routExist = matchRoutes(dataRoutes, path)
 
   return renderToString(
     <React.StrictMode>

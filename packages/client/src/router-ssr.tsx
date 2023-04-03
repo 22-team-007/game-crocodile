@@ -10,10 +10,7 @@ enum Routes {
   Register = '/signup',
   E404 = '404',
   E500 = '500',
-  NoRoute = '*',
 }
-
-export const routes = Object.values(Routes) as string[]
 
 export const routerConf: RouteObject[] = [
   {
@@ -62,9 +59,5 @@ export const routerConf: RouteObject[] = [
         <ErrorPage />
       </Page>
     ),
-  },
-  {
-    path: Routes.NoRoute,
-    element: <></>,
   },
 ]
