@@ -7,13 +7,10 @@ WORKDIR /app
 
 FROM base as builder
 
-COPY package.json yarn.lock
-RUN yarn install --frozen-lockfile
-
-COPY . .
-
-RUN yarn lerna bootstrap
-RUN yarn build
+COPY package.json package.json
+COPY lerna.json lerna.json
+COPY packages/ packages/
+RUN yarn install --frozen-lockfile && yarn lerna bootstrap && yarn build
 
 FROM builder as production
 WORKDIR /app/packages/server

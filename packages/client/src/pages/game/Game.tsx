@@ -84,9 +84,10 @@ const Game = () => {
   const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
   const [lead, setLeading] = useState<number>()
-  const [leadingPlayerName, setLeadingPlayerName] = useState<String>()
+  const [leadingPlayerName, setLeadingPlayerName] = useState<string>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
+  const varWord = useRef<string>('')
 
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
@@ -133,7 +134,7 @@ const Game = () => {
   const checkWord = (res: SocketContent) => {
     if (
       res.user_id !== undefined &&
-      res?.content?.toString().toLowerCase() === 'арбуз'
+      res?.content?.toString().toLowerCase() === varWord.current.toLowerCase()
     ) {
       if (res.user_id === currentUser?.id) {
         alert('Вы угадали!')
@@ -144,14 +145,17 @@ const Game = () => {
   }
   const onSetLeading = (res: SocketContent) => {
     if (res.user_id !== undefined && res.content === currentUser?.id) {
-      console.log('вы ведущий - нарисуйте слово Арбуз')
-      setLeading(res.content)
+      api.games.getWord().then(w=>{
+        varWord.current = w
+      })
+      setLeading(Number(res.content))
       setSeconds(TIME)
       setTimerActive(true)
       //разрешаем рисовать, запрещаем писать
       setDisabledCanvas(false)
       setDisabledChat(true)
     } else {
+      varWord.current = ''
       setSeconds(0)
       setTimerActive(false)
       setDisabledCanvas(true)
@@ -190,7 +194,7 @@ const Game = () => {
           {gamePlayers.length <= 1 && <span>Пригласите других игроков</span>}
           {lead === currentUser?.id && seconds > 0 && (
             <>
-              <span>Вы ведущий, ваше слово - "Арбуз"</span>
+              <span>Вы ведущий, ваше слово - {varWord.current}</span>
               <span style={{ marginLeft: 150 }}>
                 Осталось времени: {seconds}
               </span>

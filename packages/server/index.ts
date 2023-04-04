@@ -165,4 +165,14 @@ async function startServer() {
   })
 }
 
+//@ts-ignore для крректной работы SSR
+global.Request = global.WebSocket = <any> class extends EventTarget {
+  public constructor() {
+    super()
+  }
+  public get signal() {
+    return this
+  }
+}
+
 startServer()

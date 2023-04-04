@@ -2,6 +2,7 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { legacy_createStore as createStore } from 'redux'
 import { persistReducer } from 'redux-persist'
+import { SSRProvider } from 'react-bootstrap'
 import { Provider } from 'react-redux'
 
 import rootReducer from './store/reducers'
@@ -18,7 +19,9 @@ export function render(
   return renderToString(
     <React.StrictMode>
       <Provider store={reduxStore}>
-        <IndexSSR url={url} />
+        <SSRProvider>
+          <IndexSSR url={url} />
+        </SSRProvider>
       </Provider>
     </React.StrictMode>
   )
