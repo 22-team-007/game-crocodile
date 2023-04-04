@@ -89,10 +89,10 @@ async function startServer() {
     try {
       let template: string
       let render: (
-        path: string,
         fetchReq: globalThis.Request,
         initialState: any
       ) => Promise<string>
+      let checkRoute: (path: string) => boolean
 
       if (isDev) {
         template = await vite.transformIndexHtml(
@@ -102,26 +102,36 @@ async function startServer() {
         render = (
           await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
         ).render
+        checkRoute = (
+          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
+        ).checkRoute
       } else {
         template = fs.readFileSync(
           path.resolve(distPath, 'index.html'),
           'utf-8'
         )
         render = (await import(ssrClientPath)).render
+        checkRoute = (await import(ssrClientPath)).checkRoute
       }
 
-      const { persistConfig, preloadedState } = await preparePersist(req, res)
-      // convert express request into a Fetch request, for static handler
-      const fetchReq = createFetchRequest(req)
-      const appHtml = await render(req.originalUrl, fetchReq, {
-        persistConfig,
-        preloadedState,
-      })
+      let appHtml, stateMarkup
+      if (checkRoute(req.originalUrl)) {
+        const { persistConfig, preloadedState } = await preparePersist(req, res)
 
-      const stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
-        preloadedState
-      ).replace(/</g, '\\u003c')}
-      </script>`
+        // convert express request into a Fetch request, for static handler
+        const fetchReq = createFetchRequest(req)
+
+        appHtml = await render(fetchReq, {
+          persistConfig,
+          preloadedState,
+        })
+
+        stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
+          preloadedState
+        ).replace(/</g, '\\u003c')}</script>`
+      } else {
+        appHtml = stateMarkup = ''
+      }
 
       template = template.replace('<!--ssr-init-state-->', stateMarkup)
       const html = template.replace('<!--ssr-outlet-->', appHtml)

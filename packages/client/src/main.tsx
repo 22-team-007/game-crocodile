@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
-import store, { persistor } from './store/store'
+import store from './store/store'
 import { Index } from './router'
 
 if ('serviceWorker' in navigator) {

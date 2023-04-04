@@ -17,7 +17,6 @@ import rootReducer from './store/reducers'
 import { routerConf } from './router-ssr'
 
 export async function render(
-  path: string,
   fetchRequest: globalThis.Request,
   { persistConfig, preloadedState }: any
 ): Promise<string> {
@@ -39,18 +38,16 @@ export async function render(
 
   const router = createStaticRouter(dataRoutes, context)
 
-  // if route not exist tell client app don't hydrate page
-  const routExist = matchRoutes(dataRoutes, path)
-
   return renderToString(
     <React.StrictMode>
       <Provider store={reduxStore}>
-        {routExist ? (
-          <StaticRouterProvider router={router} context={context} />
-        ) : (
-          <></>
-        )}
+        <StaticRouterProvider router={router} context={context} />
       </Provider>
     </React.StrictMode>
   )
+}
+
+// if route not exist tell client app don't hydrate page
+export function checkRoute(path: string): boolean {
+  return matchRoutes(routerConf, path) !== null ? true : false
 }
