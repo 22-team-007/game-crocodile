@@ -137,3 +137,10 @@ declare type ForumList = {
   subject: string
   comments: string
 }[]
+
+declare type ThemeType = {
+  name: string
+  themeClass: string
+  desc: string
+  ariaLabel: string
+}
