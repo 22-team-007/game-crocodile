@@ -98,9 +98,7 @@ const Game = () => {
 
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
-  const timeOutGame = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const timeOutPopup = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [secondsPopup, setSecondsPopup] = useState(0)
   const [isActivePopup, setIsActivePopup] = useState(false)
   const [showToast, setShowToast] = useState(false)
@@ -128,9 +126,11 @@ const Game = () => {
   }, [webSocket, gamePlayers])
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout | undefined;
+
     if (webSocket !== undefined && timerActive) {
       if (seconds > 0) {
-        timeOutGame.current = setTimeout(setSeconds, 1000, seconds - 1)
+        timeout = setTimeout(setSeconds, 1000, seconds - 1)
       } else if (lead === currentUser?.id) {
         setToastText("Вы не успели, переход хода")
         setShowToast(true)
@@ -139,18 +139,18 @@ const Game = () => {
       }
     }
     return () => {
-      clearTimeout(timeOutGame.current as NodeJS.Timeout)
+      if (timeout) {
+        clearTimeout(timeout)
+      }
     }
   }, [seconds, webSocket, timerActive])
 
   useEffect(() => {
+    let timeOutPopup: NodeJS.Timeout | undefined;
+
     if (webSocket !== undefined && isActivePopup) {
       if (secondsPopup > 0) {
-        timeOutPopup.current = setTimeout(
-          setSecondsPopup,
-          1000,
-          secondsPopup - 1
-        )
+        timeOutPopup = setTimeout(setSecondsPopup, 1000, secondsPopup - 1)
       } else {
         setToastText("Превышено время ожидания старта")
         setShowToast(true)
@@ -160,7 +160,9 @@ const Game = () => {
       }
     }
     return () => {
-      clearTimeout(timeOutPopup.current as NodeJS.Timeout)
+      if (timeOutPopup) {
+        clearTimeout(timeOutPopup)
+      }
     }
   }, [webSocket, secondsPopup, isActivePopup])
 
