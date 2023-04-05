@@ -67,6 +67,7 @@ declare type LeaderType = {
   score: number
 }
 
+
 declare interface Message {
   chat_id: number
   time: string
@@ -123,12 +124,37 @@ declare interface Window {
   __INITIAL_STATE__?: object
 }
 
+declare type UsersType = Record<number, UserType>
+
 declare type ForumRecord = {
   id: number
   parent_id: number | null
   subject: string
   description: string
   author_id: number
+  updatedAt?: string
+}
+
+declare type ThemeContentType = {
+  theme: ForumRecord,
+  user: UserType
+}
+
+declare type CommentRecord = {
+  id: number
+  parent_id: number|null
+  subject: string
+  description: string
+  author_id: number
+  updatedAt?: string
+  emojis: Record<string, number> | null
+}
+
+declare type EmojiRecord = {
+  id: number
+  comment_id: number
+  author_id: number
+  emoji: string
 }
 
 declare type ForumList = {
@@ -143,3 +169,9 @@ declare type ThemeType = {
   desc: string
   ariaLabel: string
 }
+
+declare interface FormFieldsTheme {
+  subject: string
+  description: string
+}
+

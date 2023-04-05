@@ -21,7 +21,10 @@ async function startServer() {
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  app.use(cors())
+  app.use(cors({
+    credentials: true,
+    origin: '*',
+  }))
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
 
@@ -154,6 +157,12 @@ global.WebSocket = <any> class extends EventTarget {
   }
   public get signal() {
     return this
+  }
+}
+//@ts-ignore для крректной работы SSR
+global.document = <any>{
+  createElement(){
+    return new HTMLElement()
   }
 }
 

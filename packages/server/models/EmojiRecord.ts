@@ -1,35 +1,25 @@
 import { DataType, Model } from 'sequelize-typescript'
 import type { ModelAttributes } from 'sequelize'
 
-export interface IForumRecord {
+export interface IEmojiRecord {
   id: number
-  parent_id: number
-  subject: string
-  description: string
+  emoji: string
   author_id: number
 }
 
-export const formRecordModel: ModelAttributes<Model, IForumRecord> = {
+export const emojiRecordModel: ModelAttributes<Model, IEmojiRecord> = {
   id: {
     type: DataType.INTEGER,
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
   },
-  parent_id: {
-    type: DataType.INTEGER,
-    allowNull: true,
-  },
-  subject: {
+  emoji: {
     type: DataType.STRING,
-    allowNull: false,
-  },
-  description: {
-    type: DataType.TEXT,
     allowNull: false,
   },
   author_id: {
     type: DataType.INTEGER,
-    allowNull: false,
-  },
+    allowNull: false
+  }
 }
