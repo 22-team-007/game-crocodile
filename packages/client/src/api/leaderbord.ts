@@ -31,12 +31,16 @@ export default class Leaderbord extends ApiBase implements LeaderbordAPIType {
       }),
     })
     const arr: { data: Record<string, number> }[] = await r.json()
-    return arr.map(x => {
-      return {
-        id: x.data[ourGameHash + '-id'],
-        score: x.data[ourGameHash + '-score'],
-      }
-    })
+    if (Array.isArray(arr)) {
+      return arr.map(x => {
+        return {
+          id: x.data[ourGameHash + '-id'],
+          score: x.data[ourGameHash + '-score'],
+        }
+      })
+    } else {
+      return []
+    }
   }
 
   public async team(

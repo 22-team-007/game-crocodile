@@ -1,5 +1,7 @@
 import fs from 'fs'
 import dotenv from 'dotenv'
+dotenv.config()
+
 import cors from 'cors'
 import path from 'path'
 import express from 'express'
@@ -14,7 +16,6 @@ import { ThemeController } from './controllers'
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'
-dotenv.config()
 
 const isDev = process.env.NODE_ENV === 'development'
 

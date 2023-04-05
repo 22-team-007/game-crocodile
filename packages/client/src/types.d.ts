@@ -86,13 +86,12 @@ declare interface ForumThemesProps {
   chats: GameType[]
 }
 
-declare interface LeaderProps extends UserType {
+declare interface LeaderUserType extends UserType {
   score: number
 }
 
-declare type TopUser = Required<LeaderProps>
-
-declare interface TopLeaderProp extends TopUser {
+declare interface TopLeaderProp {
+  user: LeaderUserType
   title: string
 }
 
