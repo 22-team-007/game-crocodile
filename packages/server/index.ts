@@ -8,9 +8,6 @@ import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 import { createFetchRequest, preparePersist } from './utils'
 
-// @ts-ignore (can't import types)
-import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
-
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'

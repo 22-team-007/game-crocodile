@@ -3,7 +3,6 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { legacy_createStore as createStore } from 'redux'
 import { persistReducer } from 'redux-persist'
-import { SSRProvider } from 'react-bootstrap'
 import { Provider } from 'react-redux'
 
 import { matchRoutes } from 'react-router-dom'
