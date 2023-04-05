@@ -1,28 +1,54 @@
 import React from 'react'
+
 import { renderToString } from 'react-dom/server'
 import { legacy_createStore as createStore } from 'redux'
 import { persistReducer } from 'redux-persist'
 import { SSRProvider } from 'react-bootstrap'
 import { Provider } from 'react-redux'
 
-import rootReducer from './store/reducers'
-import { IndexSSR } from './router'
+import { matchRoutes } from 'react-router-dom'
 
-export function render(
-  url: string,
+import {
+  createStaticHandler,
+  createStaticRouter,
+  StaticRouterProvider,
+} from 'react-router-dom/server'
+
+import rootReducer from './store/reducers'
+import { routerConf } from './router-ssr'
+
+export async function render(
+  fetchRequest: globalThis.Request,
   { persistConfig, preloadedState }: any
-): string {
+): Promise<string> {
   const SSRReducer = persistReducer(persistConfig, rootReducer)
 
   const reduxStore = createStore(SSRReducer, preloadedState)
 
+  // convert Routes object To DataRoutes
+  const { query, dataRoutes } = createStaticHandler(routerConf)
+
+  // run actions / loaders, for requested path, and put returned data to context
+  // now we haven't any
+  const context = await query(fetchRequest)
+
+  // loader return redirect?
+  if (context instanceof Response) {
+    throw context
+  }
+
+  const router = createStaticRouter(dataRoutes, context)
+
   return renderToString(
     <React.StrictMode>
       <Provider store={reduxStore}>
-        <SSRProvider>
-          <IndexSSR url={url} />
-        </SSRProvider>
+        <StaticRouterProvider router={router} context={context} />
       </Provider>
     </React.StrictMode>
   )
+}
+
+// if route not exist tell client app don't hydrate page
+export function checkRoute(path: string): boolean {
+  return matchRoutes(routerConf, path) !== null ? true : false
 }

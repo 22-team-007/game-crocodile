@@ -59,6 +59,7 @@ const ThemeSwitcher: FC = () => {
                     onChange={handleChange}
                     checked={appTheme === theme.themeClass}
                     className="mb-3"
+                    key={theme.themeClass}
                   />
                 ))}
               </Form.Group>
