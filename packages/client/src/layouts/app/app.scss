@@ -47,6 +47,9 @@ body {
       color: #ffffff;
     }
   }
+  img {
+    object-fit: cover;
+  }
 }
 
 .App > .container {

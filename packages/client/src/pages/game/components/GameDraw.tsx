@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useEffect, useRef } from 'react'
-import { Form } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import api from '../../../api'
 
 import Brush from '../../../utils/tools/Brush'
@@ -21,8 +21,9 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
       const brushWidth = typeof localStorage !== "undefined" && localStorage.getItem('brushWidth')
       const brushColor = typeof localStorage !== "undefined" && localStorage.getItem('brushColor')
 
-      if (brushWidth) brush.current.lineWidth = Number(brushWidth)
-
+      if (brushWidth) {
+        brush.current.lineWidth = Number(brushWidth)
+      }
       if (brushColor) {
         brush.current.strokeColor = brushColor
         brush.current.fillColor = brushColor
@@ -44,10 +45,12 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
   }
 
   const sendCoordinates = (content: Coordinate[]) => {
+
     if (brush.current && socket !== undefined) {
       socket.sendContent('coordinates', {
         content,
         color: brush.current.strokeColor,
+        lineWidth: brush.current.lineWidth
       })
     }
   }
@@ -59,7 +62,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
   }
 
   const onUserConnected = async (c: SocketContent) => {
-    // нужен ведущий игрок, пока true
+
     if (currentUserId !== c.user_id) {
 
       const canvas = canvasRef.current as HTMLCanvasElement
@@ -97,7 +100,7 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
 
   const onCoordinates = (c: SocketContent) => {
     if (brush.current && currentUserId !== c.user_id) {
-      brush.current.drawArray(c.content as Coordinate[], c.color || '#000000')
+      brush.current.drawArray(c.content as Coordinate[], c.color || '#000000',  c.lineWidth || 1)
     }
   }
 
@@ -123,26 +126,30 @@ const GameDraw: FC<GameDrawProps> = ({ currentUserId, socket, disabled }) => {
   }
 
   return (
-    <div>
-      <div className="d-flex">
-        {!disabled && <button onClick={clear}>clear</button>}
-        <Form.Control
-          type="color"
-          onChange={changeColor}
-          defaultValue={typeof localStorage !== "undefined" && localStorage.getItem('brushColor') || '#000000'}
-        />
-
-        <input
-          onChange={changeLineWidth}
-          type="range"
-          className="mx-1"
-          defaultValue={typeof localStorage !== "undefined" && localStorage.getItem('brushWidth') || 1}
-          min={1}
-          max={20}
-        />
-      </div>
+    <>
       <canvas className={`${disabled ? 'readonly' : ''}`} ref={canvasRef} width={650} height={600} />
-    </div>
+      {!disabled && (
+        <div className="tools-wrap p-2">
+          <span className="d-flex">
+            <Form.Control
+              type="color"
+              onChange={changeColor}
+              defaultValue={typeof localStorage !== "undefined" && localStorage.getItem('brushColor') || '#000000'}
+            />
+
+            <input
+              onChange={changeLineWidth}
+              type="range"
+              className="mx-1"
+              defaultValue={typeof localStorage !== "undefined" && localStorage.getItem('brushWidth') || '1'}
+              min={1}
+              max={20}
+            />
+          </span>
+          <Button onClick={clear} variant="danger">Очистить</Button>
+        </div>
+      )}
+    </>
   )
 }
 
