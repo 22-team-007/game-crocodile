@@ -49,10 +49,11 @@ const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
 }
 
 const oAuthLoaderClient = async () => {
-  const userId = useAppSelector(selectUserId)
-  const dispatch = useAppDispatch()
+  const userId = useAppSelector(selectUserId) 
+  if(userId) return redirect('/game')
 
   try {
+    const dispatch = useAppDispatch() 
     const user = await api.auth.user()
     if (user?.id) {
       dispatch({
@@ -63,7 +64,6 @@ const oAuthLoaderClient = async () => {
   } catch (err) {
     console.error(err)
   }
-
   return redirect('/game')
 }
 

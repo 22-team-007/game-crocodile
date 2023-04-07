@@ -47,6 +47,7 @@ export async function render(
   // loader number 3 = OAuthLoader
   let cookie = undefined
   if (context.loaderData && OAUTH_LOADER_NUMBER in context.loaderData) {
+    preloadedState.userData.user=context.loaderData[OAUTH_LOADER_NUMBER].user
     cookie = context.loaderData[OAUTH_LOADER_NUMBER].parsCookies
   }
 
