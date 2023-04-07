@@ -7,6 +7,7 @@ import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 import { createFetchRequest, preparePersist } from './utils'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
@@ -22,18 +23,43 @@ async function startServer() {
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
   app.use(cors())
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: true }))
-
-  let vite: ViteDevServer
 
   await dbConnect()
-  app.use('/api', ApiRouter)
 
+  app.use(
+    '/api/v2',
+    createProxyMiddleware({
+      target: 'https://ya-praktikum.tech:443',
+      changeOrigin: true,
+      secure: false,
+      cookieDomainRewrite: {
+        '*': '',
+      },
+      onError: e => console.log(e),
+    })
+  )
+
+  app.use(
+    '/ws',
+    createProxyMiddleware({
+      target: 'https://ya-praktikum.tech',
+      secure: false,
+      ws: true,
+      cookieDomainRewrite: {
+        '*': '',
+      },
+      onError: e => console.log(e),
+    })
+  )
+
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+  app.use('/api', ApiRouter)
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
   })
 
+  let vite: ViteDevServer
   if (isDev) {
     vite = await createViteServer({
       server: { middlewareMode: true },
@@ -88,7 +114,15 @@ async function startServer() {
       let render: (
         fetchReq: globalThis.Request,
         initialState: any
-      ) => Promise<string>
+      ) => Promise<
+        [
+          appHtml: string,
+          cookie: {
+            authCookie: Record<string, string>
+            uuid: Record<string, string>
+          }
+        ]
+      >
       let checkRoute: (path: string) => boolean
 
       if (isDev) {
@@ -111,23 +145,28 @@ async function startServer() {
         checkRoute = (await import(ssrClientPath)).checkRoute
       }
 
-      let appHtml, stateMarkup
-      if (checkRoute(req.originalUrl)) {
-        const { persistConfig, preloadedState } = await preparePersist(req, res)
+      const preloadedState = await preparePersist(req, res)
 
+      let appHtml: string,
+        stateMarkup = JSON.stringify(preloadedState).replace(/</g, '\\u003c')
+
+      if (checkRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler
         const fetchReq = createFetchRequest(req)
 
-        appHtml = await render(fetchReq, {
-          persistConfig,
-          preloadedState,
-        })
+        const [html, cookie] = await render(fetchReq, preloadedState)
+        appHtml = html
+
+        if (url.split('?')[0] === '/oauth' && cookie) {
+          res.cookie(cookie.authCookie.name, cookie.authCookie.value)
+          res.cookie(cookie.uuid.name, cookie.uuid.value)
+        }
 
         stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
           preloadedState
         ).replace(/</g, '\\u003c')}</script>`
       } else {
-        appHtml = stateMarkup = ''
+        appHtml = ''
       }
 
       template = template.replace('<!--ssr-init-state-->', stateMarkup)
@@ -147,8 +186,8 @@ async function startServer() {
   })
 }
 
-//@ts-ignore для крректной работы SSR
-global.Request = global.WebSocket = <any> class extends EventTarget {
+// @ts-ignore для крректной работы SSR
+global.WebSocket = <any>class extends EventTarget {
   public constructor() {
     super()
   }

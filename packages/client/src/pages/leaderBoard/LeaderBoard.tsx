@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom'
-import { Button, Card, Row, Col, Container } from 'react-bootstrap'
+import { Row, Col, Container } from 'react-bootstrap'
 import { Leader } from './components/Leader'
 import { TopLeader } from './components/TopLeader'
 import api from '../../api'

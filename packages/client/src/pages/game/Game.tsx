@@ -188,7 +188,7 @@ const Game = () => {
       api.games.getWord().then(w=>{
         varWord.current = w
       })
-      setLeading(res.content)
+      setLeading(res.content as number)
       setSecondsPopup(secondsToHidePopup)
       setIsActivePopup(true)
 

@@ -36,7 +36,7 @@ describe('Testing Auth API ', () => {
       body: JSON.stringify(siginData),
     }
 
-    const fetchSecondCallParam = { ...fetchParam }
+    const fetchSecondCallParam = { ...fetchParam, headers: {"Cookie": undefined} }
 
     // @ts-ignore
     global.fetch = jest.fn(() =>
@@ -49,8 +49,8 @@ describe('Testing Auth API ', () => {
     await auth.signIn(siginData)
     // @ts-ignore
     expect(global.fetch.mock.calls).toEqual([
-      ['https://ya-praktikum.tech/api/v2/auth/signin', fetchFirstCallParam],
-      ['https://ya-praktikum.tech/api/v2/auth/user', fetchSecondCallParam],
+      ['http://localhost:3000/api/v2/auth/signin', fetchFirstCallParam],
+      ['http://localhost:3000/api/v2/auth/user', fetchSecondCallParam],
     ])
   })
 
@@ -84,7 +84,7 @@ describe('Testing Auth API ', () => {
 
     expect(auth.user).toHaveBeenCalled()
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://ya-praktikum.tech/api/v2/auth/signup',
+      'http://localhost:3000/api/v2/auth/signup',
       fetchCallParam
     )
   })
@@ -100,12 +100,13 @@ describe('Testing Auth API ', () => {
     const postParams = {
       ...fetchParam,
       method: 'POST',
+      headers: {"Cookie": undefined} 
     }
 
     fetchParam.method = 'POST'
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'https://ya-praktikum.tech/api/v2/auth/logout',
+      'http://localhost:3000/api/v2/auth/logout',
       postParams
     )
   })

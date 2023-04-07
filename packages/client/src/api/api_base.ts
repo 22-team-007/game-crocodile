@@ -1,5 +1,6 @@
 export default class ApiBase {
-  protected host = 'https://ya-praktikum.tech'
+  protected host = 'http://localhost:3000'
+  // protected host = 'https://ya-praktikum.tech'
   protected static instance: ApiBase
   static Init(): ApiBase {
     if (this.instance === null || this.instance === undefined) {
@@ -31,11 +32,25 @@ export default class ApiBase {
     path: string,
     params?: RequestInit
   ): Promise<Response> {
+    let headers: HeadersInit = {
+      accept: 'application/json',
+      'content-type': 'application/json',
+    }
+
+    if (params?.headers && 'Cookie' in params.headers) {
+      // @ts-ignore
+      const { Cookie } = params.headers as string
+
+      // server code
+      if (typeof Cookie !== 'undefined') {
+        headers = { ...headers, Cookie }
+        delete params.headers
+        this.host = 'https://ya-praktikum.tech'
+      }
+    }
+
     return fetch(`${this.host}${path}`, {
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-      },
+      headers,
       mode: 'cors',
       credentials: 'include',
       ...params,

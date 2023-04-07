@@ -4,7 +4,7 @@ type ThemeAPIType = {
   getThemes: () => Promise<ThemeType[]>
 }
 export default class Themes extends ApiBase implements ThemeAPIType {
-  protected host = 'http://localhost:3001'
+  protected host = ''
 
   public async getThemes(): Promise<ThemeType[]> {
     const r = await this.GET('/api/theme')

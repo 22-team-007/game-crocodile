@@ -1,8 +1,8 @@
 import type { RouteObject } from 'react-router-dom'
-// components
-import App from './layouts/app/App'
 
+import App from './layouts/app/App'
 import { StartPage, ErrorPage, Login, Registration, Page } from './pages'
+import { OAuthLoaderServer } from './components/OAuth/oAuth'
 
 enum Routes {
   Index = '/',
@@ -10,7 +10,10 @@ enum Routes {
   Register = '/signup',
   E404 = '404',
   E500 = '500',
+  OAuth = 'oauth',
 }
+
+export const OAUTH_LOADER_NUMBER = 3
 
 export const routerConf: RouteObject[] = [
   {
@@ -59,5 +62,10 @@ export const routerConf: RouteObject[] = [
         <ErrorPage />
       </Page>
     ),
+  },
+  {
+    path: Routes.OAuth,
+    loader: OAuthLoaderServer,
+    element: <></>,
   },
 ]
