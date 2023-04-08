@@ -1,5 +1,7 @@
 import Auth from './auth'
 
+const host = `http://${SERVER_HOST}:${SERVER_PORT}`
+
 describe('Testing Auth API ', () => {
   const auth: Auth = new Auth()
 
@@ -49,8 +51,8 @@ describe('Testing Auth API ', () => {
     await auth.signIn(siginData)
     // @ts-ignore
     expect(global.fetch.mock.calls).toEqual([
-      ['http://localhost:3000/api/v2/auth/signin', fetchFirstCallParam],
-      ['http://localhost:3000/api/v2/auth/user', fetchSecondCallParam],
+      [`${host}/api/v2/auth/signin`, fetchFirstCallParam],
+      [`${host}/api/v2/auth/user`, fetchSecondCallParam],
     ])
   })
 
@@ -84,7 +86,7 @@ describe('Testing Auth API ', () => {
 
     expect(auth.user).toHaveBeenCalled()
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:3000/api/v2/auth/signup',
+      `${host}/api/v2/auth/signup`,
       fetchCallParam
     )
   })
@@ -106,7 +108,7 @@ describe('Testing Auth API ', () => {
     fetchParam.method = 'POST'
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:3000/api/v2/auth/logout',
+      `${host}/api/v2/auth/logout`,
       postParams
     )
   })

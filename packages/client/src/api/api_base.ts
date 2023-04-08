@@ -1,5 +1,12 @@
+const {
+  SERVER_HOST,
+  SERVER_PORT,
+ PRAKTIKUM_HOST
+} = process.env
+
 export default class ApiBase {
-  protected host = 'http://localhost:3000'
+  protected host = `http://${SERVER_HOST}:${SERVER_PORT}`
+  
   // protected host = 'https://ya-praktikum.tech'
   protected static instance: ApiBase
   static Init(): ApiBase {
@@ -26,30 +33,30 @@ export default class ApiBase {
   protected FORMPOST(path: string, body: FormData): Promise<Response> {
     return this.fetchRequest('POST', path, { body, headers: undefined })
   }
-
+  
   protected fetchRequest(
     method: string,
     path: string,
     params?: RequestInit
-  ): Promise<Response> {
-    let headers: HeadersInit = {
-      accept: 'application/json',
-      'content-type': 'application/json',
-    }
-
-    if (params?.headers && 'Cookie' in params.headers) {
-      // @ts-ignore
-      const { Cookie } = params.headers as string
-
-      // server code
-      if (typeof Cookie !== 'undefined') {
-        headers = { ...headers, Cookie }
-        delete params.headers
-        this.host = 'https://ya-praktikum.tech'
+    ): Promise<Response> {
+      let headers: HeadersInit = {
+        accept: 'application/json',
+        'content-type': 'application/json',
       }
-    }
+      
+      if (params?.headers && 'Cookie' in params.headers) {
+        // @ts-ignore
+        const { Cookie } = params.headers as string
+        
+        // server code
+        if (typeof Cookie !== 'undefined') {
+          headers = { ...headers, Cookie }
+          delete params.headers
+          this.host = `https://${PRAKTIKUM_HOST}` as string
+        }
+      }
 
-    return fetch(`${this.host}${path}`, {
+      return fetch(`${this.host}${path}`, {
       headers,
       mode: 'cors',
       credentials: 'include',

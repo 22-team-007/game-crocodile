@@ -26,10 +26,14 @@ async function startServer() {
 
   await dbConnect()
 
+const {
+  PRAKTIKUM_HOST
+} = process.env
+
   app.use(
     '/api/v2',
     createProxyMiddleware({
-      target: 'https://ya-praktikum.tech:443',
+      target: `https://${PRAKTIKUM_HOST}`,
       changeOrigin: true,
       secure: false,
       cookieDomainRewrite: {
@@ -42,7 +46,7 @@ async function startServer() {
   app.use(
     '/ws',
     createProxyMiddleware({
-      target: 'https://ya-praktikum.tech',
+      target: `https://${PRAKTIKUM_HOST}`,
       secure: false,
       ws: true,
       cookieDomainRewrite: {

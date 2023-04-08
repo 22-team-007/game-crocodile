@@ -10,6 +10,11 @@ import { useAppSelector } from '../../hooks/useAppSelector'
 import { selectUserId } from '../../store/selectors'
 import { userTypes } from '../../store/actions/user'
 
+const {
+  SERVER_HOST,
+  SERVER_PORT,
+} = process.env
+
 const dispatch: (arg0: UserDataAction) => any = useAppDispatch
 
 const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
@@ -17,7 +22,7 @@ const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
   const code = new URL(request.url).searchParams.get('code')
 
   if (code) {
-    const redirect_uri = 'http://localhost:3000/oauth'
+    const redirect_uri = `http://${SERVER_HOST}:${SERVER_PORT}/oauth`
 
     const cookieOrNull = request.headers.get('cookie')
     let cookies = cookieOrNull !== null ? cookieOrNull : undefined
@@ -37,7 +42,7 @@ const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
       if (parsCookies) {
         cookies = `authCookie=${parsCookies?.authCookie?.value}; uuid=${parsCookies?.uuid?.value};`
       }
-
+      
       const user = await api.auth.user(cookies)
 
       if (user?.id) {
