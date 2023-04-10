@@ -2,7 +2,6 @@ import React from 'react'
 
 import { renderToString } from 'react-dom/server'
 import { legacy_createStore as createStore } from 'redux'
-import { persistReducer } from 'redux-persist'
 import { Provider } from 'react-redux'
 
 import { matchRoutes } from 'react-router-dom'
@@ -14,15 +13,14 @@ import {
 } from 'react-router-dom/server'
 
 import rootReducer from './store/reducers'
-import { routerConf } from './router-ssr'
+import { routerConf, OAUTH_LOADER_NUMBER } from './router-ssr'
+import { IRootState } from './store/reducers'
 
 export async function render(
   fetchRequest: globalThis.Request,
-  { persistConfig, preloadedState }: any
+  preloadedState: IRootState
 ): Promise<string> {
-  const SSRReducer = persistReducer(persistConfig, rootReducer)
-
-  const reduxStore = createStore(SSRReducer, preloadedState)
+  const store = createStore(rootReducer, preloadedState)
 
   // convert Routes object To DataRoutes
   const { query, dataRoutes } = createStaticHandler(routerConf)
@@ -38,13 +36,23 @@ export async function render(
 
   const router = createStaticRouter(dataRoutes, context)
 
-  return renderToString(
+  const appHTML = renderToString(
     <React.StrictMode>
-      <Provider store={reduxStore}>
+      <Provider store={store}>
         <StaticRouterProvider router={router} context={context} />
       </Provider>
     </React.StrictMode>
   )
+
+  // loader number 3 = OAuthLoader
+  let cookie = undefined
+  if (context.loaderData && OAUTH_LOADER_NUMBER in context.loaderData) {
+    preloadedState.userData.user=context.loaderData[OAUTH_LOADER_NUMBER].user
+    cookie = context.loaderData[OAUTH_LOADER_NUMBER].parsCookies
+  }
+
+  // @ts-ignore
+  return [appHTML, cookie]
 }
 
 // if route not exist tell client app don't hydrate page

@@ -1,5 +1,5 @@
 import { redirect, RouterProvider, createBrowserRouter } from 'react-router-dom'
-import type { RouteObject, LoaderFunctionArgs } from 'react-router-dom'
+import type { RouteObject } from 'react-router-dom'
 // components
 import App from './layouts/app/App'
 
@@ -22,7 +22,7 @@ import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
 import { UserLogoutAction, UserDataAction } from './store/actions/types'
-import { userTypes } from './store/actions/user'
+import { oAuthLoaderClient } from './components/OAuth/oAuth'
 
 export enum Routes {
   Index = '/',
@@ -42,37 +42,9 @@ export enum Routes {
 
 export function getRouterConf(forTest = '') {
   let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
-  let OAuthLoader: ((arg: LoaderFunctionArgs) => any) | undefined
 
   if (!forTest) {
     dispatch = useAppDispatch()
-
-    OAuthLoader = async ({ request }) => {
-      const code = new URL(request.url).searchParams.get('code')
-
-      if (code) {
-        const redirectURI = 'http://localhost:3000/oauth'
-
-        let resp = await api.oauth.signIn(code, redirectURI)
-
-        // try log out and enter again
-        if (resp.reason === 'User already in system') {
-          await api.auth.logOut()
-          resp = await api.oauth.signIn(code, redirectURI)
-        }
-
-        if (resp.reason === 'ok') {
-          const user = await api.auth.user()
-
-          if (user?.id) {
-            dispatch({ type: userTypes.SET_USER_DATA, payload: user })
-          }
-        }
-      }
-      return redirect('/')
-    }
-  } else {
-    OAuthLoader = undefined
   }
 
   const routerConf: RouteObject[] = [
@@ -183,7 +155,7 @@ export function getRouterConf(forTest = '') {
     },
     {
       path: Routes.OAuth,
-      loader: OAuthLoader,
+      loader: oAuthLoaderClient,
     },
   ]
 

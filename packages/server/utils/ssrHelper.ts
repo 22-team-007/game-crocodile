@@ -43,9 +43,8 @@ export async function preparePersist(req: Request, res: any) {
       userData: { user: null },
     }
   }
-  res.removeHeader('Set-Cookie')
 
-  return { persistConfig, preloadedState }
+  return preloadedState
 }
 
 // convert the incoming Express request into a Fetch request

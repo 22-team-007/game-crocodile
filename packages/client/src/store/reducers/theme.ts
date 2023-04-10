@@ -6,7 +6,7 @@ const initState = {
   name: '',
 }
 
-type ThemeState = {
+export type ThemeState = {
   name: string
 }
 
