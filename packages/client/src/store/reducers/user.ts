@@ -6,7 +6,7 @@ const initState = {
   user: null,
 }
 
-type UserState = {
+export type UserState = {
   user: UserType | null
 }
 

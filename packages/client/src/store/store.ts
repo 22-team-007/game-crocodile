@@ -9,20 +9,28 @@ import thunk from 'redux-thunk'
 import { CookieStorage } from 'redux-persist-cookie-storage'
 import Cookies from 'cookies-js'
 import rootReducer from './reducers'
+import { IRootState } from './reducers'
 
-let initialData
+let initialData: IRootState
 
-if (typeof window !== 'undefined') {
-  initialData = window.__INITIAL_STATE__
+if (typeof window?.__INITIAL_STATE__ !== 'undefined') {
+  initialData = window.__INITIAL_STATE__ as any
   delete window.__INITIAL_STATE__
 } else {
-  initialData = {}
+  initialData = {
+    userData: { user: null },
+    theme: { name: 'white-theme' },
+  }
 }
 
 const persistConfig = {
   key: 'root',
-  storage: new CookieStorage(Cookies, {}),
+  storage: new CookieStorage(Cookies),
   whitelist: ['userData', 'theme'],
+  stateReconciler(inboundState: any, originalState: any) {
+    // Ignore state from cookies, only use preloadedState from window object
+    return originalState
+  },
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

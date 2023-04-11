@@ -6,7 +6,9 @@ export default {
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
   globals: {
-    __SERVER_PORT__: process.env.SERVER_PORT,
+    SERVER_PORT: process.env.SERVER_PORT,
+    SERVER_HOST: process.env.SERVER_HOST,
+    PRAKTIKUM_HOST: process.env.PRAKTIKUM_HOST,
   },
   moduleNameMapper: {
     '^.+\\.(css|scss)$': 'babel-jest',

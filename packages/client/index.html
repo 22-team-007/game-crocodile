@@ -5,9 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/assets/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!--ssr-init-state-->
+    <script id="post-work">
+      if ('serviceWorker' in navigator)
+        navigator.serviceWorker.register('/sw.js')
+      document.addEventListener("DOMContentLoaded",()=>{
+        document.getElementById('root').removeAttribute('style')
+      })
+      document.getElementById('post-work').remove()
+    </script>
   </head>
   <body>
-    <div id="root"><!--ssr-outlet--></div>
+    <div id="root" style="display: none;"><!--ssr-outlet--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

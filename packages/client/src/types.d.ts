@@ -67,13 +67,31 @@ declare type LeaderType = {
   score: number
 }
 
-declare interface LeaderProps extends UserType {
+declare interface Message {
+  chat_id: number
+  time: string
+  type: string
+  user_id: number
+  content: string
+  file?: ResourceType
+}
+
+declare interface ForumMessagesProps {
+  selectedChat: number | undefined
+  messages: Message[]
+  userId: number
+}
+
+declare interface ForumThemesProps {
+  chats: GameType[]
+}
+
+declare interface LeaderUserType extends UserType {
   score: number
 }
 
-declare type TopUser = Required<LeaderProps>
-
-declare interface TopLeaderProp extends TopUser {
+declare interface TopLeaderProp {
+  user: LeaderUserType
   title: string
 }
 
@@ -92,7 +110,8 @@ declare type SocketContent = {
   time?: string
   user_id?: number
   id?: number
-  color?: string
+  color?: string,
+  lineWidth?: number,
   content?: string | number | Coordinate[] | SocketContent
   file?: ResourceType
 }

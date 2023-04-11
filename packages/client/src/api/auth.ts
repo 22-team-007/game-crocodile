@@ -22,13 +22,18 @@ export default class Auth extends ApiBase implements AuthAPIType {
     return await this.user()
   }
 
-  public async user(): Promise<UserType> {
-    const r: Response = await this.GET('/api/v2/auth/user')
+  public async user(Cookie?: string | undefined): Promise<UserType> {
+    const r: Response = await this.GET('/api/v2/auth/user', {
+      headers: { Cookie } as HeadersInit,
+    })
+
     return await r.json()
   }
 
-  public async logOut(): Promise<string> {
-    const r = await this.POST('/api/v2/auth/logout')
+  public async logOut(Cookie?: string | undefined): Promise<string> {
+    const r = await this.POST('/api/v2/auth/logout', {
+      headers: { Cookie } as HeadersInit,
+    })
     return await r.text()
   }
 }

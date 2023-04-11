@@ -26,8 +26,6 @@ self.addEventListener('install', event => {
         '/FullScreen_In.mp3',
         '/FullScreen_Out.mp3',
         '/assets/vite.svg',
-        '/assets/index.css',
-        '/assets/index.js',
         '/assets/arrow.svg',
       ])
     })
