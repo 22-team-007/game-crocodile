@@ -17,9 +17,9 @@ interface ForumCommentsProps {
 const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReaction}) => {
 
   const emojis = [
+    '🧡',
     '😀',
     '😧',
-    '🧡',
     '👍',
     '👎',
   ]
@@ -50,7 +50,7 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReact
                   <MarkDown text={message.description} />
                 </div>
                 <div className='right'>
-                  <small className='px-1 reaction'>ответить</small>
+                  {/* <small className='px-1 reaction'>ответить</small> */}
                   <small>{getFormatDateString(message.updatedAt)}</small>
                 </div>
               </div>

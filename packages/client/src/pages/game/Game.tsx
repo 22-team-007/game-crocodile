@@ -41,6 +41,7 @@ function AutohideToast({ show, setShow, text }: AutohideToast) {
 
 interface GamePopupsProps {
   currentUserId: number | undefined
+  WORD: string | undefined
   lead: number | undefined
   isActivePopup: boolean
   secondsPopup: number
@@ -50,6 +51,7 @@ interface GamePopupsProps {
 
 const GamePopup: FC<GamePopupsProps> = ({
   lead,
+  WORD,
   currentUserId,
   isActivePopup,
   secondsPopup,
@@ -95,8 +97,9 @@ const Game = () => {
   const nextPlayer = gamePlayers.filter(player => {
     return player.id !== currentUser?.id
   })
-  const varWord = useRef<string>('')
 
+  const varWord = useRef<string>('')
+  
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
 
@@ -119,7 +122,7 @@ const Game = () => {
   }, [currentUser, chatId])
 
   useEffect(() => {
-    if (webSocket !== undefined && gamePlayers.length > 1) {
+    if (webSocket !== undefined && (gamePlayers && gamePlayers.length > 1)) {
       setLeadingPlayer(nextPlayer[0].id)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
@@ -187,14 +190,13 @@ const Game = () => {
     if (res.user_id !== undefined && res.content === currentUser?.id) {
       api.games.getWord().then(w=>{
         varWord.current = w
+        setLeading(Number(res.content))
+        setSecondsPopup(secondsToHidePopup)
+        setIsActivePopup(true)
+        //разрешаем рисовать, запрещаем писать
+        setDisabledCanvas(false)
+        setDisabledChat(true)
       })
-      setLeading(res.content as number)
-      setSecondsPopup(secondsToHidePopup)
-      setIsActivePopup(true)
-
-      //разрешаем рисовать, запрещаем писать
-      setDisabledCanvas(false)
-      setDisabledChat(true)
     } else {
       varWord.current = ''
       setDisabledCanvas(true)
@@ -231,7 +233,7 @@ const Game = () => {
         <div className="game-wrapper">
           <div className={isActivePopup ? 'popup-active' : ''}>
             <div className="d-flex justify-content-between align-items-center p-2">
-              {gamePlayers.length <= 1 && (
+              {gamePlayers && gamePlayers.length <= 1 && (
                 <span>Пригласите других игроков</span>
               )}
               {leadingPlayerData && (
@@ -269,6 +271,7 @@ const Game = () => {
             <GamePopup
               word={varWord.current}
               lead={lead}
+              WORD={varWord.current}
               secondsPopup={secondsPopup}
               setIsActive={setIsActivePopup}
               isActivePopup={isActivePopup}

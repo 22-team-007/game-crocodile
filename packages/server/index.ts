@@ -153,33 +153,23 @@ const {
       }
 
       const preloadedState = await preparePersist(req, res)
-
-      let appHtml: string,
-        stateMarkup = JSON.stringify(preloadedState).replace(/</g, '\\u003c')
+      const stateMarkup = JSON.stringify(preloadedState).replace(/</g, '\\u003c')
+      template = template.replace('{/*ssr-init-state*/}', stateMarkup)
 
       if (checkRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler
         const fetchReq = createFetchRequest(req)
-
         const [html, cookie] = await render(fetchReq, preloadedState)
-        appHtml = html
+
+        template = template.replace('<!--ssr-outlet-->', html)
 
         if (url.split('?')[0] === '/oauth' && cookie) {
           res.cookie(cookie.authCookie.name, cookie.authCookie.value)
           res.cookie(cookie.uuid.name, cookie.uuid.value)
         }
-
-        stateMarkup = `<script>window.__INITIAL_STATE__=${JSON.stringify(
-          preloadedState
-        ).replace(/</g, '\\u003c')}</script>`
-      } else {
-        appHtml = ''
       }
 
-      template = template.replace('<!--ssr-init-state-->', stateMarkup)
-      const html = template.replace('<!--ssr-outlet-->', appHtml)
-
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
     } catch (e) {
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
@@ -194,7 +184,7 @@ const {
 }
 
 // @ts-ignore для крректной работы SSR
-global.WebSocket = <any>class extends EventTarget {
+global.WebSocket = <any> class extends EventTarget {
   public constructor() {
     super()
   }
