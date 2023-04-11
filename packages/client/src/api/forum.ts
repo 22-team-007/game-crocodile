@@ -9,7 +9,7 @@ type ForumAPIType = {
   update_comment: (record: ForumRecord) => Promise<ForumRecord>
 }
 export default class Forum extends ApiBase implements ForumAPIType {
-  protected host = 'http://localhost:3001/api'
+  protected host = '/api'
   public async get(id: number): Promise<ForumRecord> {
     const r = await this.GET(`/forum/${id}`)
     return await r.json()

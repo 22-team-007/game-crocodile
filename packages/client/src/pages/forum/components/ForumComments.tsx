@@ -5,9 +5,8 @@ import { ListGroup, Image, Dropdown } from 'react-bootstrap'
 import { MarkDown } from './index'
 // Api
 import api from '../../../api'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFaceSmile } from '@fortawesome/free-regular-svg-icons'
 import { getFormatDateString } from '../../../utils/getFormatDateString'
+import svgSmile from '../../../assets/msgToolbar/smile.svg'
 
 interface ForumCommentsProps {
   messages: CommentRecord[]
@@ -59,7 +58,7 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReact
 
                 <Dropdown>
                   <Dropdown.Toggle as={'span'}>
-                    <FontAwesomeIcon icon={faFaceSmile} size={'lg'}/>
+                    <img src={svgSmile} alt='smile' />
                   </Dropdown.Toggle>
                   <Dropdown.Menu className='emoji_dropdown'>
                     {
