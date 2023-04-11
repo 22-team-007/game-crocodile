@@ -1,8 +1,3 @@
-// const {
-//   SERVER_HOST,
-//   SERVER_PORT,
-// } = process.env
-
 export default class Socket extends WebSocket implements SocketAPIType {
   protected static instance: Socket
   protected static userId: number
