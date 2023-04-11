@@ -159,11 +159,5 @@ global.WebSocket = <any> class extends EventTarget {
     return this
   }
 }
-//@ts-ignore для крректной работы SSR
-global.document = <any>{
-  createElement(){
-    return new HTMLElement()
-  }
-}
 
 startServer()
