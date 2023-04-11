@@ -1,6 +1,6 @@
 import Auth from './auth'
 
-const host = `http://${SERVER_HOST}:${SERVER_PORT}`
+const host = `http://${API_SERVER_HOST}:${API_SERVER_PORT}`
 
 describe('Testing Auth API ', () => {
   const auth: Auth = new Auth()

@@ -15,14 +15,14 @@ import { useAppDispatch } from '../../hooks/useAppSelector'
 import { setUser } from '../../store/actions/user'
 import api from '../../api'
 
-const {
-  SERVER_HOST,
-  SERVER_PORT,
-} = process.env
+// const {
+//   SERVER_HOST,
+//   SERVER_PORT,
+// } = process.env
 
 const auth = async () => {
   const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
-  const redirectURI = `http://${SERVER_HOST}:${SERVER_PORT}/oauth`
+  const redirectURI = `http://${API_SERVER_HOST}:${API_SERVER_PORT}/oauth`
 
   const OAuthClientId = await api.oauth.setvice(redirectURI)
   const goTo = `${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`

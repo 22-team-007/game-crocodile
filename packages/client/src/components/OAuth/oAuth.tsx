@@ -10,19 +10,15 @@ import { useAppSelector } from '../../hooks/useAppSelector'
 import { selectUserId } from '../../store/selectors'
 import { userTypes } from '../../store/actions/user'
 
-const {
-  SERVER_HOST,
-  SERVER_PORT,
-} = process.env
-
 const dispatch: (arg0: UserDataAction) => any = useAppDispatch
 
-const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
- = async ({ request }) => {
+const OAuthLoaderServer:
+  | ((arg: LoaderFunctionArgs) => any)
+  | undefined = async ({ request }) => {
   const code = new URL(request.url).searchParams.get('code')
 
   if (code) {
-    const redirect_uri = `http://${SERVER_HOST}:${SERVER_PORT}/oauth`
+    const redirect_uri = `http://${API_SERVER_HOST}:${API_SERVER_PORT}/oauth`
 
     const cookieOrNull = request.headers.get('cookie')
     let cookies = cookieOrNull !== null ? cookieOrNull : undefined
@@ -42,7 +38,7 @@ const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
       if (parsCookies) {
         cookies = `authCookie=${parsCookies?.authCookie?.value}; uuid=${parsCookies?.uuid?.value};`
       }
-      
+
       const user = await api.auth.user(cookies)
 
       if (user?.id) {
@@ -54,11 +50,11 @@ const OAuthLoaderServer: ((arg: LoaderFunctionArgs) => any) | undefined
 }
 
 const oAuthLoaderClient = async () => {
-  const userId = useAppSelector(selectUserId) 
-  if(userId) return redirect('/game')
+  const userId = useAppSelector(selectUserId)
+  if (userId) return redirect('/game')
 
   try {
-    const dispatch = useAppDispatch() 
+    const dispatch = useAppDispatch()
     const user = await api.auth.user()
     if (user?.id) {
       dispatch({
