@@ -1,87 +1,55 @@
+// React
 import { useState } from 'react'
-import { ForumThemes, ForumMessages } from './components'
+// Components
+import { ForumThemes, NewThemeModal } from './components'
 import {
   Card,
   Container,
-  Tabs,
-  Tab,
   Form,
   Button,
-  Modal,
+  InputGroup
 } from 'react-bootstrap'
-
-import { mockTopics, mockMessages } from './mockData'
+// SVG
+import svgSearch from '../../assets/msgToolbar/search.svg'
+import svgClose from '../../assets/msgToolbar/close.svg'
+// style
 import './style.scss'
 
 const Forum = () => {
   const [show, setShow] = useState(false)
-  const [topicTitle, setTopicTitle] = useState('')
-
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
-
-  const createTopicHandler = () => {
-    handleClose()
-  }
-
-  const changeTopicHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTopicTitle(event.target.value)
-  }
+  const handleSwitchModal = () => setShow(!show)
 
   return (
-    <Container className="forum-container">
-      <Card>
-        <Card.Header>
-          <Card.Title>Форум</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          <Tabs defaultActiveKey="themes" className="mb-3">
-            <Tab eventKey="themes" title="Список тем">
-              <Button variant="primary" onClick={handleShow}>
+    <>
+      <Container className="forum-container">
+        <Card>
+          <Card.Header>
+            <Card.Title className='d-flex justify-content-sm-between align-items-center'>
+              Форум
+              <Button
+                variant="outline-primary"
+                onClick={handleSwitchModal}
+              >
                 Создать новую тему
               </Button>
-              <ForumThemes chats={mockTopics} />
-              <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Введите название темы</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className="text-center">
-                  <Form>
-                    <Form.Group className="mb-4" controlId="topicName">
-                      <Form.Control
-                        onChange={changeTopicHandler}
-                        value={topicTitle}
-                        type="text"
-                        placeholder="Название темы"
-                      />
-                    </Form.Group>
+            </Card.Title>
+          </Card.Header>
 
-                    <Button variant="primary" onClick={createTopicHandler}>
-                      Создать
-                    </Button>
-                  </Form>
-                </Modal.Body>
-              </Modal>
-            </Tab>
-
-            <Tab eventKey="messages" title="Список сообщений в теме">
-              <ForumMessages
-                messages={mockMessages}
-                selectedChat={1}
-                userId={1}
+          <Card.Body>
+            <InputGroup>
+              <Form.Control
+                placeholder="Найти тему"
               />
-              <Form>
-                <Form.Group className="mb-3" controlId="comment">
-                  <Form.Label>Оставьте свой комментарий</Form.Label>
-                  <Form.Control as="textarea" placeholder="Ваше сообщение" />
-                </Form.Group>
-                <Button variant="primary">Отправить</Button>
-              </Form>
-            </Tab>
-          </Tabs>
-        </Card.Body>
-      </Card>
-    </Container>
+              <Button variant="outline-secondary"><img src={svgClose} alt='close' /></Button>
+              <Button variant="outline-secondary"><img src={svgSearch} alt='search' /></Button>
+            </InputGroup>
+
+            <ForumThemes/>
+          </Card.Body>
+        </Card>
+      </Container>
+      <NewThemeModal show={show} switchModal={handleSwitchModal}/>
+    </>
   )
 }
 export default Forum

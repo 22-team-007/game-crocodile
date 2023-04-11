@@ -34,7 +34,7 @@ export default class Forum extends ApiBase implements ForumAPIType {
     return await r.json()
   }
 
-  public async comments(parent_id: number): Promise<ForumRecord[]> {
+  public async comments(parent_id: number): Promise<CommentRecord[]> {
     const r = await this.GET(`/forum/${parent_id}/comment`)
     return await r.json()
   }
@@ -49,6 +49,13 @@ export default class Forum extends ApiBase implements ForumAPIType {
   public async update_comment(record: ForumRecord): Promise<ForumRecord> {
     const r = await this.POST(`/forum/${record.parent_id}/comment`, {
       body: JSON.stringify(record)
+    })
+    return await r.json()
+  }
+
+  public async create_reaction(data: Omit<EmojiRecord, 'id'>): Promise<EmojiRecord> {
+    const r = await this.POST('/forum/comment/emoji', {
+      body: JSON.stringify(data)
     })
     return await r.json()
   }

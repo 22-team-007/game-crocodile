@@ -1,5 +1,6 @@
-import { ForumRecord, CommentRecord, sequelize } from '../db'
+import { ForumRecord, CommentRecord, EmojiRecord, sequelize } from '../db'
 import type { Response, Request } from 'express'
+import { QueryTypes } from 'sequelize'
 
 class ForumController {
   //GET /forum - получение списка тем
@@ -73,7 +74,7 @@ class ForumController {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при поиске темы ${(e as Error).message}`)
+        .end(`Возникла ошибка при поиске темы ${(e as Error).message}`)
     }
   }
 
@@ -91,14 +92,15 @@ class ForumController {
 
       const data = req.body
       delete data.id
-      const rec = await ForumRecord.update(data, { where: { id } })
+      await ForumRecord.update(data, { where: { id } })
+      const rec = await ForumRecord.findOne({where: { id }})
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при изменении темы ${(e as Error).message}`)
+        .end(`Возникла ошибка при изменении темы ${(e as Error).message}`)
     }
   }
 
@@ -114,7 +116,24 @@ class ForumController {
         return
       }
 
-      const rec = await CommentRecord.findAll({ where: { parent_id } })
+      const rec = await sequelize.query(`select "a".*,"c"."emojis"
+        from "CommentRecords" as "a"
+        left join (select
+            "comment_id",
+            json_object_agg("emoji","emoji_kol") "emojis"
+          from  (select        
+          "comment_id",
+          "emoji",        
+          count("emoji") "emoji_kol"
+          from "EmojiRecords"      
+          group by "comment_id", "emoji") as "b"
+        group by "comment_id") as "c" on "c"."comment_id"="a"."id"
+        where "a"."parent_id" = :parent_id`,
+        {
+          replacements: { parent_id },
+          type: QueryTypes.SELECT
+        }
+      )
 
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
@@ -128,7 +147,7 @@ class ForumController {
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
         .end(
-          `Возникла ошибак при загрузке комментариев ${(e as Error).message}`
+          `Возникла ошибка при загрузке комментариев ${(e as Error).message}`
         )
     }
   }
@@ -160,7 +179,8 @@ class ForumController {
       }
 
       delete data.id
-      const rec = CommentRecord.update(data, { where: { parent_id, id } })
+      await CommentRecord.update(data, { where: { parent_id, id } })
+      const rec = await CommentRecord.findOne({where: { id }})
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
@@ -168,7 +188,7 @@ class ForumController {
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
         .end(
-          `Возникла ошибак при изменении комментария ${(e as Error).message}`
+          `Возникла ошибка при изменении комментария ${(e as Error).message}`
         )
     }
   }
@@ -198,7 +218,80 @@ class ForumController {
       res
         .status(500)
         .set({ 'Content-Type': 'text/plain' })
-        .end(`Возникла ошибак при создании комментария ${(e as Error).message}`)
+        .end(`Возникла ошибка при создании комментария ${(e as Error).message}`)
+    }
+  }
+
+  //DELETE /forum/comment/emoji - добавление/редактирование эмоции комментария
+  public static async deleteEmoji(req: Request, res: Response) {
+    try {
+      const { comment_id, author_id, emoji } = req.body
+
+      if (!comment_id || !author_id || !emoji ) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Комментарий не найден`)
+          return
+      }
+
+      const comment = await CommentRecord.findOne({ where: { id: comment_id } })
+      if (!comment) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Комментарий не найден`)
+        return
+      }
+
+      const rec = await EmojiRecord.destroy({ where: {comment_id, author_id} })
+      res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибка при удалении реакции ${(e as Error).message}`)
+    }
+  }
+
+  //POST /forum/comment/emoji - добавление/редактирование эмоции комментария
+  public static async postEmoji(req: Request, res: Response) {
+    try {
+      const { comment_id, author_id, emoji } = req.body
+
+      if (!comment_id || !author_id || !emoji ) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Комментарий не найден`)
+        return
+      }
+
+      const comment = await CommentRecord.findOne({ where: { id: comment_id } })
+      if (!comment) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Комментарий не найден`)
+        return
+      }
+
+      let rec = await EmojiRecord.findOne({ where: { author_id, comment_id } })
+
+      if (rec) {
+        await rec.update({ emoji })
+        await rec.save()
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+      } else {
+        rec = await EmojiRecord.create({ comment_id, author_id, emoji })
+        res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
+      }
+
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибка при создании реакции ${(e as Error).message}`)
     }
   }
 }

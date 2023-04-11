@@ -22,7 +22,10 @@ async function startServer() {
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  app.use(cors())
+  app.use(cors({
+    credentials: true,
+    origin: '*',
+  }))
 
   await dbConnect()
 

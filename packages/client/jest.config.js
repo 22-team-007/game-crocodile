@@ -14,4 +14,8 @@ export default {
     '^.+\\.(css|scss)$': 'babel-jest',
     '.+\\.(svg|png|jpg)$': 'babel-jest',
   },
+  transform: {
+    '\\.js$': ['babel-jest', { rootMode: 'upward' }],
+  },
+  transformIgnorePatterns: ['<rootDir>/node_modules/rehype-raw/'],
 }
