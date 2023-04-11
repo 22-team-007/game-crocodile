@@ -185,19 +185,19 @@ const Game = () => {
   const onSetLeading = (res: SocketContent) => {
     setSeconds(TIME)
     setTimerActive(true)
+    setDisabledCanvas(true)
+    setDisabledChat(true)
+    setIsActivePopup(false)
+    varWord.current = ''
     if (res.user_id !== undefined && res.content === currentUser?.id) {
       api.games.getWord().then(w=>{
         varWord.current = w
         setLeading(Number(res.content))
         setSecondsPopup(secondsToHidePopup)
         setIsActivePopup(true)
-        //разрешаем рисовать, запрещаем писать
         setDisabledCanvas(false)
-        setDisabledChat(true)
       })
     } else {
-      varWord.current = ''
-      setDisabledCanvas(true)
       setDisabledChat(false)
     }
   }
