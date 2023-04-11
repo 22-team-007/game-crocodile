@@ -21,8 +21,6 @@ import { GameChat, GameDraw } from './components'
 
 import './style.scss'
 
-const WORD = 'арбуз'
-
 type AutohideToast = {
   show: boolean
   setShow: (value: boolean) => void,
