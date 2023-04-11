@@ -41,7 +41,6 @@ function AutohideToast({ show, setShow, text }: AutohideToast) {
 
 interface GamePopupsProps {
   currentUserId: number | undefined
-  WORD: string | undefined
   lead: number | undefined
   isActivePopup: boolean
   secondsPopup: number
@@ -51,7 +50,6 @@ interface GamePopupsProps {
 
 const GamePopup: FC<GamePopupsProps> = ({
   lead,
-  WORD,
   currentUserId,
   isActivePopup,
   secondsPopup,
@@ -271,7 +269,6 @@ const Game = () => {
             <GamePopup
               word={varWord.current}
               lead={lead}
-              WORD={varWord.current}
               secondsPopup={secondsPopup}
               setIsActive={setIsActivePopup}
               isActivePopup={isActivePopup}
