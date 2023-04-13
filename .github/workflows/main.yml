@@ -16,12 +16,12 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
       - name: Build, tag, and push image to Yandex Cloud Container Registry
         env:
-					# идентификатор регистра
+          # идентификатор регистра
           CR_REGISTRY: crpgk04rnkkeled7bdg1
-					# название репозитория
+          # название репозитория
           CR_REPOSITORY: game-crocodile
           IMAGE_TAG: ${{ github.sha }}
-					# перееменные среды
+          # перееменные среды
           CLIENT_PORT: 3001
           SERVER_PORT: 3000
           POSTGRES_USER: postgres
