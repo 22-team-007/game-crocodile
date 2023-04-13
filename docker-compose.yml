@@ -19,7 +19,7 @@ services:
       - prakticum-network
   server:
     container_name: prakticum-server
-    image: prackicum-server
+    image: prakticum-server
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -36,12 +36,15 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      API_SERVER_HOST: ${API_SERVER_HOST}
+      API_SERVER_PORT: ${API_SERVER_PORT}
     networks:
       - prakticum-network
     depends_on:
       - postgres
   nginx:
     container_name: prakticum-nginx
+    image: prakticum-nginx
     build:
         context : .
         dockerfile: Dockerfile.nginx
