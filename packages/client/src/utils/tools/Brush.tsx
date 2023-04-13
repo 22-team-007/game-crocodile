@@ -12,10 +12,15 @@ export default class Brush extends Tool {
 
   public mouseDown = false
 
-  public drawArray(coordinates: Coordinate[], color: string) {
+  public clear() {
+    this.ctx!.clearRect(0, 0, this.canvas.width, this.canvas.height)
+  }
+  
+  public drawArray(coordinates: Coordinate[], color: string, lineWidth: number) {
     const tmpStrokeColor = this.strokeColor
     const tmpfillColor = this.fillColor
     this.strokeColor = this.fillColor = color
+    this.lineWidth = this.lineWidth = lineWidth
     for (let i = 0; i < coordinates.length; i++) {
       const [x, y] = coordinates[i]
       if (i === 0) {

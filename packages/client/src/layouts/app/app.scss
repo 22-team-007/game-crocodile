@@ -10,6 +10,46 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+
+  &.dark-theme {
+    background-image: url('../../assets/appBgDark.svg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    .navbar {
+      background-color: #343a40 !important;
+
+      .nav-link {
+        color: #ffffff !important;
+      }
+      .navbar-brand {
+        color: #ffffff !important;
+      }
+    }
+
+    .card *,
+    .chatting,
+    .chat *,
+    .send-message input {
+      background-color: #343a40;
+      color: #e5e5e5;
+    }
+
+    .chatting .leader-board {
+      background-image: linear-gradient(135deg, #74598f, #1f1c39);
+    }
+
+    .rules-list {
+      color: #e5e5e5;
+    }
+
+    .leaders h1 {
+      color: #ffffff;
+    }
+  }
+  img {
+    object-fit: cover;
+  }
 }
 
 .App > .container {

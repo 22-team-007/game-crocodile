@@ -1,3 +1,17 @@
-import ForumMessages from './ForumMessages'
+import ForumComments from './ForumComments'
 import ForumThemes from './ForumThemes'
-export { ForumMessages, ForumThemes }
+import NewThemeModal from './NewThemeModal'
+import MessageForm from './MessageForm'
+import MarkDown from './MarkDown'
+import MessageToolbar from './MessageToolbar'
+import ForumThemeContent from './ForumThemeContent'
+
+export {
+  ForumComments,
+  ForumThemes,
+  NewThemeModal,
+  MessageForm,
+  MarkDown,
+  MessageToolbar,
+  ForumThemeContent
+}

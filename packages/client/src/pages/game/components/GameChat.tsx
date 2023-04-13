@@ -8,9 +8,10 @@ import Arrow from '../../../assets/arrow.svg'
 interface GameChatProps {
   chatId: number
   socket?: SocketAPIType
+  disabled: boolean
 }
 
-const GameChat: FC<GameChatProps> = ({ socket }) => {
+const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
   const [messageList, setMessageList] = useState<SocketMessage[]>([])
   const [message, setMessage] = useState('')
 
@@ -30,7 +31,7 @@ const GameChat: FC<GameChatProps> = ({ socket }) => {
   }
 
   const sendText = (text: string) => {
-    if (socket !== undefined) {
+    if (socket !== undefined && !disabled && text != '') {
       socket.sendContent('text', { content: text })
       setMessage('')
     }
@@ -56,6 +57,7 @@ const GameChat: FC<GameChatProps> = ({ socket }) => {
       </div>
       <div className="send-message">
         <input
+          disabled={disabled}
           type="text"
           onChange={messageHandler}
           value={message}

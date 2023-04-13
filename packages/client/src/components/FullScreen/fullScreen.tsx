@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap'
 import sound from '../../utils/sound'
 
 const FullScreen = () => {
-  const [isFs, setIsFs] = useState(!!document.fullscreenElement)
+  const [isFs, setIsFs] = useState(false)
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDownHandler)
@@ -12,9 +12,10 @@ const FullScreen = () => {
   })
 
   const toggleFS = () => {
-    if (!document.fullscreenElement 
-      && document.documentElement.requestFullscreen) {
-
+    if (
+      !document.fullscreenElement &&
+      document.documentElement.requestFullscreen
+    ) {
       document.documentElement.requestFullscreen()
       sound.fullScreenIn()
       setIsFs(true)

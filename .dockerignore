@@ -1,0 +1,12 @@
+node_modules/
+packages/**/dist/
+packages/**/dist-ssr/
+packages/**/node_modules/
+.github/
+tmp/
+.*
+yarn.lock
+package-lock.json
+Dockerfile.*
+*.rm
+*.yml

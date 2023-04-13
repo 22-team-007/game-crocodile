@@ -6,28 +6,27 @@ import FullScreen from '../../components/FullScreen/fullScreen'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './app.scss'
+import { useAppSelector } from '../../hooks/useAppSelector'
+import { selectUserId, selectTheme } from '../../store/selectors'
 
 const App = () => {
-  let userId = localStorage.getItem('userId')
-
-  if (userId === '0') {
-    userId = null
-  }
+  const userId = useAppSelector(selectUserId)
+  const appTheme = useAppSelector(selectTheme)
 
   const availableLinks = useMemo(
     () =>
       LINKS.filter(
         link =>
           !(
-            (link.showUnregOnly && userId !== null) ||
-            (link.private && userId === null)
+            (link.showUnregOnly && userId !== undefined) ||
+            (link.private && userId === undefined)
           )
       ),
     [userId]
   )
 
   return (
-    <div className="App">
+    <div className={`App ${appTheme}`}>
       <Navbar fixed="top" className="mb-4" bg="light">
         <Container>
           <NavLink className="navbar-brand" to="/">

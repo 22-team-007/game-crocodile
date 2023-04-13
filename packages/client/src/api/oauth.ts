@@ -4,11 +4,23 @@ type OauthAPIType = {
   setvice: (redirect_uri: string) => Promise<string>
 }
 export default class Oauth extends ApiBase implements OauthAPIType {
-  public async signIn(code: string, redirect_uri: string) {
+  public async signIn(
+    code: string,
+    redirect_uri: string,
+    Cookie?: string | undefined
+  ) {
     const r = await this.POST('/api/v2/oauth/yandex', {
       body: JSON.stringify({ code, redirect_uri }),
+      headers: { Cookie } as HeadersInit,
     })
-    return await r.text()
+
+    const cookie = r.headers.get('set-cookie')
+
+    if (r.ok) {
+      return { reason: 'ok', cookie }
+    }
+
+    return await r.json()
   }
 
   public async setvice(redirect_uri: string): Promise<string> {

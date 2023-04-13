@@ -17,17 +17,74 @@
 .theme-messages {
   .right {
     white-space: nowrap;
+
+    .reaction {
+      visibility: hidden;
+      cursor: pointer;
+    }
+  }
+
+  .emoji {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-left: 1rem;
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .emoji_dropdown.show {
+      min-width: 20px;
+      display: flex;
+
+      .dropdown-item {
+        border-radius: 20px;
+      }
+    }
+
+    .emoji-item {
+      padding: 5px;
+      border: 1px solid #eee;
+      border-radius: 50%;
+      cursor: pointer;
+      &:hover {
+        background: rgba(0, 191, 255, 0.3);
+      }
+    }
+    .emoji-item.active {
+      border: 1px solid rgb(0, 191, 255);
+    }
   }
 
   .message-text {
-    padding: 0 1rem;
-    margin-left: 1rem;
     max-width: 90%;
+    padding: 0 1rem;
+  }
+
+  .text-content {
     border-left: 1px solid #eee;
+    margin-left: 1rem;
   }
 
   .message-number {
     font-size: 0.875em;
     color: #808080;
   }
+
+  .message {
+    &:hover {
+      .reaction {
+        visibility: visible;
+      }
+    }
+  }
+
+}
+
+.preview-block {
+  min-height: 200px;
 }

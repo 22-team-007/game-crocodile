@@ -86,13 +86,12 @@ declare interface ForumThemesProps {
   chats: GameType[]
 }
 
-declare interface LeaderProps extends UserType {
+declare interface LeaderUserType extends UserType {
   score: number
 }
 
-declare type TopUser = Required<LeaderProps>
-
-declare interface TopLeaderProp extends TopUser {
+declare interface TopLeaderProp {
+  user: LeaderUserType
   title: string
 }
 
@@ -111,11 +110,68 @@ declare type SocketContent = {
   time?: string
   user_id?: number
   id?: number
-  color?: string
-  content?: string | Coordinate[] | SocketContent
+  color?: string,
+  lineWidth?: number,
+  content?: string | number | Coordinate[] | SocketContent
   file?: ResourceType
 }
 
 declare type SocketMessage = SocketContent & {
   user: UserType
 }
+
+declare interface Window {
+  __INITIAL_STATE__?: object
+}
+
+declare type UsersType = Record<number, UserType>
+
+declare type ForumRecord = {
+  id: number
+  parent_id: number | null
+  subject: string
+  description: string
+  author_id: number
+  updatedAt?: string
+}
+
+declare type ThemeContentType = {
+  theme: ForumRecord,
+  user: UserType
+}
+
+declare type CommentRecord = {
+  id: number
+  parent_id: number|null
+  subject: string
+  description: string
+  author_id: number
+  updatedAt?: string
+  emojis: Record<string, number> | null
+}
+
+declare type EmojiRecord = {
+  id: number
+  comment_id: number
+  author_id: number
+  emoji: string
+}
+
+declare type ForumList = {
+  id: number
+  subject: string
+  comments: string
+}[]
+
+declare type ThemeType = {
+  name: string
+  themeClass: string
+  desc: string
+  ariaLabel: string
+}
+
+declare interface FormFieldsTheme {
+  subject: string
+  description: string
+}
+

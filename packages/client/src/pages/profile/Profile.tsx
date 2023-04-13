@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Button, Card, Row, Col, Container } from 'react-bootstrap'
-import { Avatar, FormEdit, FormShow, FormPassword } from './components'
+import {
+  Avatar,
+  FormEdit,
+  FormShow,
+  FormPassword,
+  ThemeSwitcher,
+} from './components'
 
 import withAuth from '../../hoc/withAuth'
 import api from '../../api'
@@ -60,7 +66,12 @@ export const Profile = () => {
               <Avatar src={fields.avatar} setValue={setValue} />
             </Col>
             <Col xs="12" md="6" lg="8">
-              {page === Pages.Show && <FormShow fields={fields} />}
+              {page === Pages.Show && (
+                <>
+                  <FormShow fields={fields} />
+                  <ThemeSwitcher />
+                </>
+              )}
               {page === Pages.Password && (
                 <FormPassword
                   close={() => {
@@ -69,10 +80,7 @@ export const Profile = () => {
                 />
               )}
               {page === Pages.Edit && (
-                <FormEdit
-                  fields={fields}
-                  close={onCloseEdit}
-                />
+                <FormEdit fields={fields} close={onCloseEdit} />
               )}
             </Col>
           </Row>

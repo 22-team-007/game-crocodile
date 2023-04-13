@@ -1,28 +1,37 @@
-import { Client } from 'pg'
+import { Sequelize } from 'sequelize-typescript'
+import { formRecordModel } from './models/ForumRecord'
+import { commentRecordModel } from './models/CommentRecord'
+import { emojiRecordModel } from './models/EmojiRecord'
+const {
+  POSTGRES_HOST,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB,
+  POSTGRES_PORT,
+} = process.env
 
-const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT } =
-  process.env
+export const sequelize = new Sequelize({
+  host: POSTGRES_HOST,
+  port: Number(POSTGRES_PORT),
+  username: POSTGRES_USER,
+  password: POSTGRES_PASSWORD,
+  database: POSTGRES_DB,
+  dialect: 'postgres',
+})
 
-export const createClientAndConnect = async (): Promise<Client | null> => {
+export const ForumRecord = sequelize.define('ForumRecord', formRecordModel, {})
+export const CommentRecord = sequelize.define('CommentRecord', commentRecordModel, {})
+export const EmojiRecord = sequelize.define('EmojiRecord', emojiRecordModel, {})
+
+CommentRecord.hasMany(EmojiRecord, {onDelete: 'cascade', foreignKey: 'comment_id'})
+EmojiRecord.belongsTo(CommentRecord, {foreignKey: 'comment_id'})
+
+export const dbConnect = async () => {
   try {
-    const client = new Client({
-      user: POSTGRES_USER,
-      host: 'localhost',
-      database: POSTGRES_DB,
-      password: POSTGRES_PASSWORD,
-      port: Number(POSTGRES_PORT),
-    })
-
-    await client.connect()
-
-    const res = await client.query('SELECT NOW()')
-    console.log('  ➜ 🎸 Connected to the database at:', res?.rows?.[0].now)
-    client.end()
-
-    return client
-  } catch (e) {
-    console.error(e)
+    await sequelize.authenticate()
+    await sequelize.sync({alter: true})
+    console.log('Connection has been established successfully.')
+  } catch (error) {
+    console.error('Unable to connect to the database.')
   }
-
-  return null
 }

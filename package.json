@@ -1,10 +1,10 @@
 {
-  "name": "client-server-template-with-vite",
+  "name": "game-crocodile",
   "private": true,
   "scripts": {
     "bootstrap": "yarn && node init.js && lerna clean && yarn && lerna bootstrap",
     "build": "lerna run build",
-    "dev:client": "lerna run dev  --scope=client",
+    "dev:client": "lerna run dev --scope=client",
     "dev:server": "lerna run dev --scope=server",
     "dev": "lerna run dev",
     "test": "lerna run test",
@@ -21,16 +21,22 @@
   },
   "devDependencies": {
     "@evilmartians/lefthook": "1.1.1",
-    "lerna": "5.4.3"
+    "@types/pg": "8.6.6"
   },
   "dependencies": {
     "bootstrap": "5.2.3",
+    "lerna": "5.4.3",
+    "pg": "8.10.0",
+    "react": "18.2.0",
     "react-bootstrap": "2.7.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.43.1",
-    "react-redux": "^8.0.5",
+    "react-redux": "8.0.5",
     "react-router-dom": "6.8.1",
-    "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2"
+    "redux": "4.2.1",
+    "redux-thunk": "2.4.2",
+    "reflect-metadata": "0.1.13",
+    "sequelize": "6.29.2",
+    "sequelize-typescript": "2.1.5"
   }
 }

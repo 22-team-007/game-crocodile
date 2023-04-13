@@ -1,23 +1,32 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
-import store, { persistor } from './store/store'
+import store from './store/store'
+import { Index } from './router'
 
-import { routerConf } from './router'
+const root = document.getElementById('root') as HTMLElement
+const hydrate = window.__staticRouterHydrationData
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
+// dont't use loader date from server
+if (hydrate?.loaderData) {
+  hydrate.loaderData = undefined
 }
 
-ReactDOM.createRoot(document.getElementById('root') as Element).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <RouterProvider router={createBrowserRouter(routerConf)} />
-      </PersistGate>
-    </Provider>
-  </React.StrictMode>
-)
+delete window.__staticRouterHydrationData
+
+typeof hydrate !== 'undefined'
+  ? ReactDOM.hydrateRoot(
+      root,
+      <React.StrictMode>
+        <Provider store={store}>
+          <Index />
+        </Provider>
+      </React.StrictMode>
+    )
+  : ReactDOM.createRoot(root).render(
+      <React.StrictMode>
+        <Provider store={store}>
+          <Index />
+        </Provider>
+      </React.StrictMode>
+    )
