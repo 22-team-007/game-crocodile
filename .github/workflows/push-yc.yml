@@ -35,9 +35,9 @@ jobs:
           API_SERVER_PORT: 3000
         run: |
           docker compose build
-          docker tag practicum-postgres:latest cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
-          docker push cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
-          docker tag practicum-server:latest cr.yandex/$CR_REGISTRY/practicum-server:latest
-          docker push cr.yandex/$CR_REGISTRY/practicum-server:latest
-          docker tag practicum-nginx:latest cr.yandex/$CR_REGISTRY/practicum-nginx:latest
-          docker push cr.yandex/$CR_REGISTRY/practicum-nginx:latest
+          docker tag game-crocodile-postgres:latest cr.yandex/$CR_REGISTRY/game-crocodile-postgres:latest
+          docker push cr.yandex/$CR_REGISTRY/game-crocodile-postgres:latest
+          docker tag game-crocodile-server:latest cr.yandex/$CR_REGISTRY/game-crocodile-server:latest
+          docker push cr.yandex/$CR_REGISTRY/game-crocodile-server:latest
+          docker tag game-crocodile-nginx:latest cr.yandex/$CR_REGISTRY/game-crocodile-nginx:latest
+          docker push cr.yandex/$CR_REGISTRY/game-crocodile-nginx:latest
