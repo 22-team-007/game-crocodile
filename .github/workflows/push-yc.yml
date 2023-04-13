@@ -35,7 +35,9 @@ jobs:
           API_SERVER_PORT: 3000
         run: |
           docker compose build
-          docker tag practicum-client:latest cr.yandex/$CR_REGISTRY/practicum-client:latest
-          docker push cr.yandex/$CR_REGISTRY/practicum-client:latest
+          docker tag practicum-postgres:latest cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
+          docker push cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
           docker tag practicum-server:latest cr.yandex/$CR_REGISTRY/practicum-server:latest
           docker push cr.yandex/$CR_REGISTRY/practicum-server:latest
+          docker tag practicum-nginx:latest cr.yandex/$CR_REGISTRY/practicum-nginx:latest
+          docker push cr.yandex/$CR_REGISTRY/practicum-nginx:latest
