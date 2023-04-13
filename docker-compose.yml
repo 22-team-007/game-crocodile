@@ -42,6 +42,7 @@ services:
       - postgres
   nginx:
     container_name: prakticum-nginx
+    image: prakticum-nginx
     build:
         context : .
         dockerfile: Dockerfile.nginx
