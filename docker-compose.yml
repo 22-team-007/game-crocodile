@@ -3,7 +3,7 @@ version: "3.9"
 services:
   postgres:
     container_name: prakticum-postgres
-    image: prakticum-postgres
+    image: cr.yandex/${CR_REGISTRY}/prakticum-postgres
     build:
       context: .
       dockerfile: Dockerfile.postgres
@@ -16,10 +16,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     networks:
-      - prakticum-network
+      - default
   server:
     container_name: prakticum-server
-    image: prakticum-server
+    image: cr.yandex/${CR_REGISTRY}/prakticum-server
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -30,8 +30,9 @@ services:
       - "${SERVER_PORT}:${SERVER_PORT}"
     environment:
       SERVER_PORT: ${SERVER_PORT}
-      NODE_ENV: production
-      POSTGRES_HOST: prakticum-postgres
+      NODE_ENV: ${NODE_ENV}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      PRAKTIKUM_HOST: ${PRAKTIKUM_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -39,12 +40,12 @@ services:
       API_SERVER_HOST: ${API_SERVER_HOST}
       API_SERVER_PORT: ${API_SERVER_PORT}
     networks:
-      - prakticum-network
+      - default
     depends_on:
       - postgres
   nginx:
     container_name: prakticum-nginx
-    image: prakticum-nginx
+    image: cr.yandex/${CR_REGISTRY}/prakticum-nginx
     build:
         context : .
         dockerfile: Dockerfile.nginx
@@ -52,10 +53,12 @@ services:
       - server
     ports:
       - "80:80"
+    environment:
+      CR_REGISTRY: ${CR_REGISTRY}
     restart: always
     networks:
-      - prakticum-network
+      - default
 
 networks:
-  prakticum-network:
+  default:
     driver: bridge 
