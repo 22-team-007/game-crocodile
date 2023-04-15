@@ -2,7 +2,7 @@
 import { useForm } from 'react-hook-form'
 // Router
 import { NavLink } from 'react-router-dom'
-import { Routes } from '../../router'
+import { Routes } from '../../constants/routes'
 // components
 import FormInput from '../../components/FormInput'
 // Bootstrap components

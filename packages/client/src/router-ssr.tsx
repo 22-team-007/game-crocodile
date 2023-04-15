@@ -1,17 +1,16 @@
 import type { RouteObject } from 'react-router-dom'
 
 import App from './layouts/app/App'
-import { StartPage, ErrorPage, Login, Registration, Page } from './pages'
-import { OAuthLoaderServer } from './components/OAuth/oAuth'
+import {
+  StartPage,
+  ErrorPage,
+  Login,
+  Registration,
+  Page,
+} from './pages/index-ssr'
 
-enum Routes {
-  Index = '/',
-  Login = '/signin',
-  Register = '/signup',
-  E404 = '404',
-  E500 = '500',
-  OAuth = 'oauth',
-}
+import { OAuthLoaderServer } from './components/OAuth/oAuth'
+import { Routes } from './constants/routes'
 
 export const OAUTH_LOADER_NUMBER = 3
 

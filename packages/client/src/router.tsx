@@ -24,23 +24,7 @@ import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
 import { UserLogoutAction, UserDataAction } from './store/actions/types'
 import { oAuthLoaderClient } from './components/OAuth/oAuth'
-
-export enum Routes {
-  Index = '/',
-  Login = 'signin',
-  Register = 'signup',
-  Logout = 'signout',
-  GameList = 'game',
-  Game = 'game/:chatId',
-  Profile = 'profile',
-  ProfileId = 'profile/:profileId',
-  Leaderboard = 'leaders',
-  Forum = 'forum',
-  ForumTheme = 'forum/:id',
-  E404 = '404',
-  E500 = '500',
-  OAuth = 'oauth',
-}
+import { Routes } from './constants/routes'
 
 export function getRouterConf(forTest = '') {
   let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
