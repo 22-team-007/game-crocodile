@@ -82,3 +82,20 @@ export function createFetchRequest(req: Request) {
 
   return new Request(url.href, init)
 }
+
+const routes = [
+  '/',
+  '/signin',
+  '/signup',
+  '/signout',
+  '/game',
+  '/profile',
+  '/leaders',
+  '/forum',
+  '/oauth',
+]
+
+export function routeExist(url: string): boolean {
+  const [pathname] = url.split('?')
+  return routes.includes(pathname)
+}

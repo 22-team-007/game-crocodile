@@ -2,7 +2,7 @@
 import { useForm } from 'react-hook-form'
 // Router
 import { NavLink } from 'react-router-dom'
-import { Routes } from '../../constants/routes'
+import { routes } from '../../constants/routes'
 import WithAuth from '../../hoc/withAuth'
 // components
 import FormInput from '../../components/FormInput'
@@ -76,7 +76,7 @@ const Login = () => {
             <Button className="w-100 mt-3" type="submit">
               Войти
             </Button>
-            <NavLink to={`/${Routes.Register}`}>
+            <NavLink to={`${routes.Register}`}>
               <Button className="w-100" size="sm" variant="link">
                 Нет аккаунта?
               </Button>

@@ -10,13 +10,13 @@ import {
 } from './pages/index-ssr'
 
 import { OAuthLoaderServer } from './components/OAuth/oAuth'
-import { Routes } from './constants/routes'
+import { routes } from './constants/routes'
 
 export const OAUTH_LOADER_NUMBER = 3
 
 export const routerConf: RouteObject[] = [
   {
-    path: Routes.Index,
+    path: routes.Index,
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
@@ -29,7 +29,7 @@ export const routerConf: RouteObject[] = [
         ),
       },
       {
-        path: Routes.Login,
+        path: routes.Login,
         element: (
           <Page title="Крокодил - Вход">
             <Login />
@@ -37,7 +37,7 @@ export const routerConf: RouteObject[] = [
         ),
       },
       {
-        path: Routes.Register,
+        path: routes.Register,
         element: (
           <Page title="Крокодил - Регистрация">
             <Registration />
@@ -47,7 +47,7 @@ export const routerConf: RouteObject[] = [
     ],
   },
   {
-    path: Routes.E404,
+    path: routes.E404,
     element: (
       <Page title="Ошибка - 404">
         <ErrorPage />
@@ -55,7 +55,7 @@ export const routerConf: RouteObject[] = [
     ),
   },
   {
-    path: Routes.E500,
+    path: routes.E500,
     element: (
       <Page title="Ошибка - 500">
         <ErrorPage />
@@ -63,7 +63,7 @@ export const routerConf: RouteObject[] = [
     ),
   },
   {
-    path: Routes.OAuth,
+    path: routes.OAuth,
     loader: OAuthLoaderServer,
     element: <></>,
   },

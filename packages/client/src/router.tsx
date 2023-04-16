@@ -24,7 +24,7 @@ import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
 import { UserLogoutAction, UserDataAction } from './store/actions/types'
 import { oAuthLoaderClient } from './components/OAuth/oAuth'
-import { Routes } from './constants/routes'
+import { routes } from './constants/routes'
 
 export function getRouterConf(forTest = '') {
   let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
@@ -35,7 +35,7 @@ export function getRouterConf(forTest = '') {
 
   const routerConf: RouteObject[] = [
     {
-      path: Routes.Index,
+      path: routes.Index,
       element: <App />,
       errorElement: <ErrorPage />,
       children: [
@@ -48,7 +48,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Login,
+          path: routes.Login,
           element: (
             <Page title="Крокодил - Вход">
               <Login />
@@ -56,7 +56,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.GameList,
+          path: routes.GameList,
           element: (
             <Page title="Крокодил - Игра">
               <GameList />
@@ -64,7 +64,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Game,
+          path: routes.Game,
           element: (
             <Page title="Крокодил - Игра">
               <Game />
@@ -72,7 +72,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Register,
+          path: routes.Register,
           element: (
             <Page title="Крокодил - Регистрация">
               <Registration />
@@ -80,7 +80,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Profile,
+          path: routes.Profile,
           element: (
             <Page title="Крокодил - Профиль">
               <PrivateProfile />
@@ -88,7 +88,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.ProfileId,
+          path: routes.ProfileId,
           loader: undefined,
           element: (
             <Page title="Крокодил - Профиль">
@@ -97,7 +97,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Leaderboard,
+          path: routes.Leaderboard,
           loader: leaderBoardLoader,
           element: (
             <Page title="Крокодил - Лидеры">
@@ -106,7 +106,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Forum,
+          path: routes.Forum,
           element: (
             <Page title="Крокодил - Форум">
               <Forum />
@@ -114,7 +114,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.ForumTheme,
+          path: routes.ForumTheme,
           element: (
             <Page title="Крокодил - Форум">
               <ForumTheme />
@@ -122,7 +122,7 @@ export function getRouterConf(forTest = '') {
           ),
         },
         {
-          path: Routes.Logout,
+          path: routes.Logout,
           loader: async () => {
             await api.auth.logOut()
             forTest ? false : dispatch(logoutUser())
@@ -132,7 +132,7 @@ export function getRouterConf(forTest = '') {
       ],
     },
     {
-      path: Routes.E404,
+      path: routes.E404,
       element: (
         <Page title="Ошибка - 404">
           <ErrorPage />
@@ -140,7 +140,7 @@ export function getRouterConf(forTest = '') {
       ),
     },
     {
-      path: Routes.E500,
+      path: routes.E500,
       element: (
         <Page title="Ошибка - 500">
           <ErrorPage />
@@ -148,7 +148,7 @@ export function getRouterConf(forTest = '') {
       ),
     },
     {
-      path: Routes.OAuth,
+      path: routes.OAuth,
       loader: oAuthLoaderClient,
     },
   ]
