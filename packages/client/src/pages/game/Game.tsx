@@ -88,14 +88,18 @@ const Game = () => {
   const [isDisabledCanvas, setDisabledCanvas] = useState(true)
   const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
+  const [scoreLeaders, setScoreLeaders] = useState<UserType[]>([])
   const [lead, setLeading] = useState<number>()
   const [leadingPlayerData, setLeadingPlayerData] = useState<UserType>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
   const nextPlayer = gamePlayers.filter(player => {
-    return player.id !== currentUser?.id
+    return player?.id !== currentUser?.id
   })
-
+  const roomPlayersIds = gamePlayers.reduce((ids: number[] , player) => {
+    ids.push(player.id)
+    return ids
+  }, [])
   const varWord = useRef<string>('')
   
   const [seconds, setSeconds] = useState(0)
@@ -121,7 +125,7 @@ const Game = () => {
 
   useEffect(() => {
     if (webSocket !== undefined && (gamePlayers && gamePlayers.length > 1)) {
-      setLeadingPlayer(nextPlayer[0].id)
+      setLeadingPlayer(nextPlayer[0].id, true)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
     }
@@ -137,7 +141,7 @@ const Game = () => {
         setToastText("Вы не успели, переход хода")
         setShowToast(true)
         webSocket!.sendContent('clear', {})
-        setLeadingPlayer(nextPlayer[0].id)
+        setLeadingPlayer(nextPlayer[0].id, true)
       }
     }
     return () => {
@@ -158,7 +162,7 @@ const Game = () => {
         setShowToast(true)
         setIsActivePopup(false)
         webSocket!.sendContent('clear', {})
-        setLeadingPlayer(nextPlayer[0].id)
+        setLeadingPlayer(nextPlayer[0].id, true)
       }
     }
     return () => {
@@ -173,15 +177,44 @@ const Game = () => {
       res.user_id !== undefined &&
       res?.content?.toString().toLowerCase() === varWord.current.toLowerCase()
     ) {
-      if (res.user_id === currentUser?.id) {
-        setToastText("Вы угадали, начислено 10 баллов!")
-        setShowToast(true)
-        //начисляем баллы
-      }
       webSocket!.sendContent('clear', {})
       setLeadingPlayer(res.user_id)
     }
   }
+
+  
+  const setScore = async (id: number) => {
+
+    let leadsIdScore: LeaderType[]
+    
+    await api.leaderbord.add(Number(chatId), id, 10)
+    leadsIdScore = await api.leaderbord.all()
+
+    let rawLeaders = await Promise.all(
+      leadsIdScore.map(async leader => {
+        try {
+          if (leader.id && roomPlayersIds.includes(leader.id)) {
+            const user = await api.users.get(leader.id)
+            if(user.id === id) {
+              await api.leaderbord.add(Number(chatId), id, leader.score + 10) 
+            } 
+            return { ...user, score: leader.score} as LeaderUserType
+          } 
+        } catch {
+          console.log(`Cant get user info with id ${leader.id}`)
+        }
+      })
+    )
+    const leaders = rawLeaders.filter(
+      leader => leader !== undefined
+    ) as LeaderUserType[]
+
+    rawLeaders = leaders
+    setScoreLeaders(leaders)
+    console.log(scoreLeaders)
+  }
+
+  
   const onSetLeading = (res: SocketContent) => {
     setSeconds(TIME)
     setTimerActive(true)
@@ -189,6 +222,7 @@ const Game = () => {
     setDisabledChat(true)
     setIsActivePopup(false)
     varWord.current = ''
+
     if (res.user_id !== undefined && res.content === currentUser?.id) {
       api.games.getWord().then(w=>{
         varWord.current = w
@@ -196,13 +230,21 @@ const Game = () => {
         setSecondsPopup(secondsToHidePopup)
         setIsActivePopup(true)
         setDisabledCanvas(false)
+
+        if(!res.withoutSetScore) {
+          setToastText("Вы угадали, начислено 10 баллов!")
+          setShowToast(true)
+          setScore(res.content as number)
+        }
       })
+
     } else {
       setDisabledChat(false)
+      //setScore(0)
     }
   }
 
-  const setLeadingPlayer = (id: number) => {
+  const setLeadingPlayer = (id: number, withoutSetScore: boolean = false) => {
     setLeading(id)
 
     gamePlayers.filter(player => {
@@ -212,6 +254,7 @@ const Game = () => {
     })
     webSocket!.sendContent('setLeadingPlayer', {
       content: id,
+      withoutSetScore: withoutSetScore
     })
   }
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
@@ -251,8 +294,8 @@ const Game = () => {
               {lead === currentUser?.id && seconds > 0 && (
                 <>
                   <ul className="word">
-                    {[...varWord.current].map(letter => (
-                      <li className="word-letter">{letter}</li>
+                    {[...varWord.current].map((letter, i) => (
+                      <li key={i} className="word-letter">{letter}</li>
                     ))}
                   </ul>
                 </>
@@ -319,7 +362,14 @@ const Game = () => {
                 </ListGroup.Item>
               </ListGroup>
               <ListGroup variant="flush" className="leader-board_wrap">
-                {gamePlayers?.map(player => (
+                {!scoreLeaders || scoreLeaders.length === 0 && (
+                   <ListGroup.Item>
+                      <div className="empty-msg">
+                        <div className="msg">пока нет лидеров</div>
+                      </div>
+                    </ListGroup.Item>
+                )}
+                {scoreLeaders?.map(player => (
                   <ListGroup.Item
                     key={player.id}
                     className="d-flex justify-content-between text-white no-border">
@@ -332,7 +382,7 @@ const Game = () => {
                       />
                       <span className="user-name">{player.login}</span>
                     </span>
-                    <span>80</span>
+                    <span>{player.score ? player.score : 0}</span>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
