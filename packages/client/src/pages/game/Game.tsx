@@ -96,10 +96,6 @@ const Game = () => {
   const nextPlayer = gamePlayers.filter(player => {
     return player?.id !== currentUser?.id
   })
-  const roomPlayersIds = gamePlayers.reduce((ids: number[] , player) => {
-    ids.push(player.id)
-    return ids
-  }, [])
   const varWord = useRef<string>('')
   
   const [seconds, setSeconds] = useState(0)
@@ -117,7 +113,8 @@ const Game = () => {
         api.games
           .socketConnect(currentUser.id, Number(chatId))
           .then(setWebSocket)
-      }
+        api.leaderbord.add(Number(chatId), currentUser?.id, 0)
+      } 
     }
 
     return () => webSocket?.close()
@@ -182,21 +179,19 @@ const Game = () => {
     }
   }
 
-  
   const setScore = async (id: number) => {
 
-    let leadsIdScore: LeaderType[]
-    
-    await api.leaderbord.add(Number(chatId), id, 10)
-    leadsIdScore = await api.leaderbord.all()
+    let leadsIdScore = await api.leaderbord.team(`team${chatId}`)
+
+    console.log(leadsIdScore)
 
     let rawLeaders = await Promise.all(
       leadsIdScore.map(async leader => {
         try {
-          if (leader.id && roomPlayersIds.includes(leader.id)) {
+          if (leader.id) {
             const user = await api.users.get(leader.id)
             if(user.id === id) {
-              await api.leaderbord.add(Number(chatId), id, leader.score + 10) 
+              await api.leaderbord.add(Number(chatId), currentUser?.id, leader.score + 10) 
             } 
             return { ...user, score: leader.score} as LeaderUserType
           } 
@@ -211,7 +206,6 @@ const Game = () => {
 
     rawLeaders = leaders
     setScoreLeaders(leaders)
-    console.log(scoreLeaders)
   }
 
   
@@ -223,7 +217,7 @@ const Game = () => {
     setIsActivePopup(false)
     varWord.current = ''
 
-    if (res.user_id !== undefined && res.content === currentUser?.id) {
+    if (res.user_id !== undefined && res.content === currentUser?.id) { 
       api.games.getWord().then(w=>{
         varWord.current = w
         setLeading(Number(res.content))
@@ -234,19 +228,17 @@ const Game = () => {
         if(!res.withoutSetScore) {
           setToastText("Вы угадали, начислено 10 баллов!")
           setShowToast(true)
-          setScore(res.content as number)
+          setScore(currentUser?.id)
         }
       })
 
     } else {
       setDisabledChat(false)
-      //setScore(0)
     }
   }
 
   const setLeadingPlayer = (id: number, withoutSetScore: boolean = false) => {
     setLeading(id)
-
     gamePlayers.filter(player => {
       if (player.id === id) {
         setLeadingPlayerData(player)
@@ -356,16 +348,16 @@ const Game = () => {
                         </Popover.Body>
                       </Popover>
                     }>
-                    <Button className="rounded-circle">&#43;</Button>
+                    <Button title="Добавить игрока" className="rounded-circle">&#43;</Button>
                   </OverlayTrigger>
-                  <h5 className="text-center">Раунд 8 из 15</h5>
+                  <h5 className="text-center">Таблица лидеров</h5>
                 </ListGroup.Item>
               </ListGroup>
               <ListGroup variant="flush" className="leader-board_wrap">
                 {!scoreLeaders || scoreLeaders.length === 0 && (
                    <ListGroup.Item>
                       <div className="empty-msg">
-                        <div className="msg">пока нет лидеров</div>
+                        <div className="msg">Пока нет лидеров</div>
                       </div>
                     </ListGroup.Item>
                 )}
@@ -385,6 +377,7 @@ const Game = () => {
                     <span>{player.score ? player.score : 0}</span>
                   </ListGroup.Item>
                 ))}
+               
               </ListGroup>
             </div>
             <GameChat

@@ -24,7 +24,6 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
   const onText = (res: SocketContent) => {
     if (res.user_id !== undefined) {
       api.users.get(res.user_id).then((user: UserType) => {
-        //нужно в API настроить запись в Store пользователей, после внедрение его в API, чтобы не дергать постоянно
         setMessageList(prev => [...prev, { ...res, user }])
       })
     }
@@ -62,6 +61,11 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
           onChange={messageHandler}
           value={message}
           placeholder="Напишите сообщение"
+          onKeyDown={event => {
+            if (event.key === 'Enter') {
+              sendText(message)
+            }
+          }}
         />
         <button type="submit" onClick={() => sendText(message)}>
           <img src={Arrow} alt="Отправить" />
