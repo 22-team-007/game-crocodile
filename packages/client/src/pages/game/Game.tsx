@@ -183,15 +183,13 @@ const Game = () => {
 
     let leadsIdScore = await api.leaderbord.team(`team${chatId}`)
 
-    console.log(leadsIdScore)
-
     let rawLeaders = await Promise.all(
       leadsIdScore.map(async leader => {
         try {
           if (leader.id) {
-            const user = await api.users.get(leader.id)
+            const user = await api.users.get(leader.id) 
             if(user.id === id) {
-              await api.leaderbord.add(Number(chatId), currentUser?.id, leader.score + 10) 
+              await api.leaderbord.add(Number(chatId), id, leader.score + 10) 
             } 
             return { ...user, score: leader.score} as LeaderUserType
           } 
