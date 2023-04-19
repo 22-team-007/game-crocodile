@@ -12,5 +12,4 @@ export enum routes {
   ForumTheme = '/forum/:id',
   E404 = '/404',
   E500 = '/500',
-  OAuth = '/oauth',
 }

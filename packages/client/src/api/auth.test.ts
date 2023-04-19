@@ -1,6 +1,6 @@
 import Auth from './auth'
 
-const host = `http://${API_SERVER_HOST}:${API_SERVER_PORT}`
+const host = ''
 
 describe('Testing Auth API ', () => {
   const auth: Auth = new Auth()
@@ -40,7 +40,6 @@ describe('Testing Auth API ', () => {
 
     const fetchSecondCallParam = {
       ...fetchParam,
-      headers: { Cookie: undefined },
     }
 
     // @ts-ignore
@@ -105,7 +104,6 @@ describe('Testing Auth API ', () => {
     const postParams = {
       ...fetchParam,
       method: 'POST',
-      headers: { Cookie: undefined },
     }
 
     fetchParam.method = 'POST'

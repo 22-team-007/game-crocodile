@@ -7,18 +7,11 @@ import { Index } from './router'
 const root = document.getElementById('root') as HTMLElement
 const hydrate = window.__staticRouterHydrationData
 
-// dont't use loader date from server
-if (hydrate?.loaderData) {
-  hydrate.loaderData = undefined
-}
-
-delete window.__staticRouterHydrationData
-
 typeof hydrate !== 'undefined'
   ? ReactDOM.hydrateRoot(
       root,
       <React.StrictMode>
-        <Provider store={store}>
+        <Provider store={store} >
           <Index />
         </Provider>
       </React.StrictMode>
