@@ -107,6 +107,7 @@ declare interface SocketAPIType extends WebSocket {
 declare type SocketContent = {
   type: string
   chat_id?: number
+  withoutSetScore?: boolean
   time?: string
   user_id?: number
   id?: number
