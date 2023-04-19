@@ -54,7 +54,7 @@ const GamePopup: FC<GamePopupsProps> = ({
   isActivePopup,
   secondsPopup,
   setIsActive,
-  word
+  word,
 }) => {
   return (
     <>
@@ -83,6 +83,7 @@ const Game = () => {
 
   const TIME = 60
   const secondsToHidePopup = 10
+  const scoreCount = 10
 
   const [webSocket, setWebSocket] = useState<SocketAPIType>()
   const [isDisabledCanvas, setDisabledCanvas] = useState(true)
@@ -97,14 +98,14 @@ const Game = () => {
     return player?.id !== currentUser?.id
   })
   const varWord = useRef<string>('')
-  
+
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
 
   const [secondsPopup, setSecondsPopup] = useState(0)
   const [isActivePopup, setIsActivePopup] = useState(false)
   const [showToast, setShowToast] = useState(false)
-  const [toastText, setToastText] = useState("")
+  const [toastText, setToastText] = useState('')
 
   useEffect(() => {
     if (chatId) {
@@ -113,15 +114,17 @@ const Game = () => {
         api.games
           .socketConnect(currentUser.id, Number(chatId))
           .then(setWebSocket)
-        api.leaderbord.add(Number(chatId), currentUser?.id, 0)
-      } 
+        api.leaderbord.add(Number(chatId), currentUser?.id, 0).then(() => {
+          setScore(currentUser.id)
+        })
+      }
     }
 
     return () => webSocket?.close()
   }, [currentUser, chatId])
 
   useEffect(() => {
-    if (webSocket !== undefined && (gamePlayers && gamePlayers.length > 1)) {
+    if (webSocket !== undefined && gamePlayers && gamePlayers.length > 1) {
       setLeadingPlayer(nextPlayer[0].id, true)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
@@ -129,13 +132,13 @@ const Game = () => {
   }, [webSocket, gamePlayers])
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout | undefined;
+    let timeout: NodeJS.Timeout | undefined
 
     if (webSocket !== undefined && timerActive) {
       if (seconds > 0) {
         timeout = setTimeout(setSeconds, 1000, seconds - 1)
       } else if (lead === currentUser?.id) {
-        setToastText("Вы не успели, переход хода")
+        setToastText('Вы не успели, переход хода')
         setShowToast(true)
         webSocket!.sendContent('clear', {})
         setLeadingPlayer(nextPlayer[0].id, true)
@@ -149,13 +152,13 @@ const Game = () => {
   }, [seconds, webSocket, timerActive])
 
   useEffect(() => {
-    let timeOutPopup: NodeJS.Timeout | undefined;
+    let timeOutPopup: NodeJS.Timeout | undefined
 
     if (webSocket !== undefined && isActivePopup) {
       if (secondsPopup > 0) {
         timeOutPopup = setTimeout(setSecondsPopup, 1000, secondsPopup - 1)
       } else {
-        setToastText("Превышено время ожидания старта")
+        setToastText('Превышено время ожидания старта')
         setShowToast(true)
         setIsActivePopup(false)
         webSocket!.sendContent('clear', {})
@@ -179,34 +182,30 @@ const Game = () => {
     }
   }
 
-  const setScore = async (id: number) => {
-
-    let leadsIdScore = await api.leaderbord.team(`team${chatId}`)
-
-    let rawLeaders = await Promise.all(
-      leadsIdScore.map(async leader => {
+  const makeRowLeaders = async function (team: LeaderType[], leaderToSetScoreId?: number) {
+    return await Promise.all(
+      team.map(async leader => {
         try {
           if (leader.id) {
             const user = await api.users.get(leader.id) 
-            if(user.id === id) {
-              await api.leaderbord.add(Number(chatId), id, leader.score + 10) 
-            } 
-            return { ...user, score: leader.score} as LeaderUserType
-          } 
+            if (leaderToSetScoreId && user.id === leaderToSetScoreId) {
+              await api.leaderbord.add(Number(chatId), leaderToSetScoreId, leader.score + scoreCount)
+            }
+            return { ...user, score: leader.score } as LeaderUserType
+          }
         } catch {
           console.log(`Cant get user info with id ${leader.id}`)
         }
       })
     )
-    const leaders = rawLeaders.filter(
-      leader => leader !== undefined
-    ) as LeaderUserType[]
-
-    rawLeaders = leaders
-    setScoreLeaders(leaders)
   }
 
-  
+  const setScore = async (id: number) => {
+    let leadsIdScore = await api.leaderbord.team(`team${chatId}`)
+    let rawLeaders = await makeRowLeaders(leadsIdScore, id)
+    setScoreLeaders(rawLeaders as LeaderUserType[])
+  }
+
   const onSetLeading = (res: SocketContent) => {
     setSeconds(TIME)
     setTimerActive(true)
@@ -214,23 +213,27 @@ const Game = () => {
     setDisabledChat(true)
     setIsActivePopup(false)
     varWord.current = ''
-
-    if (res.user_id !== undefined && res.content === currentUser?.id) { 
-      api.games.getWord().then(w=>{
+    
+    if (res.user_id !== undefined && res.content === currentUser?.id) {
+      api.games.getWord().then(w => {
         varWord.current = w
         setLeading(Number(res.content))
         setSecondsPopup(secondsToHidePopup)
         setIsActivePopup(true)
         setDisabledCanvas(false)
 
-        if(!res.withoutSetScore) {
-          setToastText("Вы угадали, начислено 10 баллов!")
+        if (!res.withoutSetScore) {
+          setToastText('Вы угадали, начислено 10 баллов!')
           setShowToast(true)
-          setScore(currentUser?.id)
+          api.leaderbord.team(`team${chatId}`).then((r) => {
+            makeRowLeaders(r).then((row) => { 
+              setScoreLeaders(row as LeaderUserType[])
+            })
+          })
         }
       })
-
     } else {
+      !res.withoutSetScore && setScore(currentUser?.id)
       setDisabledChat(false)
     }
   }
@@ -244,7 +247,7 @@ const Game = () => {
     })
     webSocket!.sendContent('setLeadingPlayer', {
       content: id,
-      withoutSetScore: withoutSetScore
+      withoutSetScore: withoutSetScore,
     })
   }
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
@@ -361,7 +364,7 @@ const Game = () => {
                 )}
                 {scoreLeaders?.map(player => (
                   <ListGroup.Item
-                    key={player.id}
+                    key={player.login}
                     className="d-flex justify-content-between text-white no-border">
                     <span>
                       <Image
@@ -375,7 +378,6 @@ const Game = () => {
                     <span>{player.score ? player.score : 0}</span>
                   </ListGroup.Item>
                 ))}
-               
               </ListGroup>
             </div>
             <GameChat
