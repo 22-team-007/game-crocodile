@@ -6,7 +6,7 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
-import { createFetchRequest, preparePersist } from './utils'
+import { createFetchRequest, preparePersist, routeExist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
 import { dbConnect } from './db'
@@ -22,16 +22,16 @@ async function startServer() {
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  app.use(cors({
-    credentials: true,
-    origin: '*',
-  }))
+  app.use(
+    cors({
+      credentials: true,
+      origin: '*',
+    })
+  )
 
   await dbConnect()
 
-const {
-  PRAKTIKUM_HOST
-} = process.env
+  const { PRAKTIKUM_HOST } = process.env
 
   app.use(
     '/api/v2',
@@ -116,6 +116,12 @@ const {
 
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
+
+    if (!routeExist(url)) {
+      res.status(404).end('page not found')
+      return
+    }
+
     try {
       let template: string
       let render: (
@@ -130,7 +136,7 @@ const {
           }
         ]
       >
-      let checkRoute: (path: string) => boolean
+      let checkSSRRoute: (path: string) => boolean
 
       if (isDev) {
         template = await vite.transformIndexHtml(
@@ -140,23 +146,26 @@ const {
         render = (
           await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
         ).render
-        checkRoute = (
+        checkSSRRoute = (
           await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).checkRoute
+        ).checkSSRRoute
       } else {
         template = fs.readFileSync(
           path.resolve(distPath, 'index.html'),
           'utf-8'
         )
         render = (await import(ssrClientPath)).render
-        checkRoute = (await import(ssrClientPath)).checkRoute
+        checkSSRRoute = (await import(ssrClientPath)).checkSSRRoute
       }
 
       const preloadedState = await preparePersist(req, res)
-      const stateMarkup = JSON.stringify(preloadedState).replace(/</g, '\\u003c')
+      const stateMarkup = JSON.stringify(preloadedState).replace(
+        /</g,
+        '\\u003c'
+      )
       template = template.replace('{/*ssr-init-state*/}', stateMarkup)
 
-      if (checkRoute(req.originalUrl)) {
+      if (checkSSRRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler
         const fetchReq = createFetchRequest(req)
         const [html, cookie] = await render(fetchReq, preloadedState)
@@ -184,7 +193,7 @@ const {
 }
 
 // @ts-ignore для крректной работы SSR
-global.WebSocket = <any> class extends EventTarget {
+global.WebSocket = <any>class extends EventTarget {
   public constructor() {
     super()
   }

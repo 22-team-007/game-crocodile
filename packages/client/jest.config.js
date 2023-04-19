@@ -6,8 +6,8 @@ export default {
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
   globals: {
-    SERVER_PORT: process.env.SERVER_PORT,
-    SERVER_HOST: process.env.SERVER_HOST,
+    API_SERVER_PORT: process.env.API_SERVER_PORT,
+    API_SERVER_HOST: process.env.API_SERVER_HOST,
     PRAKTIKUM_HOST: process.env.PRAKTIKUM_HOST,
   },
   moduleNameMapper: {
