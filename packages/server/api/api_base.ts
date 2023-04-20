@@ -1,5 +1,5 @@
 export default class ApiBase {
-  protected host = ''
+  protected host = 'ya-praktikum.tech'
 
   protected static instance: ApiBase
   static Init(): ApiBase {
@@ -8,23 +8,13 @@ export default class ApiBase {
     }
     return this.instance
   }
-  protected DELETE(path: string, params?: RequestInit): Promise<Response> {
-    return this.fetchRequest('DELETE', path, params)
-  }
+
   protected POST(path: string, params?: RequestInit): Promise<Response> {
     return this.fetchRequest('POST', path, params)
   }
-  protected PUT(path: string, params?: RequestInit): Promise<Response> {
-    return this.fetchRequest('PUT', path, params)
-  }
+
   protected GET(path: string, params?: RequestInit): Promise<Response> {
     return this.fetchRequest('GET', path, params)
-  }
-  protected FORM(path: string, body: FormData): Promise<Response> {
-    return this.fetchRequest('PUT', path, { body, headers: undefined })
-  }
-  protected FORMPOST(path: string, body: FormData): Promise<Response> {
-    return this.fetchRequest('POST', path, { body, headers: undefined })
   }
 
   protected fetchRequest(
@@ -46,7 +36,7 @@ export default class ApiBase {
       }
     }
 
-    return fetch(`${this.host}${path}`, {
+    return fetch(`https://${this.host}${path}`, {
       headers,
       mode: 'cors',
       credentials: 'include',

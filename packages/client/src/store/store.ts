@@ -10,6 +10,7 @@ import { CookieStorage } from 'redux-persist-cookie-storage'
 import Cookies from 'cookies-js'
 import rootReducer from './reducers'
 import { IRootState } from './reducers'
+import api from '../api'
 
 let initialData: IRootState
 
@@ -23,10 +24,18 @@ if (typeof window?.__INITIAL_STATE__ !== 'undefined') {
   }
 }
 
+if (initialData.userData.user === null) {
+  const user = await api.auth.user()
+
+  if (user.reason !== 'Cookie is not valid') {
+    initialData.userData.user = user
+  }
+}
+
 const persistConfig = {
   key: 'root',
   storage: new CookieStorage(Cookies),
-  whitelist: ['userData', 'theme'],
+  whitelist: ['theme'],
   stateReconciler(inboundState: any, originalState: any) {
     // Ignore state from cookies, only use preloadedState from window object
     return originalState

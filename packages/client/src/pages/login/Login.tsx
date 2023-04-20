@@ -17,7 +17,7 @@ import api from '../../api'
 
 const auth = async () => {
   const OAuthUrl = 'https://oauth.yandex.ru/authorize?response_type=code'
-  const redirectURI = `http://${API_SERVER_HOST}:${API_SERVER_PORT}/oauth`
+  const redirectURI = `${self.location.origin}/oauth`
 
   const OAuthClientId = await api.oauth.setvice(redirectURI)
   const goTo = `${OAuthUrl}&client_id=${OAuthClientId}&redirect_uri=${redirectURI}`

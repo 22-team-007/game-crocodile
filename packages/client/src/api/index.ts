@@ -6,6 +6,7 @@ import Resources from './resources'
 import Leaderbord from './leaderbord'
 import Forum from './forum'
 import Themes from './theme'
+import SsrAPI from './api_ssr'
 export default {
   auth: Auth.Init() as Auth,
   oauth: Oauth.Init() as Oauth,
@@ -15,4 +16,5 @@ export default {
   leaderbord: Leaderbord.Init() as Leaderbord,
   forum: Forum.Init() as Forum,
   themes: Themes.Init() as Themes,
+  ssrAPI: SsrAPI.Init() as SsrAPI,
 }

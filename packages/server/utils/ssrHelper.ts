@@ -6,13 +6,12 @@ import type { Request } from 'express'
 import { ThemeController } from '../controllers'
 
 export async function preparePersist(req: Request, res: any) {
-  // @ts-ignore
   const cookieJar = new NodeCookiesWrapper(new Cookies(req, res))
 
   const persistConfig = {
     key: 'root',
     storage: new CookieStorage(cookieJar),
-    whitelist: ['userData', 'theme'],
+    whitelist: ['theme'],
     // @ts-ignore
     stateReconciler(inboundState: any, originalState: any) {
       return originalState
@@ -30,6 +29,8 @@ export async function preparePersist(req: Request, res: any) {
     try {
       const themeList = ThemeController.getListTheme()
       if (!themeList.includes(preloadedState.theme.name)) throw new Error()
+
+      preloadedState.userData = { user: null }
     } catch (e) {
       preloadedState.theme.name = ThemeController.getDefaultTheme()
     }

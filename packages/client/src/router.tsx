@@ -23,7 +23,6 @@ import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
 import { UserLogoutAction, UserDataAction } from './store/actions/types'
-import { oAuthLoaderClient } from './components/OAuth/oAuth'
 import { routes } from './constants/routes'
 
 export function getRouterConf(forTest = '') {
@@ -146,10 +145,6 @@ export function getRouterConf(forTest = '') {
           <ErrorPage />
         </Page>
       ),
-    },
-    {
-      path: routes.OAuth,
-      loader: oAuthLoaderClient,
     },
   ]
 
