@@ -8,7 +8,7 @@
     <script id="post-work">
       window.__INITIAL_STATE__ = {/*ssr-init-state*/}
       if ('serviceWorker' in navigator)
-        // navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('/sw.js')
       document.addEventListener("DOMContentLoaded",()=>{
         document.getElementById('root').removeAttribute('style')
       })
