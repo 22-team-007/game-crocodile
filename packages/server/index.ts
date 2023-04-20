@@ -123,7 +123,7 @@ async function startServer() {
 
     if (!routeExist(url)) {
       res.status(404).end('page not found')
-      logger.error(`error  - ${req.originalUrl} - method:${req.method}`);
+      logger.error(`400 || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
       return
     }
 
