@@ -16,7 +16,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     networks:
-      - inside
+      - default
   server:
     container_name: prakticum-server
     image: cr.yandex/${CR_REGISTRY}/prakticum-server
@@ -40,19 +40,9 @@ services:
       API_SERVER_HOST: ${API_SERVER_HOST}
       API_SERVER_PORT: ${API_SERVER_PORT}
     networks:
-      - inside
+      - default
     depends_on:
       - postgres
-  certbot:
-    container_name: prakticum-certbot
-    image: certbot/certbot:latest
-    depends_on:
-      - server
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    networks:
-      - inside
   nginx:
     container_name: prakticum-nginx
     image: cr.yandex/${CR_REGISTRY}/prakticum-nginx
@@ -60,25 +50,18 @@ services:
         context : .
         dockerfile: Dockerfile.nginx
     depends_on:
-      - certbot
+      - server
     ports:
       - "80:80"
-      - "443:443"
     restart: always
-    volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/nginx/ssl/:ro
     networks:
-      - inside
-      - outside
+      - default
+      - external
 
 networks:
-  inside:
-    name: inside
+  default:
     driver: bridge
     external: false
-  outside:
-    name: outside
+  external:
     driver: bridge
     external: true
