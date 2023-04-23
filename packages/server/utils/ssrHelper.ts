@@ -13,8 +13,12 @@ declare module 'express-session' {
   }
 }
 
-export async function userToSesion(req: Request, cookies: parse.CookieMap) {
+export async function initSesion(req: Request, cookies: parse.CookieMap) {
   req.session.userData = { user: null }
+  req.session.theme = {
+      name: ThemeController.defaultTheme,
+      defTheme: ThemeController.defaultTheme,
+    }
 
   // have user's cookie to auth?
   if (cookies) {

@@ -13,7 +13,7 @@ import parse, { splitCookiesString } from 'set-cookie-parser'
 import session from 'express-session'
 import api from './api'
 import type { IncomingMessage } from 'http'
-import { userToSesion } from './utils/ssrHelper'
+import { initSesion } from './utils/ssrHelper'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
@@ -90,7 +90,7 @@ async function startServer() {
           const cookies = splitCookiesString(proxyRes.headers['set-cookie'])
           const parsCookies = parse(cookies, { map: true })
           if (parsCookies) {
-            await userToSesion(req, parsCookies)
+            await initSesion(req, parsCookies)
           }
         }
       },
@@ -132,7 +132,7 @@ async function startServer() {
 
         const parsCookies = parse(cookies, { map: true })
         if (parsCookies) {
-          await userToSesion(req, parsCookies)
+          await initSesion(req, parsCookies)
           res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
           res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
           res.redirect('/game')
