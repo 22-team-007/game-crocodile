@@ -22,11 +22,12 @@ import {
 import api from './api'
 import { logoutUser } from './store/actions/user'
 import { useAppDispatch } from './hooks/useAppSelector'
-import { UserLogoutAction, UserDataAction } from './store/actions/types'
+import { UserLogoutAction, UserThemeDefAction } from './store/actions/types'
 import { routes } from './constants/routes'
+import { setThemeDef } from './store/actions/theme'
 
 export function getRouterConf(forTest = '') {
-  let dispatch: (arg0: UserLogoutAction | UserDataAction) => any
+  let dispatch: (arg0: UserLogoutAction | UserThemeDefAction) => any
 
   if (!forTest) {
     dispatch = useAppDispatch()
@@ -124,7 +125,10 @@ export function getRouterConf(forTest = '') {
           path: routes.Logout,
           loader: async () => {
             await api.auth.logOut()
-            forTest ? false : dispatch(logoutUser())
+            if (!forTest) {
+              dispatch(logoutUser())
+              dispatch(setThemeDef())
+            }
             return redirect('/')
           },
         },
