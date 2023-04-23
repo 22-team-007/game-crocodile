@@ -9,16 +9,27 @@ import {
   Page,
 } from './pages/index-ssr'
 
-import { OAuthLoaderServer } from './components/OAuth/oAuth'
 import { routes } from './constants/routes'
-
-export const OAUTH_LOADER_NUMBER = 3
+import api from './api'
 
 export const routerConf: RouteObject[] = [
   {
     path: routes.Index,
     element: <App />,
     errorElement: <ErrorPage />,
+    loader: async ({ request }) => {
+      const cookies = request.headers.get('cookie')
+
+      if (cookies) {
+        const user = await api.ssrAPI.user(cookies)
+        if (user.id) {
+          return user
+        }
+      }
+
+      return null
+    },
+
     children: [
       {
         index: true,
@@ -61,10 +72,5 @@ export const routerConf: RouteObject[] = [
         <ErrorPage />
       </Page>
     ),
-  },
-  {
-    path: routes.OAuth,
-    loader: OAuthLoaderServer,
-    element: <></>,
   },
 ]

@@ -4,7 +4,7 @@ export default class Socket extends WebSocket implements SocketAPIType {
   protected static chatId: number
 
   static connect(userId: number, chatId: number, token: string): Socket {
-    const url = `ws://${API_SERVER_HOST}:${API_SERVER_PORT}/ws/chats/${userId}/${chatId}/${token}`
+    const url = `ws://${self.location.host}/ws/chats/${userId}/${chatId}/${token}`
     if (this.instance === null || this.instance === undefined)
       this.instance = new this(url)
     else if (this.instance.url !== url) {
