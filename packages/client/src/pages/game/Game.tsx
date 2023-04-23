@@ -187,7 +187,7 @@ const Game = () => {
       team.map(async leader => {
         try {
           if (leader.id) {
-            const user = await api.users.get(leader.id) 
+            const user = await api.users.get(leader.id)
             if (leaderToSetScoreId && user.id === leaderToSetScoreId) {
               await api.leaderbord.add(Number(chatId), leaderToSetScoreId, leader.score + scoreCount)
             }
@@ -201,8 +201,8 @@ const Game = () => {
   }
 
   const setScore = async (id: number) => {
-    let leadsIdScore = await api.leaderbord.team(`team${chatId}`)
-    let rawLeaders = await makeRowLeaders(leadsIdScore, id)
+    const leadsIdScore = await api.leaderbord.team(`team${chatId}`)
+    const rawLeaders = await makeRowLeaders(leadsIdScore, id)
     setScoreLeaders(rawLeaders as LeaderUserType[])
   }
 
@@ -213,7 +213,7 @@ const Game = () => {
     setDisabledChat(true)
     setIsActivePopup(false)
     varWord.current = ''
-    
+
     if (res.user_id !== undefined && res.content === currentUser?.id) {
       api.games.getWord().then(w => {
         varWord.current = w
@@ -238,7 +238,7 @@ const Game = () => {
     }
   }
 
-  const setLeadingPlayer = (id: number, withoutSetScore: boolean = false) => {
+  const setLeadingPlayer = (id: number, withoutSetScore = false) => {
     setLeading(id)
     gamePlayers.filter(player => {
       if (player.id === id) {
@@ -356,7 +356,7 @@ const Game = () => {
               </ListGroup>
               <ListGroup variant="flush" className="leader-board_wrap">
                 {!scoreLeaders || scoreLeaders.length === 0 && (
-                   <ListGroup.Item>
+                    <ListGroup.Item>
                       <div className="empty-msg">
                         <div className="msg">Пока нет лидеров</div>
                       </div>

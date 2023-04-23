@@ -15,7 +15,6 @@ import {
 import rootReducer from './store/reducers'
 import { routerConf } from './router-ssr'
 import { IRootState } from './store/reducers'
-import { userTypes } from './store/actions/user'
 
 export async function render(
   fetchRequest: globalThis.Request,
@@ -32,14 +31,6 @@ export async function render(
   // loader return redirect?
   if (context instanceof Response) {
     throw context
-  }
-
-  if (context.loaderData && '0' in context.loaderData) {
-    const userData: UserType = context.loaderData[0]
-
-    store.dispatch({ type: userTypes.SET_USER_DATA, payload: userData })
-
-    preloadedState.userData.user = userData
   }
 
   const router = createStaticRouter(dataRoutes, context)

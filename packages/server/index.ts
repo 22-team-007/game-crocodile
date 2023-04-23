@@ -6,11 +6,14 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
-import { createFetchRequest, preparePersist, routeExist } from './utils'
+import { createFetchRequest, prepareInitState, routeExist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import cookieParser from 'cookie-parser'
 import parse, { splitCookiesString } from 'set-cookie-parser'
+import session from 'express-session'
 import api from './api'
+import type { IncomingMessage } from 'http'
+import { userToSesion } from './utils/ssrHelper'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
@@ -37,19 +40,6 @@ async function startServer() {
   const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
 
   app.use(
-    '/api/v2',
-    createProxyMiddleware({
-      target: `https://${PRAKTIKUM_HOST}`,
-      changeOrigin: true,
-      secure: false,
-      cookieDomainRewrite: {
-        '*': '',
-      },
-      onError: e => console.log(e),
-    })
-  )
-
-  app.use(
     '/ws',
     createProxyMiddleware({
       target: `https://${PRAKTIKUM_HOST}`,
@@ -62,11 +52,67 @@ async function startServer() {
     })
   )
 
+  app.use(
+    session({
+      secret: 'crocodile secret',
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24,
+      },
+    })
+  )
+
+  app.use(cookieParser())
+  app.use(
+    '/api/v2',
+    createProxyMiddleware({
+      target: `https://${PRAKTIKUM_HOST}`,
+      changeOrigin: true,
+      secure: false,
+      cookieDomainRewrite: {
+        '*': '',
+      },
+      onProxyRes: async (proxyRes: IncomingMessage, req) => {
+        if (
+          req.originalUrl === '/api/v2/auth/logout' &&
+          proxyRes.statusCode === 200
+        ) {
+          // user succesfully logout, destroy session
+          req.session.destroy(() => {
+            return
+          })
+        } else if (
+          req.originalUrl === '/api/v2/auth/signin' &&
+          proxyRes.statusCode === 200
+        ) {
+          // user succesfully signin, put user info in session
+          const cookies = splitCookiesString(proxyRes.headers['set-cookie'])
+          const parsCookies = parse(cookies, { map: true })
+          if (parsCookies) {
+            await userToSesion(req, parsCookies)
+          }
+        }
+      },
+      onError: e => console.log(e),
+    })
+  )
+
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use(cookieParser())
 
-  app.use('/api', ApiRouter)
+  app.use(
+    '/api',
+    (req, res, next) => {
+      if (!req.session.userData?.user) {
+        res.end('please register to use api')
+        return
+      }
+      next()
+    },
+    ApiRouter
+  )
+
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
   })
@@ -79,13 +125,14 @@ async function startServer() {
 
       let cookies = req.cookies.uuid
 
-      const resp = await api.oauth.oAuthSignIn(code, redirect_uri, cookies)
+      const retCookie = await api.oauth.oAuthSignIn(code, redirect_uri, cookies)
 
-      if (resp.reason === 'ok') {
-        cookies = splitCookiesString(resp.cookie)
+      if (retCookie !== null) {
+        cookies = splitCookiesString(retCookie)
 
         const parsCookies = parse(cookies, { map: true })
         if (parsCookies) {
+          await userToSesion(req, parsCookies)
           res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
           res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
           res.redirect('/game')
@@ -183,7 +230,7 @@ async function startServer() {
         checkSSRRoute = (await import(ssrClientPath)).checkSSRRoute
       }
 
-      const preloadedState = await preparePersist(req, res)
+      const preloadedState = await prepareInitState(req)
 
       if (checkSSRRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler

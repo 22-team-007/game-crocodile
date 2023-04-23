@@ -1,4 +1,5 @@
 import type { Response, Request } from 'express'
+
 const themeList = [
   {
     name: 'Светлая тема',
@@ -20,9 +21,20 @@ class ThemeController {
     res.status(200).json(themeList)
   }
 
-  public static getDefaultTheme() {
-    return 'white-theme'
+  public static setTheme(req: Request, res: Response) {
+    const userTheme = req.query.name as string
+    const themesName = ThemeController.getListTheme()
+
+    if (themesName.includes(userTheme)) {
+      req.session.theme!.name = userTheme
+    } else {
+      req.session.theme!.name = ThemeController.defaultTheme
+    }
+
+    res.status(200).end()
   }
+
+  public static defaultTheme = 'white-theme'
 
   public static getListTheme() {
     return themeList.map(theme => theme.themeClass)

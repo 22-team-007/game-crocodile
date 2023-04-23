@@ -26,8 +26,15 @@ export type UserThemeAction = {
   payload: string
 }
 
+export type UserThemeDefAction = {
+  type: themeTypes.SET_THEME_DEF
+  payload: string
+}
+
 export type UserAction =
   | UserDataAction
   | UserProfileAction
   | UserAvatarAction
   | UserLogoutAction
+
+export type ThemeAction = UserThemeAction | UserThemeDefAction

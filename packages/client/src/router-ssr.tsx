@@ -17,19 +17,6 @@ export const routerConf: RouteObject[] = [
     path: routes.Index,
     element: <App />,
     errorElement: <ErrorPage />,
-    loader: async ({ request }) => {
-      const cookies = request.headers.get('cookie')
-
-      if (cookies) {
-        const user = await api.ssrAPI.user(cookies)
-        if (user.id) {
-          return user
-        }
-      }
-
-      return null
-    },
-
     children: [
       {
         index: true,

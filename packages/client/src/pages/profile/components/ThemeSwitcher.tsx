@@ -31,6 +31,11 @@ const ThemeSwitcher: FC = () => {
     const themeName = e.target.value
     if (themeName) {
       setAppTheme(themeName)
+      try {
+        api.themes.setTheme(themeName)
+      } catch {
+        // ignore server error
+      }
       dispatch(setTheme(themeName))
     }
   }
