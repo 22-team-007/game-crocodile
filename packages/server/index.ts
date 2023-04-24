@@ -9,6 +9,9 @@ import type { ViteDevServer } from 'vite'
 import { createFetchRequest, preparePersist, routeExist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import logger from './utils/logger'
+import cookieParser from 'cookie-parser'
+import parse, { splitCookiesString } from 'set-cookie-parser'
+import api from './api'
 
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
@@ -32,7 +35,7 @@ async function startServer() {
 
   await dbConnect()
 
-  const { PRAKTIKUM_HOST } = process.env
+  const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
 
 
   app.use(
@@ -63,9 +66,37 @@ async function startServer() {
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
+  app.use(cookieParser())
+
   app.use('/api', ApiRouter)
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
+  })
+
+  app.get('/oauth', async (req, res) => {
+    const code = req.originalUrl.split('code=')[1]
+
+    if (code) {
+      const redirect_uri = `http://${SERVER_HOST}:3000/oauth`
+
+      let cookies = req.cookies.uuid
+
+      const resp = await api.oauth.oAuthSignIn(code, redirect_uri, cookies)
+
+      if (resp.reason === 'ok') {
+        cookies = splitCookiesString(resp.cookie)
+
+        const parsCookies = parse(cookies, { map: true })
+        if (parsCookies) {
+          res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
+          res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
+          res.redirect('/game')
+          return
+        }
+      }
+      res.redirect('/signin')
+    }
+    return
   })
 
   let vite: ViteDevServer
@@ -129,18 +160,12 @@ async function startServer() {
 
     try {
       let template: string
+
       let render: (
         fetchReq: globalThis.Request,
         initialState: any
-      ) => Promise<
-        [
-          appHtml: string,
-          cookie: {
-            authCookie: Record<string, string>
-            uuid: Record<string, string>
-          }
-        ]
-      >
+      ) => Promise<string>
+
       let checkSSRRoute: (path: string) => boolean
 
       if (isDev) {
@@ -148,12 +173,12 @@ async function startServer() {
           url,
           fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
         )
-        render = (
-          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).render
-        checkSSRRoute = (
-          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).checkSSRRoute
+
+        const ssrModule = await vite.ssrLoadModule(
+          path.resolve(srcPath, 'src/ssr.tsx')
+        )
+        render = ssrModule.render
+        checkSSRRoute = ssrModule.checkSSRRoute
       } else {
         template = fs.readFileSync(
           path.resolve(distPath, 'index.html'),
@@ -164,24 +189,20 @@ async function startServer() {
       }
 
       const preloadedState = await preparePersist(req, res)
+
+      if (checkSSRRoute(req.originalUrl)) {
+        // convert express request into a Fetch request, for static handler
+        const fetchReq = createFetchRequest(req)
+        const html = await render(fetchReq, preloadedState)
+
+        template = template.replace('<!--ssr-outlet-->', html)
+      }
+
       const stateMarkup = JSON.stringify(preloadedState).replace(
         /</g,
         '\\u003c'
       )
       template = template.replace('{/*ssr-init-state*/}', stateMarkup)
-
-      if (checkSSRRoute(req.originalUrl)) {
-        // convert express request into a Fetch request, for static handler
-        const fetchReq = createFetchRequest(req)
-        const [html, cookie] = await render(fetchReq, preloadedState)
-
-        template = template.replace('<!--ssr-outlet-->', html)
-
-        if (url.split('?')[0] === '/oauth' && cookie) {
-          res.cookie(cookie.authCookie.name, cookie.authCookie.value)
-          res.cookie(cookie.uuid.name, cookie.uuid.value)
-        }
-      }
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
     } catch (e) {
