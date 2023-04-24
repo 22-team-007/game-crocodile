@@ -6,18 +6,19 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
-import { createFetchRequest, prepareInitState, routeExist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import cookieParser from 'cookie-parser'
 import parse, { splitCookiesString } from 'set-cookie-parser'
 import session from 'express-session'
-import api from './api'
+import createMemoryStore from 'memorystore'
 import type { IncomingMessage } from 'http'
-import { userToSesion } from './utils/ssrHelper'
 
+import api from './api'
+import utils  from './utils'
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'
+
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -38,6 +39,7 @@ async function startServer() {
   await dbConnect()
 
   const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
+  const MemoryStore = createMemoryStore(session)
 
   app.use(
     '/ws',
@@ -45,9 +47,6 @@ async function startServer() {
       target: `https://${PRAKTIKUM_HOST}`,
       secure: false,
       ws: true,
-      cookieDomainRewrite: {
-        '*': '',
-      },
       onError: e => console.log(e),
     })
   )
@@ -58,8 +57,11 @@ async function startServer() {
       resave: false,
       saveUninitialized: true,
       cookie: {
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 86400000, // 24h
       },
+      store: new MemoryStore({
+      checkPeriod: 86400000 
+    }),
     })
   )
   
@@ -90,7 +92,7 @@ async function startServer() {
           const cookies = splitCookiesString(proxyRes.headers['set-cookie'])
           const parsCookies = parse(cookies, { map: true })
           if (parsCookies) {
-            await userToSesion(req, parsCookies)
+            await utils.initSesion(req, parsCookies)
           }
         }
       },
@@ -132,7 +134,7 @@ async function startServer() {
 
         const parsCookies = parse(cookies, { map: true })
         if (parsCookies) {
-          await userToSesion(req, parsCookies)
+          await utils.initSesion(req, parsCookies)
           res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
           res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
           res.redirect('/game')
@@ -195,7 +197,7 @@ async function startServer() {
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
 
-    if (!routeExist(url)) {
+    if (!utils.routeExist(url)) {
       res.status(404).end('page not found')
       return
     }
@@ -230,11 +232,11 @@ async function startServer() {
         checkSSRRoute = (await import(ssrClientPath)).checkSSRRoute
       }
 
-      const preloadedState = await prepareInitState(req)
+      const preloadedState = await utils.prepareInitState(req)
 
       if (checkSSRRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler
-        const fetchReq = createFetchRequest(req)
+        const fetchReq = utils.createFetchRequest(req)
         const html = await render(fetchReq, preloadedState)
 
         template = template.replace('<!--ssr-outlet-->', html)
