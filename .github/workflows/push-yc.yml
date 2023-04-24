@@ -33,8 +33,14 @@ jobs:
           PRAKTIKUM_HOST: ya-praktikum.tech
           API_SERVER_HOST: localhost
           API_SERVER_PORT: 3000
+          FULL_CHAIN_KEY: ${{ secrets.FULL_CHAIN_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         run: |
+          mkdir cert
+          echo $FULL_CHAIN_KEY >> ./cert/full_chain.pem
+          echo $PRIVATE_KEY >> ./cert/private_key.pem
           docker compose build
           docker push cr.yandex/$CR_REGISTRY/prakticum-nginx:latest
           docker push cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
           docker push cr.yandex/$CR_REGISTRY/prakticum-server:latest
+          rm -rf cert
