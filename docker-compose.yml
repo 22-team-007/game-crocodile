@@ -52,12 +52,10 @@ services:
       - server
     ports:
       - "80:80"
-    environment:
-      CR_REGISTRY: ${CR_REGISTRY}
     restart: always
     networks:
       - default
 
 networks:
   default:
-    driver: bridge 
+    driver: bridge
