@@ -8,6 +8,7 @@ import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 import { createFetchRequest, preparePersist, routeExist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import logger from './utils/logger'
 import cookieParser from 'cookie-parser'
 import parse, { splitCookiesString } from 'set-cookie-parser'
 import api from './api'
@@ -35,6 +36,7 @@ async function startServer() {
   await dbConnect()
 
   const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
+
 
   app.use(
     '/api/v2',
@@ -121,6 +123,7 @@ async function startServer() {
       }
       res.sendFile(fileName)
     } catch (e) {
+      logger.error(`error ${e}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -138,6 +141,7 @@ async function startServer() {
       }
       res.sendFile(fileName)
     } catch (e) {
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -150,6 +154,7 @@ async function startServer() {
 
     if (!routeExist(url)) {
       res.status(404).end('page not found')
+      logger.error(`400 || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
       return
     }
 
@@ -201,6 +206,7 @@ async function startServer() {
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
     } catch (e) {
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
