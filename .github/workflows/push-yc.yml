@@ -34,7 +34,6 @@ jobs:
           API_SERVER_HOST: localhost
           API_SERVER_PORT: 3000
         run: |
-          yc certificate-manager certificate content --id fpq5hct0mgehl1h495h5 --chain certificate_full_chain.pem --key private_key.pem
           docker compose build
           docker push cr.yandex/$CR_REGISTRY/prakticum-nginx:latest
           docker push cr.yandex/$CR_REGISTRY/prakticum-postgres:latest

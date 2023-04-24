@@ -56,12 +56,7 @@ services:
     restart: always
     networks:
       - default
-      - external
 
 networks:
   default:
     driver: bridge
-    external: false
-  external:
-    driver: bridge
-    external: true
