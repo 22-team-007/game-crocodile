@@ -14,6 +14,8 @@ jobs:
         uses: yc-actions/yc-cr-login@v0.1-alpha
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+        run: |
+          yc certificate-manager certificate content --id fpq5hct0mgehl1h495h5 --chain certificate_full_chain.pem --key private_key.pem
       - name: Build and Push
         env:
           # идентификатор регистра
@@ -35,6 +37,6 @@ jobs:
           API_SERVER_PORT: 3000
         run: |
           docker compose build
+          docker push cr.yandex/$CR_REGISTRY/prakticum-nginx:latest
           docker push cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
           docker push cr.yandex/$CR_REGISTRY/prakticum-server:latest
-          docker push cr.yandex/$CR_REGISTRY/prakticum-nginx:latest
