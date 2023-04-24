@@ -1,3 +1,3 @@
-import { createFetchRequest, preparePersist, routeExist } from './ssrHelper'
+import { createFetchRequest, prepareInitState, routeExist, initSesion } from './ssrHelper'
 
-export { createFetchRequest, preparePersist, routeExist }
+export default { createFetchRequest, prepareInitState, routeExist, initSesion }

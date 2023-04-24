@@ -201,8 +201,8 @@ const Game = () => {
   }
 
   const setScore = async (id: number) => {
-    let leadsIdScore = await api.leaderbord.team(`team${chatId}`)
-    let rawLeaders = await makeRowLeaders(leadsIdScore, id)
+    const leadsIdScore = await api.leaderbord.team(`team${chatId}`)
+    const rawLeaders = await makeRowLeaders(leadsIdScore, id)
     setScoreLeaders(rawLeaders as LeaderUserType[])
   }
 
@@ -238,7 +238,7 @@ const Game = () => {
     }
   }
 
-  const setLeadingPlayer = (id: number, withoutSetScore: boolean = false) => {
+  const setLeadingPlayer = (id: number, withoutSetScore = false) => {
     setLeading(id)
     gamePlayers.filter(player => {
       if (player.id === id) {

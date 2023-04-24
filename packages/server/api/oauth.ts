@@ -1,26 +1,38 @@
-import ApiBase from './api_base'
+const { PRAKTIKUM_HOST } = process.env
 
-type ssrAPIType = {
-  oAuthSignIn: (code: string, redirect_uri: string) => Promise<string>
-}
-
-export default class SsrAPI extends ApiBase implements ssrAPIType {
-  public async oAuthSignIn(
+interface IOAuth {
+  oAuthSignIn: (
     code: string,
     redirect_uri: string,
-    Cookie?: string | undefined
-  ) {
-    const r = await this.POST('/api/v2/oauth/yandex', {
-      body: JSON.stringify({ code, redirect_uri }),
-      headers: { Cookie } as HeadersInit,
-    })
+    Cookie: string
+  ) => Promise<string | null>
+}
 
-    if (r.ok) {
-      const cookie = r.headers.get('set-cookie')
+class OAuth implements IOAuth {
+  public async oAuthSignIn(code: string, redirect_uri: string, Cookie: string) {
+    try {
+      const resp = await fetch(
+        `https://${PRAKTIKUM_HOST}/api/v2/oauth/yandex`,
+        {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            Cookie,
+          },
+          body: JSON.stringify({ code, redirect_uri }),
+          mode: 'cors',
+        }
+      )
 
-      return { reason: 'ok', cookie }
+      if (resp.ok) {
+        return resp.headers.get('set-cookie')
+      }
+      return null
+    } catch {
+      return null
     }
-
-    return await r.json()
   }
 }
+
+export default new OAuth()

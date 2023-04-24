@@ -1,51 +1,53 @@
-// @ts-ignore (can't import types)
-import { NodeCookiesWrapper, CookieStorage } from 'redux-persist-cookie-storage'
-import Cookies from 'cookies'
-import { getStoredState } from 'redux-persist'
 import type { Request } from 'express'
 import { ThemeController } from '../controllers'
+import { UserType } from '../api/user'
+import api from '../api'
+import parse from 'set-cookie-parser'
 
-export async function preparePersist(req: Request, res: any) {
-  const cookieJar = new NodeCookiesWrapper(new Cookies(req, res))
-
-  const persistConfig = {
-    key: 'root',
-    storage: new CookieStorage(cookieJar),
-    whitelist: ['theme'],
-    // @ts-ignore
-    stateReconciler(inboundState: any, originalState: any) {
-      return originalState
-    },
-  }
-
-  let preloadedState
-  try {
-    preloadedState = (await getStoredState(persistConfig)) as any
-    if (typeof preloadedState === 'undefined') {
-      throw new Error()
+declare module 'express-session' {
+  interface SessionData {
+    userData: {
+      user: UserType | null
     }
+    theme: { name: string; defTheme?: string }
+  }
+}
 
-    // check user theme in valid?
+export async function initSesion(req: Request, cookies: parse.CookieMap) {
+  req.session.userData = { user: null }
+  req.session.theme = { name: ThemeController.defaultTheme }
+
+  // have user's cookie to auth?
+  if (cookies) {
     try {
-      const themeList = ThemeController.getListTheme()
-      if (!themeList.includes(preloadedState.theme.name)) throw new Error()
-
-      preloadedState.userData = { user: null }
-    } catch (e) {
-      preloadedState.theme.name = ThemeController.getDefaultTheme()
+      const apiCookie = `uuid=${cookies.uuid.value}; authCookie=${cookies.authCookie.value}`
+      const user = await api.user.getMe(apiCookie)
+      // return user data?
+      if (user !== null) {
+        req.session.userData.user = user
+      }
+    } catch {
+      // ignore loading data
     }
+  }
+  req.session.save()
+}
 
-    if (preloadedState._persist) {
-      delete preloadedState._persist
-    }
-  } catch (e) {
-    preloadedState = {
-      theme: { name: ThemeController.getDefaultTheme() },
-      userData: { user: null },
+export async function prepareInitState(req: Request) {
+  // if session don't contain user data
+  if (!req.session.userData?.user) {
+    req.session.userData = { user: null }
+  }
+
+  if (!req.session.theme?.name) {
+    req.session.theme = {
+      name: ThemeController.defaultTheme,
     }
   }
 
-  return preloadedState
+  req.session.theme.defTheme = ThemeController.defaultTheme
+
+  return { userData: req.session.userData, theme: req.session.theme }
 }
 
 // convert the incoming Express request into a Fetch request

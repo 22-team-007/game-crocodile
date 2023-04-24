@@ -6,16 +6,20 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
-import { createFetchRequest, preparePersist, routeExist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import logger from './utils/logger'
 import cookieParser from 'cookie-parser'
 import parse, { splitCookiesString } from 'set-cookie-parser'
-import api from './api'
+import session from 'express-session'
+import createMemoryStore from 'memorystore'
+import type { IncomingMessage } from 'http'
 
+import api from './api'
+import utils  from './utils'
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'
+
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -36,8 +40,34 @@ async function startServer() {
   await dbConnect()
 
   const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
+  const MemoryStore = createMemoryStore(session)
 
 
+  app.use(
+    '/ws',
+    createProxyMiddleware({
+      target: `https://${PRAKTIKUM_HOST}`,
+      secure: false,
+      ws: true,
+      onError: e => console.log(e),
+    })
+  )
+
+  app.use(
+    session({
+      secret: 'crocodile secret',
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        maxAge: 86400000, // 24h
+      },
+      store: new MemoryStore({
+      checkPeriod: 86400000 
+    }),
+    })
+  )
+  
+  app.use(cookieParser())
   app.use(
     '/api/v2',
     createProxyMiddleware({
@@ -47,18 +77,26 @@ async function startServer() {
       cookieDomainRewrite: {
         '*': '',
       },
-      onError: e => console.log(e),
-    })
-  )
-
-  app.use(
-    '/ws',
-    createProxyMiddleware({
-      target: `https://${PRAKTIKUM_HOST}`,
-      secure: false,
-      ws: true,
-      cookieDomainRewrite: {
-        '*': '',
+      onProxyRes: async (proxyRes: IncomingMessage, req) => {
+        if (
+          req.originalUrl === '/api/v2/auth/logout' &&
+          proxyRes.statusCode === 200
+        ) {
+          // user succesfully logout, destroy session
+          req.session.destroy(() => {
+            return
+          })
+        } else if (
+          req.originalUrl === '/api/v2/auth/signin' &&
+          proxyRes.statusCode === 200
+        ) {
+          // user succesfully signin, put user info in session
+          const cookies = splitCookiesString(proxyRes.headers['set-cookie'])
+          const parsCookies = parse(cookies, { map: true })
+          if (parsCookies) {
+            await utils.initSesion(req, parsCookies)
+          }
+        }
       },
       onError: e => console.log(e),
     })
@@ -66,9 +104,19 @@ async function startServer() {
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use(cookieParser())
 
-  app.use('/api', ApiRouter)
+  app.use(
+    '/api',
+    (req, res, next) => {
+      if (!req.session.userData?.user) {
+        res.end('please register to use api')
+        return
+      }
+      next()
+    },
+    ApiRouter
+  )
+
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
   })
@@ -81,13 +129,14 @@ async function startServer() {
 
       let cookies = req.cookies.uuid
 
-      const resp = await api.oauth.oAuthSignIn(code, redirect_uri, cookies)
+      const retCookie = await api.oauth.oAuthSignIn(code, redirect_uri, cookies)
 
-      if (resp.reason === 'ok') {
-        cookies = splitCookiesString(resp.cookie)
+      if (retCookie !== null) {
+        cookies = splitCookiesString(retCookie)
 
         const parsCookies = parse(cookies, { map: true })
         if (parsCookies) {
+          await utils.initSesion(req, parsCookies)
           res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
           res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
           res.redirect('/game')
@@ -152,7 +201,7 @@ async function startServer() {
   app.use('*', async (req, res, next) => {
     const url = req.originalUrl
 
-    if (!routeExist(url)) {
+    if (!utils.routeExist(url)) {
       res.status(404).end('page not found')
       logger.error(`400 || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
       return
@@ -188,11 +237,11 @@ async function startServer() {
         checkSSRRoute = (await import(ssrClientPath)).checkSSRRoute
       }
 
-      const preloadedState = await preparePersist(req, res)
+      const preloadedState = await utils.prepareInitState(req)
 
       if (checkSSRRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler
-        const fetchReq = createFetchRequest(req)
+        const fetchReq = utils.createFetchRequest(req)
         const html = await render(fetchReq, preloadedState)
 
         template = template.replace('<!--ssr-outlet-->', html)
