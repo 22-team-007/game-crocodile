@@ -16,6 +16,7 @@ let initialData: IRootState
 initialData = {
   userData: { user: null },
   theme: { name: 'white-theme', defTheme: 'white-theme' },
+  leader: 0
 }
 
 if (typeof window?.__INITIAL_STATE__ !== 'undefined') {

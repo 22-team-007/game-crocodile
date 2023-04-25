@@ -27,8 +27,6 @@ export function themeReducer(
         ...state,
         name: state.defTheme,
       }      
-    // default:
-    //   return state
   }
 
   return state

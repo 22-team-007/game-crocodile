@@ -1,5 +1,6 @@
 import { userTypes } from './user'
 import { themeTypes } from './theme'
+import { leaderTypes } from './leader'
 
 export type UserDataAction = {
   type: userTypes.SET_USER_DATA
@@ -29,6 +30,11 @@ export type UserThemeAction = {
 export type UserThemeDefAction = {
   type: themeTypes.SET_THEME_DEF
   payload: string
+}
+
+export type SetLeaderAction = {
+  type: leaderTypes.SET_LEADER
+  payload: number
 }
 
 export type UserAction =

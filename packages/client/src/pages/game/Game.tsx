@@ -14,12 +14,17 @@ import {
 
 import withAuth from '../../hoc/withAuth'
 import { useAppSelector } from '../../hooks/useAppSelector'
+import { selectLeader } from '../../store/selectors'
+import { useAppDispatch } from '../../hooks/useAppSelector'
+
 
 import api from '../../api'
+import { sound } from '../../utils/sound'
 
 import { GameChat, GameDraw } from './components'
 
 import './style.scss'
+import { SetLeader } from '../../store/actions/leader'
 
 type AutohideToast = {
   show: boolean
@@ -107,6 +112,9 @@ const Game = () => {
   const [showToast, setShowToast] = useState(false)
   const [toastText, setToastText] = useState('')
 
+  const leaderId = useAppSelector(selectLeader)
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
     if (chatId) {
       api.games.users(Number(chatId)).then(setGamePlayers)
@@ -125,11 +133,22 @@ const Game = () => {
 
   useEffect(() => {
     if (webSocket !== undefined && gamePlayers && gamePlayers.length > 1) {
-      setLeadingPlayer(nextPlayer[0].id, true)
+      // setLeadingPlayer(nextPlayer[0].id, true)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
+
+      setTimeout(() => {
+        debugger
+        const curLeader = leaderId !== 0 ? leaderId : currentUser.id
+        if(curLeader === currentUser.id && webSocket !== undefined) {
+          webSocket?.sendContent('sys msg', {content: 'leader'})
+        }
+    
+        dispatch(SetLeader(curLeader))
+      }, 500);
     }
   }, [webSocket, gamePlayers])
+  
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined
@@ -225,6 +244,7 @@ const Game = () => {
         if (!res.withoutSetScore) {
           setToastText('Вы угадали, начислено 10 баллов!')
           setShowToast(true)
+          sound.play('youWon')
           api.leaderbord.team(`team${chatId}`).then((r) => {
             makeRowLeaders(r).then((row) => { 
               setScoreLeaders(row as LeaderUserType[])

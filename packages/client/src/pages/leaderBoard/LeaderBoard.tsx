@@ -3,6 +3,7 @@ import { Row, Col, Container } from 'react-bootstrap'
 import { Leader } from './components/Leader'
 import { TopLeader } from './components/TopLeader'
 import api from '../../api'
+import withAuth from '../../hoc/withAuth'
 
 import './style.scss'
 
@@ -109,4 +110,5 @@ const LeaderBoard = () => {
   )
 }
 
-export default LeaderBoard
+export default withAuth(LeaderBoard)
+// export default LeaderBoard

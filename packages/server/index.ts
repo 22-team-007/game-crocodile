@@ -194,13 +194,8 @@ async function startServer() {
     }
   })
 
-  app.use('*', async (req, res, next) => {
+  app.use(utils.routes, async (req, res, next) => {
     const url = req.originalUrl
-
-    if (!utils.routeExist(url)) {
-      res.status(404).end('page not found')
-      return
-    }
 
     try {
       let template: string
