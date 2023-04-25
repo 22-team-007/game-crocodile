@@ -1,6 +1,6 @@
 import Auth from './auth'
 
-const host = `http://${SERVER_HOST}:${SERVER_PORT}`
+const host = ''
 
 describe('Testing Auth API ', () => {
   const auth: Auth = new Auth()
@@ -38,7 +38,9 @@ describe('Testing Auth API ', () => {
       body: JSON.stringify(siginData),
     }
 
-    const fetchSecondCallParam = { ...fetchParam, headers: {"Cookie": undefined} }
+    const fetchSecondCallParam = {
+      ...fetchParam,
+    }
 
     // @ts-ignore
     global.fetch = jest.fn(() =>
@@ -102,7 +104,6 @@ describe('Testing Auth API ', () => {
     const postParams = {
       ...fetchParam,
       method: 'POST',
-      headers: {"Cookie": undefined} 
     }
 
     fetchParam.method = 'POST'

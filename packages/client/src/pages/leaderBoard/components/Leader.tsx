@@ -8,11 +8,7 @@ export const Leader: FC<UserType> = props => {
     <div className="leader">
       <div className={`leader__avatar ${avatar ? '' : 'no-avatar'}`}>
         <div className="leader__img-wrapper">
-          {avatar ? (
-            <img src={api.resources.url(avatar)} />
-          ) : (
-            <div>no-avatar</div>
-          )}
+          <img src={api.resources.url(avatar)} />
         </div>
       </div>
       <div className="leader__info">

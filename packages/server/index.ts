@@ -6,12 +6,20 @@ import path from 'path'
 import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
-import { createFetchRequest, preparePersist } from './utils'
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import logger from './utils/logger'
+import cookieParser from 'cookie-parser'
+import parse, { splitCookiesString } from 'set-cookie-parser'
+import session from 'express-session'
+import createMemoryStore from 'memorystore'
+import type { IncomingMessage } from 'http'
 
+import api from './api'
+import utils  from './utils'
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'
+
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -22,17 +30,44 @@ async function startServer() {
   const srcPath = path.dirname(require.resolve('client/index.html'))
   const ssrClientPath = require.resolve('client/dist-ssr/client.cjs')
 
-  app.use(cors({
-    credentials: true,
-    origin: '*',
-  }))
+  app.use(
+    cors({
+      credentials: true,
+      origin: '*',
+    })
+  )
 
   await dbConnect()
 
-const {
-  PRAKTIKUM_HOST
-} = process.env
+  const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
+  const MemoryStore = createMemoryStore(session)
 
+
+  app.use(
+    '/ws',
+    createProxyMiddleware({
+      target: `https://${PRAKTIKUM_HOST}`,
+      secure: false,
+      ws: true,
+      onError: e => console.log(e),
+    })
+  )
+
+  app.use(
+    session({
+      secret: 'crocodile secret',
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        maxAge: 86400000, // 24h
+      },
+      store: new MemoryStore({
+      checkPeriod: 86400000 
+    }),
+    })
+  )
+  
+  app.use(cookieParser())
   app.use(
     '/api/v2',
     createProxyMiddleware({
@@ -42,18 +77,26 @@ const {
       cookieDomainRewrite: {
         '*': '',
       },
-      onError: e => console.log(e),
-    })
-  )
-
-  app.use(
-    '/ws',
-    createProxyMiddleware({
-      target: `https://${PRAKTIKUM_HOST}`,
-      secure: false,
-      ws: true,
-      cookieDomainRewrite: {
-        '*': '',
+      onProxyRes: async (proxyRes: IncomingMessage, req) => {
+        if (
+          req.originalUrl === '/api/v2/auth/logout' &&
+          proxyRes.statusCode === 200
+        ) {
+          // user succesfully logout, destroy session
+          req.session.destroy(() => {
+            return
+          })
+        } else if (
+          req.originalUrl === '/api/v2/auth/signin' &&
+          proxyRes.statusCode === 200
+        ) {
+          // user succesfully signin, put user info in session
+          const cookies = splitCookiesString(proxyRes.headers['set-cookie'])
+          const parsCookies = parse(cookies, { map: true })
+          if (parsCookies) {
+            await utils.initSesion(req, parsCookies)
+          }
+        }
       },
       onError: e => console.log(e),
     })
@@ -61,9 +104,48 @@ const {
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use('/api', ApiRouter)
+
+  app.use(
+    '/api',
+    (req, res, next) => {
+      if (!req.session.userData?.user) {
+        res.end('please register to use api')
+        return
+      }
+      next()
+    },
+    ApiRouter
+  )
+
   app.get('/words', (_, res) => {
     res.send(words[Math.floor(Math.random() * words.length)])
+  })
+
+  app.get('/oauth', async (req, res) => {
+    const code = req.originalUrl.split('code=')[1]
+
+    if (code) {
+      const redirect_uri = `http://${SERVER_HOST}:3000/oauth`
+
+      let cookies = req.cookies.uuid
+
+      const retCookie = await api.oauth.oAuthSignIn(code, redirect_uri, cookies)
+
+      if (retCookie !== null) {
+        cookies = splitCookiesString(retCookie)
+
+        const parsCookies = parse(cookies, { map: true })
+        if (parsCookies) {
+          await utils.initSesion(req, parsCookies)
+          res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
+          res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
+          res.redirect('/game')
+          return
+        }
+      }
+      res.redirect('/signin')
+    }
+    return
   })
 
   let vite: ViteDevServer
@@ -90,6 +172,7 @@ const {
       }
       res.sendFile(fileName)
     } catch (e) {
+      logger.error(`error ${e}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -107,6 +190,7 @@ const {
       }
       res.sendFile(fileName)
     } catch (e) {
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -114,63 +198,58 @@ const {
     }
   })
 
-  app.use('*', async (req, res, next) => {
+  app.use(utils.routes, async (req, res, next) => {
     const url = req.originalUrl
+
     try {
       let template: string
+
       let render: (
         fetchReq: globalThis.Request,
         initialState: any
-      ) => Promise<
-        [
-          appHtml: string,
-          cookie: {
-            authCookie: Record<string, string>
-            uuid: Record<string, string>
-          }
-        ]
-      >
-      let checkRoute: (path: string) => boolean
+      ) => Promise<string>
+
+      let checkSSRRoute: (path: string) => boolean
 
       if (isDev) {
         template = await vite.transformIndexHtml(
           url,
           fs.readFileSync(path.resolve(srcPath, 'index.html'), 'utf-8')
         )
-        render = (
-          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).render
-        checkRoute = (
-          await vite.ssrLoadModule(path.resolve(srcPath, 'src/ssr.tsx'))
-        ).checkRoute
+
+        const ssrModule = await vite.ssrLoadModule(
+          path.resolve(srcPath, 'src/ssr.tsx')
+        )
+        render = ssrModule.render
+        checkSSRRoute = ssrModule.checkSSRRoute
       } else {
         template = fs.readFileSync(
           path.resolve(distPath, 'index.html'),
           'utf-8'
         )
         render = (await import(ssrClientPath)).render
-        checkRoute = (await import(ssrClientPath)).checkRoute
+        checkSSRRoute = (await import(ssrClientPath)).checkSSRRoute
       }
 
-      const preloadedState = await preparePersist(req, res)
-      const stateMarkup = JSON.stringify(preloadedState).replace(/</g, '\\u003c')
-      template = template.replace('{/*ssr-init-state*/}', stateMarkup)
+      const preloadedState = await utils.prepareInitState(req)
 
-      if (checkRoute(req.originalUrl)) {
+      if (checkSSRRoute(req.originalUrl)) {
         // convert express request into a Fetch request, for static handler
-        const fetchReq = createFetchRequest(req)
-        const [html, cookie] = await render(fetchReq, preloadedState)
+        const fetchReq = utils.createFetchRequest(req)
+        const html = await render(fetchReq, preloadedState)
 
         template = template.replace('<!--ssr-outlet-->', html)
-
-        if (url.split('?')[0] === '/oauth' && cookie) {
-          res.cookie(cookie.authCookie.name, cookie.authCookie.value)
-          res.cookie(cookie.uuid.name, cookie.uuid.value)
-        }
       }
+
+      const stateMarkup = JSON.stringify(preloadedState).replace(
+        /</g,
+        '\\u003c'
+      )
+      template = template.replace('{/*ssr-init-state*/}', stateMarkup)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
     } catch (e) {
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -184,7 +263,7 @@ const {
 }
 
 // @ts-ignore для крректной работы SSR
-global.WebSocket = <any> class extends EventTarget {
+global.WebSocket = <any>class extends EventTarget {
   public constructor() {
     super()
   }

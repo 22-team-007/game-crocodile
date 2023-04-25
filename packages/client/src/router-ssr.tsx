@@ -1,23 +1,19 @@
 import type { RouteObject } from 'react-router-dom'
 
 import App from './layouts/app/App'
-import { StartPage, ErrorPage, Login, Registration, Page } from './pages'
-import { OAuthLoaderServer } from './components/OAuth/oAuth'
+import {
+  StartPage,
+  ErrorPage,
+  Login,
+  Registration,
+  Page,
+} from './pages/index-ssr'
 
-enum Routes {
-  Index = '/',
-  Login = '/signin',
-  Register = '/signup',
-  E404 = '404',
-  E500 = '500',
-  OAuth = 'oauth',
-}
-
-export const OAUTH_LOADER_NUMBER = 3
+import { routes } from './constants/routes'
 
 export const routerConf: RouteObject[] = [
   {
-    path: Routes.Index,
+    path: routes.Index,
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
@@ -30,7 +26,7 @@ export const routerConf: RouteObject[] = [
         ),
       },
       {
-        path: Routes.Login,
+        path: routes.Login,
         element: (
           <Page title="Крокодил - Вход">
             <Login />
@@ -38,7 +34,7 @@ export const routerConf: RouteObject[] = [
         ),
       },
       {
-        path: Routes.Register,
+        path: routes.Register,
         element: (
           <Page title="Крокодил - Регистрация">
             <Registration />
@@ -48,7 +44,7 @@ export const routerConf: RouteObject[] = [
     ],
   },
   {
-    path: Routes.E404,
+    path: routes.E404,
     element: (
       <Page title="Ошибка - 404">
         <ErrorPage />
@@ -56,16 +52,11 @@ export const routerConf: RouteObject[] = [
     ),
   },
   {
-    path: Routes.E500,
+    path: routes.E500,
     element: (
       <Page title="Ошибка - 500">
         <ErrorPage />
       </Page>
     ),
-  },
-  {
-    path: Routes.OAuth,
-    loader: OAuthLoaderServer,
-    element: <></>,
   },
 ]

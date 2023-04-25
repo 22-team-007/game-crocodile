@@ -1,6 +1,6 @@
 interface CrocoSound {
   fileName: string
-  buffer: ArrayBuffer | undefined
+  buffer?: ArrayBuffer
 }
 const fetch2 = typeof fetch === 'undefined'
   ? (): Promise<{ arrayBuffer: () => Promise<ArrayBuffer> }> => {
@@ -21,27 +21,27 @@ class Sound {
   protected sounds: Record<string, CrocoSound> = {
     fullScreenIn: {
       fileName: 'FullScreen_In.mp3',
-      buffer: undefined,
     },
     fullScreenOut: {
       fileName: 'FullScreen_Out.mp3',
-      buffer: undefined,
+    },
+    userEnter:{
+      fileName: 'userEnter.mp3',
+    },
+    youWon:{
+      fileName: 'youWon.mp3',
     },
   }
 
-  public fullScreenIn() {
-    if (typeof this.sounds.fullScreenIn.buffer !== 'undefined') {
-      this.play(this.sounds.fullScreenIn.buffer)
-    }
+  public play(key: any){
+    if(typeof this.sounds[key].buffer !== 'undefined') {
+      const soud = this.sounds[key].buffer as ArrayBuffer
+      this.start(soud)
+  }
+    
   }
 
-  public fullScreenOut() {
-    if (typeof this.sounds.fullScreenOut.buffer !== 'undefined') {
-      this.play(this.sounds.fullScreenOut.buffer)
-    }
-  }
-
-  protected async play(buffer: ArrayBuffer) {
+  protected async start(buffer: ArrayBuffer) {
     const soundCtx = new AudioContext()
 
     const decodeBuffer = await soundCtx.decodeAudioData(buffer.slice(0))
@@ -62,7 +62,7 @@ class Sound {
       const nameLoadingFile = this.sounds[key].fileName
 
       try {
-        return fetch2(`/${nameLoadingFile}`)
+        return fetch(`/${nameLoadingFile}`)
           .then(res => res.arrayBuffer())
           .then(audioData => (this.sounds[key].buffer = audioData))
       } catch (e) {
@@ -74,10 +74,10 @@ class Sound {
   }
 }
 
-const sound = new Sound()
+export const sound = new Sound()
 
 if(typeof window !== 'undefined') {
   (async () => await sound.init())()
 }
 
-export default sound
+

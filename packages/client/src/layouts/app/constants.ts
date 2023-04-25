@@ -4,6 +4,6 @@ export const LINKS = [
   { title: 'Регистрация', path: 'signup', showUnregOnly: true },
   { title: 'Профиль', path: 'profile', private: true },
   { title: 'Игра', path: 'game', private: true },
-  { title: 'Лидеры', path: 'leaders' },
-  { title: 'Форум', path: 'forum' },
+  { title: 'Лидеры', path: 'leaders', private: true },
+  { title: 'Форум', path: 'forum', private: true },
 ]

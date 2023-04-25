@@ -5,11 +5,10 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
-  globals: {
-    SERVER_PORT: process.env.SERVER_PORT,
-    SERVER_HOST: process.env.SERVER_HOST,
-    PRAKTIKUM_HOST: process.env.PRAKTIKUM_HOST,
-  },
+  // globals: {
+  //   SERVER_HOST: process.env.SERVER_HOST,
+  //   PRAKTIKUM_HOST: process.env.PRAKTIKUM_HOST,
+  // },
   moduleNameMapper: {
     '^.+\\.(css|scss)$': 'babel-jest',
     '.+\\.(svg|png|jpg)$': 'babel-jest',

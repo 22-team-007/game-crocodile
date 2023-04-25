@@ -5,30 +5,42 @@ import {
 } from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import thunk from 'redux-thunk'
-// @ts-ignore (can't import types)
-import { CookieStorage } from 'redux-persist-cookie-storage'
-import Cookies from 'cookies-js'
+import storage from 'redux-persist/lib/storage'
+
 import rootReducer from './reducers'
 import { IRootState } from './reducers'
+import api from '../api'
 
 let initialData: IRootState
+
+initialData = {
+  userData: { user: null },
+  theme: { name: 'white-theme', defTheme: 'white-theme' }
+}
 
 if (typeof window?.__INITIAL_STATE__ !== 'undefined') {
   initialData = window.__INITIAL_STATE__ as any
   delete window.__INITIAL_STATE__
-} else {
-  initialData = {
-    userData: { user: null },
-    theme: { name: 'white-theme' },
+}
+
+if (!('userData' in initialData) || initialData.userData.user === null) {
+  try {
+    const user = await api.auth.user()
+
+    if ('id' in user) {
+      initialData.userData.user = user
+    }
+  } catch {
+    // ignore loaded data
   }
 }
 
 const persistConfig = {
   key: 'root',
-  storage: new CookieStorage(Cookies),
+  storage,
   whitelist: ['userData', 'theme'],
   stateReconciler(inboundState: any, originalState: any) {
-    // Ignore state from cookies, only use preloadedState from window object
+    // Ignore state, only use preloadedState from window object
     return originalState
   },
 }

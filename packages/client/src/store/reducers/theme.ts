@@ -1,18 +1,19 @@
 import { themeTypes } from '../actions/theme'
-
-import { UserThemeAction } from '../actions/types'
+import { ThemeAction } from '../actions/types'
 
 const initState = {
-  name: '',
+  name: 'white-theme',
+  defTheme: 'white-theme',
 }
 
 export type ThemeState = {
   name: string
+  defTheme: string
 }
 
 export function themeReducer(
   state: ThemeState = initState,
-  { type, payload }: UserThemeAction
+  { type, payload }: ThemeAction
 ): ThemeState {
   switch (type) {
     case themeTypes.SET_THEME:
@@ -20,8 +21,12 @@ export function themeReducer(
         ...state,
         name: payload,
       }
-    default:
-      return state
+      
+    case themeTypes.SET_THEME_DEF:
+      return {
+        ...state,
+        name: state.defTheme,
+      }      
   }
 
   return state

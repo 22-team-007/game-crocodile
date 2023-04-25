@@ -13,7 +13,7 @@ import {
 } from 'react-router-dom/server'
 
 import rootReducer from './store/reducers'
-import { routerConf, OAUTH_LOADER_NUMBER } from './router-ssr'
+import { routerConf } from './router-ssr'
 import { IRootState } from './store/reducers'
 
 export async function render(
@@ -26,14 +26,13 @@ export async function render(
   const { query, dataRoutes } = createStaticHandler(routerConf)
 
   // run actions / loaders, for requested path, and put returned data to context
-  // now we haven't any
   const context = await query(fetchRequest)
 
   // loader return redirect?
   if (context instanceof Response) {
     throw context
   }
-
+  
   const router = createStaticRouter(dataRoutes, context)
 
   const appHTML = renderToString(
@@ -44,18 +43,10 @@ export async function render(
     </React.StrictMode>
   )
 
-  // loader number 3 = OAuthLoader
-  let cookie = undefined
-  if (context.loaderData && OAUTH_LOADER_NUMBER in context.loaderData) {
-    preloadedState.userData.user=context.loaderData[OAUTH_LOADER_NUMBER].user
-    cookie = context.loaderData[OAUTH_LOADER_NUMBER].parsCookies
-  }
-
-  // @ts-ignore
-  return [appHTML, cookie]
+  return appHTML
 }
 
 // if route not exist tell client app don't hydrate page
-export function checkRoute(path: string): boolean {
+export function checkSSRRoute(path: string): boolean {
   return matchRoutes(routerConf, path) !== null ? true : false
 }

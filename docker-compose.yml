@@ -30,6 +30,7 @@ services:
       - "${SERVER_PORT}:${SERVER_PORT}"
     environment:
       SERVER_PORT: ${SERVER_PORT}
+      SERVER_HOST: ${SERVER_HOST}
       NODE_ENV: ${NODE_ENV}
       POSTGRES_HOST: ${POSTGRES_HOST}
       PRAKTIKUM_HOST: ${PRAKTIKUM_HOST}
@@ -37,8 +38,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      API_SERVER_HOST: ${API_SERVER_HOST}
-      API_SERVER_PORT: ${API_SERVER_PORT}
     networks:
       - default
     depends_on:

@@ -11,5 +11,5 @@ export type IRootState = {
 
 export default combineReducers({
   userData: userReducer,
-  theme: themeReducer,
+  theme: themeReducer
 })

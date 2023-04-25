@@ -107,6 +107,7 @@ declare interface SocketAPIType extends WebSocket {
 declare type SocketContent = {
   type: string
   chat_id?: number
+  withoutSetScore?: boolean
   time?: string
   user_id?: number
   id?: number
@@ -133,6 +134,7 @@ declare type ForumRecord = {
   description: string
   author_id: number
   updatedAt?: string
+  replyed_id?: number
 }
 
 declare type ThemeContentType = {
@@ -148,6 +150,10 @@ declare type CommentRecord = {
   author_id: number
   updatedAt?: string
   emojis: Record<string, number> | null
+  login?: string
+  replyed_id?: number
+  replyed_author_id?: number
+  replyed_description?: string
 }
 
 declare type EmojiRecord = {

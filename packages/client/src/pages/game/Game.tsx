@@ -16,9 +16,10 @@ import withAuth from '../../hoc/withAuth'
 import { useAppSelector } from '../../hooks/useAppSelector'
 
 import api from '../../api'
+import { sound } from '../../utils/sound'
 
 import { GameChat, GameDraw } from './components'
-
+import withErrorBoundary from '../../hoc/withErrorBoundary'
 import './style.scss'
 
 type AutohideToast = {
@@ -54,7 +55,7 @@ const GamePopup: FC<GamePopupsProps> = ({
   isActivePopup,
   secondsPopup,
   setIsActive,
-  word
+  word,
 }) => {
   return (
     <>
@@ -83,28 +84,29 @@ const Game = () => {
 
   const TIME = 60
   const secondsToHidePopup = 10
+  const scoreCount = 10
 
   const [webSocket, setWebSocket] = useState<SocketAPIType>()
   const [isDisabledCanvas, setDisabledCanvas] = useState(true)
   const [isDisabledChat, setDisabledChat] = useState(false)
   const [gamePlayers, setGamePlayers] = useState<UserType[]>([])
+  const [scoreLeaders, setScoreLeaders] = useState<UserType[]>([])
   const [lead, setLeading] = useState<number>()
   const [leadingPlayerData, setLeadingPlayerData] = useState<UserType>()
   const [searchedPlayers, setSearchedPlayers] = useState<UserType[]>([])
   const currentUser = useAppSelector(state => state.userData.user)
   const nextPlayer = gamePlayers.filter(player => {
-    return player.id !== currentUser?.id
+    return player?.id !== currentUser?.id
   })
-
   const varWord = useRef<string>('')
-  
+
   const [seconds, setSeconds] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
 
   const [secondsPopup, setSecondsPopup] = useState(0)
   const [isActivePopup, setIsActivePopup] = useState(false)
   const [showToast, setShowToast] = useState(false)
-  const [toastText, setToastText] = useState("")
+  const [toastText, setToastText] = useState('')
 
   useEffect(() => {
     if (chatId) {
@@ -113,6 +115,9 @@ const Game = () => {
         api.games
           .socketConnect(currentUser.id, Number(chatId))
           .then(setWebSocket)
+        /*api.leaderbord.add(Number(chatId), currentUser?.id, 0).then(() => {
+          setScore(currentUser.id)
+        })*/
       }
     }
 
@@ -120,24 +125,49 @@ const Game = () => {
   }, [currentUser, chatId])
 
   useEffect(() => {
-    if (webSocket !== undefined && (gamePlayers && gamePlayers.length > 1)) {
-      setLeadingPlayer(nextPlayer[0].id)
+    let timeout: NodeJS.Timeout | undefined
+    if (webSocket !== undefined && gamePlayers && gamePlayers.length > 1) {
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
+      
+      let leaderId2 = 0;
+      timeout = setTimeout(() => {
+        if(leaderId2 === 0){
+          leaderId2 = currentUser.id
+          setLeadingPlayer(leaderId2, true)
+        }
+      }, 5000);
+      webSocket.on<SocketContent>('user connected', (res: SocketContent) => {
+        if(res.content === undefined) return
+        if(leaderId2 === currentUser.id){
+          webSocket.sendContent('sys msg', {content: 'leader'})
+        }
+      })
+      webSocket.on<SocketContent>('sys msg', (res: SocketContent) => {
+        if (res.user_id === undefined) return 
+        leaderId2 = res.user_id
+        setLeading(leaderId2)
+      })
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
     }
   }, [webSocket, gamePlayers])
+  
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout | undefined;
+    let timeout: NodeJS.Timeout | undefined
 
     if (webSocket !== undefined && timerActive) {
       if (seconds > 0) {
         timeout = setTimeout(setSeconds, 1000, seconds - 1)
       } else if (lead === currentUser?.id) {
-        setToastText("Вы не успели, переход хода")
+        setToastText('Вы не успели, переход хода')
         setShowToast(true)
         webSocket!.sendContent('clear', {})
-        setLeadingPlayer(nextPlayer[0].id)
+        setLeadingPlayer(nextPlayer[0].id, true)
       }
     }
     return () => {
@@ -148,17 +178,17 @@ const Game = () => {
   }, [seconds, webSocket, timerActive])
 
   useEffect(() => {
-    let timeOutPopup: NodeJS.Timeout | undefined;
+    let timeOutPopup: NodeJS.Timeout | undefined
 
     if (webSocket !== undefined && isActivePopup) {
       if (secondsPopup > 0) {
         timeOutPopup = setTimeout(setSecondsPopup, 1000, secondsPopup - 1)
       } else {
-        setToastText("Превышено время ожидания старта")
+        setToastText('Превышено время ожидания старта')
         setShowToast(true)
         setIsActivePopup(false)
         webSocket!.sendContent('clear', {})
-        setLeadingPlayer(nextPlayer[0].id)
+        setLeadingPlayer(nextPlayer[0].id, true)
       }
     }
     return () => {
@@ -173,15 +203,31 @@ const Game = () => {
       res.user_id !== undefined &&
       res?.content?.toString().toLowerCase() === varWord.current.toLowerCase()
     ) {
-      if (res.user_id === currentUser?.id) {
-        setToastText("Вы угадали, начислено 10 баллов!")
-        setShowToast(true)
-        //начисляем баллы
-      }
-      webSocket!.sendContent('clear', {})
-      setLeadingPlayer(res.user_id)
+      api.leaderbord.add(Number(chatId), Number(res.user_id), scoreCount).then(()=>{
+        webSocket!.sendContent('clear', {})
+        setLeadingPlayer(Number(res.user_id))
+      })
     }
   }
+
+  const makeRowLeaders = async function (team: LeaderType[]): Promise<LeaderUserType[]> {
+    return await Promise.all(
+      team.map(p => {
+        return new Promise<LeaderUserType>((resolve)=>{
+          api.users.get(p.id).then(user=>{
+            resolve({ ...user, score: p.score } as LeaderUserType)
+          })
+        })
+      })
+    )
+  }
+
+  const setScore = async () => {
+    const leadsIdScore = await api.leaderbord.team(`team${chatId}`)
+    const rawLeaders = await makeRowLeaders(leadsIdScore)
+    setScoreLeaders(rawLeaders as LeaderUserType[])
+  }
+
   const onSetLeading = (res: SocketContent) => {
     setSeconds(TIME)
     setTimerActive(true)
@@ -189,22 +235,28 @@ const Game = () => {
     setDisabledChat(true)
     setIsActivePopup(false)
     varWord.current = ''
+    setScore()
     if (res.user_id !== undefined && res.content === currentUser?.id) {
-      api.games.getWord().then(w=>{
+      api.games.getWord().then(w => {
         varWord.current = w
         setLeading(Number(res.content))
         setSecondsPopup(secondsToHidePopup)
         setIsActivePopup(true)
         setDisabledCanvas(false)
+
+        if (!res.withoutSetScore) {
+          setToastText('Вы угадали, начислено 10 баллов!')
+          setShowToast(true)
+          sound.play('youWon')
+        }
       })
     } else {
       setDisabledChat(false)
     }
   }
 
-  const setLeadingPlayer = (id: number) => {
+  const setLeadingPlayer = (id: number, withoutSetScore = false) => {
     setLeading(id)
-
     gamePlayers.filter(player => {
       if (player.id === id) {
         setLeadingPlayerData(player)
@@ -212,6 +264,7 @@ const Game = () => {
     })
     webSocket!.sendContent('setLeadingPlayer', {
       content: id,
+      withoutSetScore: withoutSetScore,
     })
   }
   const searchPlayers = (event: ChangeEvent<HTMLInputElement>) => {
@@ -251,8 +304,8 @@ const Game = () => {
               {lead === currentUser?.id && seconds > 0 && (
                 <>
                   <ul className="word">
-                    {[...varWord.current].map(letter => (
-                      <li className="word-letter">{letter}</li>
+                    {[...varWord.current].map((letter, i) => (
+                      <li key={i} className="word-letter">{letter}</li>
                     ))}
                   </ul>
                 </>
@@ -313,15 +366,22 @@ const Game = () => {
                         </Popover.Body>
                       </Popover>
                     }>
-                    <Button className="rounded-circle">&#43;</Button>
+                    <Button title="Добавить игрока" className="rounded-circle">&#43;</Button>
                   </OverlayTrigger>
-                  <h5 className="text-center">Раунд 8 из 15</h5>
+                  <h5 className="text-center">Таблица лидеров</h5>
                 </ListGroup.Item>
               </ListGroup>
               <ListGroup variant="flush" className="leader-board_wrap">
-                {gamePlayers?.map(player => (
+                {!scoreLeaders || scoreLeaders.length === 0 && (
+                   <ListGroup.Item>
+                      <div className="empty-msg">
+                        <div className="msg">Пока нет лидеров</div>
+                      </div>
+                    </ListGroup.Item>
+                )}
+                {scoreLeaders?.map(player => (
                   <ListGroup.Item
-                    key={player.id}
+                    key={player.login}
                     className="d-flex justify-content-between text-white no-border">
                     <span>
                       <Image
@@ -332,7 +392,7 @@ const Game = () => {
                       />
                       <span className="user-name">{player.login}</span>
                     </span>
-                    <span>80</span>
+                    <span>{player.score ? player.score : 0}</span>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
@@ -349,4 +409,4 @@ const Game = () => {
     </Container>
   )
 }
-export default withAuth(Game)
+export default withAuth(withErrorBoundary(Game))
