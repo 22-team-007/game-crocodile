@@ -3,8 +3,6 @@ import { ListGroup } from 'react-bootstrap'
 
 import api from '../../../api'
 import { sound } from '../../../utils/sound'
-import { useAppSelector } from '../../../hooks/useAppSelector'
-import { selectUserId } from '../../../store/selectors'
 
 import Arrow from '../../../assets/arrow.svg'
 
