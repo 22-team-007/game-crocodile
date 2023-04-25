@@ -138,7 +138,7 @@ const Game = () => {
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
 
       setTimeout(() => {
-        debugger
+        // debugger
         const curLeader = leaderId !== 0 ? leaderId : currentUser.id
         if(curLeader === currentUser.id && webSocket !== undefined) {
           webSocket?.sendContent('sys msg', {content: 'leader'})
