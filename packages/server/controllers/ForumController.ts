@@ -116,24 +116,30 @@ class ForumController {
         return
       }
 
-      const rec = await sequelize.query(`select "a".*,"c"."emojis"
+      const rec = await sequelize.query(`
+        select "a".*, "c"."emojis", "d"."author_id" as "replyed_author_id", "d"."description" as "replyed_description"
         from "CommentRecords" as "a"
-        left join (select
+        left join (
+          select
             "comment_id",
-            json_object_agg("emoji","emoji_kol") "emojis"
-          from  (select        
-          "comment_id",
-          "emoji",        
-          count("emoji") "emoji_kol"
-          from "EmojiRecords"      
-          group by "comment_id", "emoji") as "b"
-        group by "comment_id") as "c" on "c"."comment_id"="a"."id"
-        where "a"."parent_id" = :parent_id`,
-        {
-          replacements: { parent_id },
-          type: QueryTypes.SELECT
-        }
-      )
+            json_object_agg("emoji", "emoji_kol") "emojis"
+          from (
+            select        
+              "comment_id",
+              "emoji",        
+              count("emoji") "emoji_kol"
+            from "EmojiRecords"      
+            group by "comment_id", "emoji"
+          ) as "b"
+          group by "comment_id"
+        ) as "c" on "c"."comment_id" = "a"."id"
+        left join "CommentRecords" as "d" on "a"."replyed_id" = "d"."id"
+        where "a"."parent_id" = :parent_id
+  `, {
+        replacements: { parent_id },
+        type: QueryTypes.SELECT
+      });
+
 
       if (rec !== null)
         res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
@@ -210,8 +216,21 @@ class ForumController {
         return
       }
 
+
+
       delete data.id
+      console.log(data)
       const rec = await CommentRecord.create(data)
+
+      if (data.replyed_id) {
+        const replyed_message = await CommentRecord.findOne({where: {id: data.replyed_id}})
+        res.status(200).set({ 'Content-Type': 'application/json' }).json({
+          ...rec.dataValues,
+          replyed_author_id: replyed_message?.dataValues.author_id,
+          replyed_description: replyed_message?.dataValues.description
+        })
+        return
+      }
 
       res.status(200).set({ 'Content-Type': 'application/json' }).json(rec)
     } catch (e) {
