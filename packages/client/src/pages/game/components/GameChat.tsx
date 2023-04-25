@@ -4,9 +4,7 @@ import { ListGroup } from 'react-bootstrap'
 import api from '../../../api'
 import { sound } from '../../../utils/sound'
 import { useAppSelector } from '../../../hooks/useAppSelector'
-import { selectLeader, selectUserId } from '../../../store/selectors'
-import { useAppDispatch } from '../../../hooks/useAppSelector'
-import { SetLeader } from '../../../store/actions/leader'
+import { selectUserId } from '../../../store/selectors'
 
 import Arrow from '../../../assets/arrow.svg'
 
@@ -21,14 +19,11 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
   const [messageList, setMessageList] = useState<SocketMessage[]>([])
   const [message, setMessage] = useState('')
   const userId = useAppSelector(selectUserId)
-  const leaderId = useAppSelector(selectLeader)
-  const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (socket !== undefined) {
       socket.on<SocketContent>('text', onText)
       socket.on<SocketContent>('user connected', onUserConnected)
-      socket.on<SocketContent>('sys msg', onSysMsg)
     }
   }, [socket])
 
@@ -37,16 +32,6 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
       api.users.get(res.user_id).then((user: UserType) => {
         setMessageList(prev => [...prev, { ...res, user }])
       })
-    }
-  }
-
-  const onSysMsg = (res: SocketContent) => {
-    if (res.user_id === undefined) return 
-    // debugger
-
-    if(res.content === 'leader' && res.user_id !== userId){
-      // set leader
-      dispatch(SetLeader(res.user_id))
     }
   }
 
@@ -65,15 +50,11 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
     if(res.content === undefined) return
     // debugger
 
-    if(leaderId === userId){
-      socket?.sendContent('sys msg', {content: 'leader'})
-    }
-
     api.users.get(Number(res.content)).then((user: UserType) => {
       res.content = 'вошёл в комнату'
-        setMessageList(prev => [...prev, { ...res, user }])
-        sound.play('userEnter')
-      })
+      setMessageList(prev => [...prev, { ...res, user }])
+      sound.play('userEnter')
+    })
   }
 
   return (
@@ -81,7 +62,7 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
       <div className="chat">
         <ListGroup variant="flush">
           {messageList.map(msg => (
-            <ListGroup.Item key={msg.id}>
+            <ListGroup.Item key={`${msg.content}`}>
               <>
                 <sup className="name-color me-2">{msg.user.login}</sup>
                 {msg.content}
