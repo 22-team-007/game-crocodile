@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
-import sound from '../../utils/sound'
+import { sound } from '../../utils/sound'
 
 const FullScreen = () => {
   const [isFs, setIsFs] = useState(false)
@@ -17,11 +17,11 @@ const FullScreen = () => {
       document.documentElement.requestFullscreen
     ) {
       document.documentElement.requestFullscreen()
-      sound.fullScreenIn()
+      sound.play('fullScreenIn')
       setIsFs(true)
     } else if (document.exitFullscreen) {
       document.exitFullscreen()
-      sound.fullScreenOut()
+      sound.play('fullScreenOut')
       setIsFs(false)
     }
   }

@@ -16,6 +16,7 @@ import withAuth from '../../hoc/withAuth'
 import { useAppSelector } from '../../hooks/useAppSelector'
 
 import api from '../../api'
+import { sound } from '../../utils/sound'
 
 import { GameChat, GameDraw } from './components'
 import withErrorBoundary from '../../hoc/withErrorBoundary'
@@ -114,9 +115,9 @@ const Game = () => {
         api.games
           .socketConnect(currentUser.id, Number(chatId))
           .then(setWebSocket)
-        api.leaderbord.add(Number(chatId), currentUser?.id, 0).then(() => {
+        /*api.leaderbord.add(Number(chatId), currentUser?.id, 0).then(() => {
           setScore(currentUser.id)
-        })
+        })*/
       }
     }
 
@@ -124,12 +125,37 @@ const Game = () => {
   }, [currentUser, chatId])
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout | undefined
     if (webSocket !== undefined && gamePlayers && gamePlayers.length > 1) {
-      setLeadingPlayer(nextPlayer[0].id, true)
       webSocket.on<SocketContent>('text', checkWord)
       webSocket.on<SocketContent>('setLeadingPlayer', onSetLeading)
+      
+      let leaderId2 = 0;
+      timeout = setTimeout(() => {
+        if(leaderId2 === 0){
+          leaderId2 = currentUser.id
+          setLeadingPlayer(leaderId2, true)
+        }
+      }, 5000);
+      webSocket.on<SocketContent>('user connected', (res: SocketContent) => {
+        if(res.content === undefined) return
+        if(leaderId2 === currentUser.id){
+          webSocket.sendContent('sys msg', {content: 'leader'})
+        }
+      })
+      webSocket.on<SocketContent>('sys msg', (res: SocketContent) => {
+        if (res.user_id === undefined) return 
+        leaderId2 = res.user_id
+        setLeading(leaderId2)
+      })
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout)
+      }
     }
   }, [webSocket, gamePlayers])
+  
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined
@@ -177,32 +203,28 @@ const Game = () => {
       res.user_id !== undefined &&
       res?.content?.toString().toLowerCase() === varWord.current.toLowerCase()
     ) {
-      webSocket!.sendContent('clear', {})
-      setLeadingPlayer(res.user_id)
+      api.leaderbord.add(Number(chatId), Number(res.user_id), scoreCount).then(()=>{
+        webSocket!.sendContent('clear', {})
+        setLeadingPlayer(Number(res.user_id))
+      })
     }
   }
 
-  const makeRowLeaders = async function (team: LeaderType[], leaderToSetScoreId?: number) {
+  const makeRowLeaders = async function (team: LeaderType[]): Promise<LeaderUserType[]> {
     return await Promise.all(
-      team.map(async leader => {
-        try {
-          if (leader.id) {
-            const user = await api.users.get(leader.id) 
-            if (leaderToSetScoreId && user.id === leaderToSetScoreId) {
-              await api.leaderbord.add(Number(chatId), leaderToSetScoreId, leader.score + scoreCount)
-            }
-            return { ...user, score: leader.score } as LeaderUserType
-          }
-        } catch {
-          console.log(`Cant get user info with id ${leader.id}`)
-        }
+      team.map(p => {
+        return new Promise<LeaderUserType>((resolve)=>{
+          api.users.get(p.id).then(user=>{
+            resolve({ ...user, score: p.score } as LeaderUserType)
+          })
+        })
       })
     )
   }
 
-  const setScore = async (id: number) => {
+  const setScore = async () => {
     const leadsIdScore = await api.leaderbord.team(`team${chatId}`)
-    const rawLeaders = await makeRowLeaders(leadsIdScore, id)
+    const rawLeaders = await makeRowLeaders(leadsIdScore)
     setScoreLeaders(rawLeaders as LeaderUserType[])
   }
 
@@ -213,7 +235,7 @@ const Game = () => {
     setDisabledChat(true)
     setIsActivePopup(false)
     varWord.current = ''
-    
+    setScore()
     if (res.user_id !== undefined && res.content === currentUser?.id) {
       api.games.getWord().then(w => {
         varWord.current = w
@@ -225,15 +247,10 @@ const Game = () => {
         if (!res.withoutSetScore) {
           setToastText('Вы угадали, начислено 10 баллов!')
           setShowToast(true)
-          api.leaderbord.team(`team${chatId}`).then((r) => {
-            makeRowLeaders(r).then((row) => { 
-              setScoreLeaders(row as LeaderUserType[])
-            })
-          })
+          sound.play('youWon')
         }
       })
     } else {
-      !res.withoutSetScore && setScore(currentUser?.id)
       setDisabledChat(false)
     }
   }

@@ -2,8 +2,10 @@ import { ChangeEvent, FC, useEffect, useState } from 'react'
 import { ListGroup } from 'react-bootstrap'
 
 import api from '../../../api'
+import { sound } from '../../../utils/sound'
 
 import Arrow from '../../../assets/arrow.svg'
+
 
 interface GameChatProps {
   chatId: number
@@ -18,6 +20,7 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
   useEffect(() => {
     if (socket !== undefined) {
       socket.on<SocketContent>('text', onText)
+      socket.on<SocketContent>('user connected', onUserConnected)
     }
   }, [socket])
 
@@ -40,12 +43,23 @@ const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
     setMessage(event.target.value)
   }
 
+  const onUserConnected = async (res: SocketContent) => {
+    if(res.content === undefined) return
+    // debugger
+
+    api.users.get(Number(res.content)).then((user: UserType) => {
+      res.content = 'вошёл в комнату'
+      setMessageList(prev => [...prev, { ...res, user }])
+      sound.play('userEnter')
+    })
+  }
+
   return (
     <>
       <div className="chat">
         <ListGroup variant="flush">
           {messageList.map(msg => (
-            <ListGroup.Item key={msg.id}>
+            <ListGroup.Item key={`${msg.content}`}>
               <>
                 <sup className="name-color me-2">{msg.user.login}</sup>
                 {msg.content}
