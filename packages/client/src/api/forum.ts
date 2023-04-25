@@ -27,6 +27,11 @@ export default class Forum extends ApiBase implements ForumAPIType {
     return await r.json()
   }
 
+  public async delete(id: number): Promise<any> {
+    const r = await this.DELETE(`/forum/${id}`)
+    return await r.json()
+  }
+
   public async update(record: ForumRecord): Promise<ForumRecord> {
     const r = await this.POST(`/forum/${record.id}`, {
       body: JSON.stringify(record)
