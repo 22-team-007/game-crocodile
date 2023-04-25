@@ -203,7 +203,7 @@ const Game = () => {
       res.user_id !== undefined &&
       res?.content?.toString().toLowerCase() === varWord.current.toLowerCase()
     ) {
-      api.leaderbord.add(Number(chatId), Number(res.user_id), 10).then(()=>{
+      api.leaderbord.add(Number(chatId), Number(res.user_id), scoreCount).then(()=>{
         webSocket!.sendContent('clear', {})
         setLeadingPlayer(Number(res.user_id))
       })

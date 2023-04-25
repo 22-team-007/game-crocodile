@@ -18,7 +18,6 @@ interface GameChatProps {
 const GameChat: FC<GameChatProps> = ({ socket, disabled }) => {
   const [messageList, setMessageList] = useState<SocketMessage[]>([])
   const [message, setMessage] = useState('')
-  const userId = useAppSelector(selectUserId)
 
   useEffect(() => {
     if (socket !== undefined) {
