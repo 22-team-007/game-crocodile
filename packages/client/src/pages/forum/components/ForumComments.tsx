@@ -12,9 +12,10 @@ interface ForumCommentsProps {
   messages: CommentRecord[]
   users: UsersType | null
   handleSendReaction: (emoji: string, comment_id: number) => void
+  setReplyMessage: (replyMessage: CommentRecord) => void;
 }
 
-const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReaction}) => {
+const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReaction, setReplyMessage}) => {
 
   const emojis = [
     '🧡',
@@ -47,10 +48,21 @@ const ForumComments: FC<ForumCommentsProps> = ({messages, users, handleSendReact
               <div className='d-flex justify-content-between w-100'>
                 <div className='message-text'>
                   <div className='message-number'>#{index + 1}</div>
+                  {
+                    message.replyed_id &&
+                    <div className={'replyed-message'}>
+                      <span className={'title'}>{users[message.replyed_author_id!]?.login}</span>
+                      <MarkDown text={message.replyed_description!} />
+                    </div>
+                  }
                   <MarkDown text={message.description} />
                 </div>
                 <div className='right'>
-                  {/* <small className='px-1 reaction'>ответить</small> */}
+                   <small
+                     className='px-1 reaction'
+                     onClick={() => setReplyMessage({...message, login: users[message.author_id]?.login})}
+                   >
+                     ответить</small>
                   <small>{getFormatDateString(message.updatedAt)}</small>
                 </div>
               </div>

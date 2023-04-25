@@ -11,11 +11,14 @@ import { selectUser } from '../../store/selectors'
 import useGetForumMessages from '../../hooks/useGetForumMessages'
 // SVG
 import svgMore from '../../assets/msgToolbar/more.svg'
+import ReplyedMessage from './components/ReplyedMessage'
 
 const ForumTheme = () => {
 
   const { themeContent, loading, update } = useGetForumTheme()
   const { messages, users, createComment, createReaction } = useGetForumMessages()
+
+  const [replyMessage, setReplyMessage] = useState<CommentRecord | null>(null)
 
   const [editMode, setEditMode] = useState<boolean>(false)
 
@@ -35,8 +38,10 @@ const ForumTheme = () => {
         description: watch('description'),
         parent_id: themeContent?.theme?.id,
         author_id: user.id,
+        replyed_id: replyMessage?.id
       }).then(() => {
         setValue('description', '')
+        setReplyMessage(null)
       })
     }
   }
@@ -83,6 +88,11 @@ const ForumTheme = () => {
             messages={messages}
             users={users}
             handleSendReaction={handleSendReaction}
+            setReplyMessage={setReplyMessage}
+          />
+          <ReplyedMessage
+            replyedMessage={replyMessage}
+            setReplyMessage={setReplyMessage}
           />
           <MessageForm
             customRegister={{

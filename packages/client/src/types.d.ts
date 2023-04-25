@@ -134,6 +134,7 @@ declare type ForumRecord = {
   description: string
   author_id: number
   updatedAt?: string
+  replyed_id?: number
 }
 
 declare type ThemeContentType = {
@@ -149,6 +150,10 @@ declare type CommentRecord = {
   author_id: number
   updatedAt?: string
   emojis: Record<string, number> | null
+  login?: string
+  replyed_id?: number
+  replyed_author_id?: number
+  replyed_description?: string
 }
 
 declare type EmojiRecord = {

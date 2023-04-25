@@ -88,3 +88,13 @@
 .preview-block {
   min-height: 200px;
 }
+
+.replyed-message {
+  padding-left: 20px;
+  border-left: 5px solid rgb(0, 191, 255);
+  font-size: 14px;
+
+  .title {
+    font-weight: bold;
+  }
+}

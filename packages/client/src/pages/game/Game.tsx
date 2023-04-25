@@ -19,7 +19,7 @@ import api from '../../api'
 import { sound } from '../../utils/sound'
 
 import { GameChat, GameDraw } from './components'
-
+import withErrorBoundary from '../../hoc/withErrorBoundary'
 import './style.scss'
 
 type AutohideToast = {
@@ -409,4 +409,4 @@ const Game = () => {
     </Container>
   )
 }
-export default withAuth(Game)
+export default withAuth(withErrorBoundary(Game))

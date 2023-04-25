@@ -7,6 +7,7 @@ export interface ICommentRecord {
   subject: string
   description: string
   author_id: number
+  replyed_id: number
 }
 
 export const commentRecordModel: ModelAttributes<Model, ICommentRecord> = {
@@ -31,5 +32,9 @@ export const commentRecordModel: ModelAttributes<Model, ICommentRecord> = {
   author_id: {
     type: DataType.INTEGER,
     allowNull: false,
+  },
+  replyed_id: {
+    type: DataType.INTEGER,
+    allowNull: true,
   },
 }

@@ -7,6 +7,7 @@ import express from 'express'
 import { createServer as createViteServer } from 'vite'
 import type { ViteDevServer } from 'vite'
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import logger from './utils/logger'
 import cookieParser from 'cookie-parser'
 import parse, { splitCookiesString } from 'set-cookie-parser'
 import session from 'express-session'
@@ -40,6 +41,7 @@ async function startServer() {
 
   const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
   const MemoryStore = createMemoryStore(session)
+
 
   app.use(
     '/ws',
@@ -170,6 +172,7 @@ async function startServer() {
       }
       res.sendFile(fileName)
     } catch (e) {
+      logger.error(`error ${e}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -187,6 +190,7 @@ async function startServer() {
       }
       res.sendFile(fileName)
     } catch (e) {
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -245,6 +249,7 @@ async function startServer() {
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
     } catch (e) {
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
