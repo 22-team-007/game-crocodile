@@ -19,13 +19,11 @@ self.addEventListener('install', event => {
         '/',
         '/signin',
         '/signup',
-        '/leaders',
-        '/forum',
-        '/game',
-        '/sw.js',
         '/FullScreen_In.mp3',
         '/FullScreen_Out.mp3',
-        '/assets/vite.svg',
+        '/userEnter.mp3',
+        '/youWon.mp3',
+        '/assets/favicon.svg',
         '/assets/arrow.svg',
       ])
     })
@@ -35,7 +33,7 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(response => {
-      try{return fetch(event.request)} catch {return response}
+      return response || fetch(event.request)
     })
   )
 })

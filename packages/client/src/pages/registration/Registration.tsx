@@ -3,12 +3,16 @@ import { useForm } from 'react-hook-form'
 // Router
 import { NavLink } from 'react-router-dom'
 import { routes } from '../../constants/routes'
+import WithAuth from '../../hoc/withAuth'
 // components
 import FormInput from '../../components/FormInput'
 // Bootstrap components
 import { Button, Card, Container, Form } from 'react-bootstrap'
 // Utils
 import { onValidateRepeatPassword, validation } from '../../utils'
+
+import { useAppDispatch } from '../../hooks/useAppSelector'
+import { setUser } from '../../store/actions/user'
 import api from '../../api'
 
 const Registration = () => {
@@ -19,8 +23,12 @@ const Registration = () => {
     formState: { errors },
   } = useForm<RegistrationData>()
 
+  const dispatch = useAppDispatch()
+
   const onSubmitHandler = (data: RegistrationData) => {
-    api.auth.signUp(data)
+    api.auth.signUp(data).then((user)=>{
+      dispatch(setUser(user))
+    })
   }
 
   return (
@@ -125,4 +133,4 @@ const Registration = () => {
   )
 }
 
-export default Registration
+export default WithAuth(Registration, '/game', true)
