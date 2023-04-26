@@ -247,7 +247,7 @@ const Game = () => {
         if (!res.withoutSetScore) {
           setToastText('Вы угадали, начислено 10 баллов!')
           setShowToast(true)
-          sound.play('youWon')
+          sound.play('YouWon')
         }
       })
     } else {

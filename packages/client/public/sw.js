@@ -22,9 +22,8 @@ self.addEventListener('install', event => {
         '/FullScreen_In.mp3',
         '/FullScreen_Out.mp3',
         '/userEnter.mp3',
-        '/youWon.mp3',
-        '/assets/favicon.svg',
-        '/assets/arrow.svg',
+        '/YouWon.mp3',
+        '/favicon.svg',
       ])
     })
   )
