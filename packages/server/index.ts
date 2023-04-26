@@ -15,11 +15,10 @@ import createMemoryStore from 'memorystore'
 import type { IncomingMessage } from 'http'
 
 import api from './api'
-import utils  from './utils'
+import utils from './utils'
 import { dbConnect } from './db'
 import ApiRouter from './routers/api_router'
 import words from './words'
-
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -42,7 +41,6 @@ async function startServer() {
   const { PRAKTIKUM_HOST, SERVER_HOST } = process.env
   const MemoryStore = createMemoryStore(session)
 
-
   app.use(
     '/ws',
     createProxyMiddleware({
@@ -62,11 +60,11 @@ async function startServer() {
         maxAge: 86400000, // 24h
       },
       store: new MemoryStore({
-      checkPeriod: 86400000 
-    }),
+        checkPeriod: 86400000,
+      }),
     })
   )
-  
+
   app.use(cookieParser())
   app.use(
     '/api/v2',
@@ -86,16 +84,6 @@ async function startServer() {
           req.session.destroy(() => {
             return
           })
-        } else if (
-          req.originalUrl === '/api/v2/auth/signin' &&
-          proxyRes.statusCode === 200
-        ) {
-          // user succesfully signin, put user info in session
-          const cookies = splitCookiesString(proxyRes.headers['set-cookie'])
-          const parsCookies = parse(cookies, { map: true })
-          if (parsCookies) {
-            await utils.initSesion(req, parsCookies)
-          }
         }
       },
       onError: e => console.log(e),
@@ -107,10 +95,13 @@ async function startServer() {
 
   app.use(
     '/api',
-    (req, res, next) => {
+    async (req, res, next) => {
       if (!req.session.userData?.user) {
-        res.end('please register to use api')
-        return
+        const ok = await utils.initSesion(req)
+        if (!ok) {
+          res.end('please register to use api')
+          return
+        }
       }
       next()
     },
@@ -136,7 +127,6 @@ async function startServer() {
 
         const parsCookies = parse(cookies, { map: true })
         if (parsCookies) {
-          await utils.initSesion(req, parsCookies)
           res.cookie(parsCookies.authCookie.name, parsCookies.authCookie.value)
           res.cookie(parsCookies.uuid.name, parsCookies.uuid.value)
           res.redirect('/game')
@@ -172,7 +162,7 @@ async function startServer() {
       }
       res.sendFile(fileName)
     } catch (e) {
-      logger.error(`error ${e}`);
+      logger.error(`error ${e}`)
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -190,7 +180,7 @@ async function startServer() {
       }
       res.sendFile(fileName)
     } catch (e) {
-      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`)
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
@@ -249,7 +239,7 @@ async function startServer() {
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(template)
     } catch (e) {
-      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`);
+      logger.error(`error ${e} - ${req.originalUrl} - method:${req.method}`)
       if (isDev) {
         vite.ssrFixStacktrace(e as Error)
       }
