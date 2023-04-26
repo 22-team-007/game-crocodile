@@ -28,8 +28,8 @@ class Sound {
     userEnter:{
       fileName: 'userEnter.mp3',
     },
-    youWon:{
-      fileName: 'youWon.mp3',
+    YouWon:{
+      fileName: 'YouWon.mp3',
     },
   }
 
