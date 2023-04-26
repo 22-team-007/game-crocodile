@@ -78,6 +78,34 @@ class ForumController {
     }
   }
 
+  //DELETE /forum/:id - удаление темы
+  public static async deleteTheme(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id)
+      if (!id) {
+        res
+          .status(404)
+          .set({ 'Content-Type': 'text/plain' })
+          .end(`Тема не найдена`)
+        return
+      }
+
+      const theme = await ForumRecord.destroy({where: { id }})
+      const comments = await CommentRecord.destroy({where: {parent_id: id}})
+      if (!theme && !comments) {
+        throw new Error('Ошибка удаления темы')
+      }
+
+      res.status(200).set({ 'Content-Type': 'application/json' }).json('ok')
+
+    } catch (e) {
+      res
+        .status(500)
+        .set({ 'Content-Type': 'text/plain' })
+        .end(`Возникла ошибка при удалении темы ${(e as Error).message}`)
+    }
+  }
+
   //POST /forum/:id - редактирование темы
   public static async postTheme(req: Request, res: Response) {
     try {
@@ -215,8 +243,6 @@ class ForumController {
           .end(`Тема не найдена`)
         return
       }
-
-
 
       delete data.id
       console.log(data)

@@ -15,6 +15,7 @@ ForumRouter.route('/comment/emoji')
 ForumRouter.route('/:id')
   .get(ForumController.getTheme)
   .post(ForumController.postTheme)
+  .delete(ForumController.deleteTheme)
 
 ForumRouter.route('/:id/comment')
   .get(ForumController.getComments)
