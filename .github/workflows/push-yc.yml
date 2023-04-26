@@ -33,9 +33,6 @@ jobs:
           NODE_ENV: production
           PRAKTIKUM_HOST: ya-praktikum.tech
         run: |
-          docker stop $(docker ps -a -q)
-          docker rm $(docker ps -a -q)
-          docker rmi $(docker images -a -q)
           docker compose build
           docker push cr.yandex/$CR_REGISTRY/prakticum-nginx:latest
           docker push cr.yandex/$CR_REGISTRY/prakticum-postgres:latest
