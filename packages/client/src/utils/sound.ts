@@ -2,19 +2,7 @@ interface CrocoSound {
   fileName: string
   buffer?: ArrayBuffer
 }
-const fetch2 = typeof fetch === 'undefined'
-  ? (): Promise<{ arrayBuffer: () => Promise<ArrayBuffer> }> => {
-      return new Promise(a => {
-        a({
-          arrayBuffer: () => {
-            return new Promise(b => {
-              b(new ArrayBuffer(0))
-            })
-          },
-        })
-      })
-    }
-  : fetch
+
 class Sound {
   protected soundCtx: AudioContext | undefined
 
