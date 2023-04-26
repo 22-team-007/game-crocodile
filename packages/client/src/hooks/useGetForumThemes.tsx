@@ -8,7 +8,6 @@ const useGetForumThemes = () => {
 
   useEffect(() => {
     if (loading) {
-      console.log('forum fetch', loading)
       api.forum.list().then(value => {
         setThemes(value)
         setLoading(false)

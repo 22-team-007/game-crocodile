@@ -32,9 +32,15 @@ const useGetForumTheme = () => {
     })
   }
 
+  const deleteTheme = async (id: number) => {
+    api.forum.delete(id)
+      .catch((err) => console.log('Ошибка удаления темы', err.message))
+  }
+
   return {
     themeContent,
     update,
+    deleteTheme,
     loading
   }
 }
