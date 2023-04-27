@@ -16,9 +16,10 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       cache.addAll([
-        '/',
-        '/signin',
-        '/signup',
+        '/game',
+        '/profile',
+        '/leaders',
+        '/forum',
         '/FullScreen_In.mp3',
         '/FullScreen_Out.mp3',
         '/userEnter.mp3',

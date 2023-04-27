@@ -32,15 +32,13 @@ export async function render(
   if (context instanceof Response) {
     throw context
   }
-  
+
   const router = createStaticRouter(dataRoutes, context)
 
   const appHTML = renderToString(
-    <React.StrictMode>
-      <Provider store={store}>
-        <StaticRouterProvider router={router} context={context} />
-      </Provider>
-    </React.StrictMode>
+    <Provider store={store}>
+      <StaticRouterProvider router={router} context={context} />
+    </Provider>
   )
 
   return appHTML
