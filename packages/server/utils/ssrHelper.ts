@@ -13,41 +13,40 @@ declare module 'express-session' {
   }
 }
 
-export async function initSesion(req: Request, cookies: parse.CookieMap) {
+export async function initSesion(req: Request): Promise<boolean> {
   req.session.userData = { user: null }
   req.session.theme = { name: ThemeController.defaultTheme }
 
   // have user's cookie to auth?
-  if (cookies) {
+  const cookies = req.cookies as parse.CookieMap
+  if ('uuid' in cookies && 'authCookie' in cookies) {
     try {
-      const apiCookie = `uuid=${cookies.uuid.value}; authCookie=${cookies.authCookie.value}`
+      const apiCookie = `uuid=${cookies.uuid}; authCookie=${cookies.authCookie}`
       const user = await api.user.getMe(apiCookie)
       // return user data?
       if (user !== null) {
         req.session.userData.user = user
+        return true
       }
     } catch {
       // ignore loading data
     }
   }
-  req.session.save()
+  return false
 }
 
 export async function prepareInitState(req: Request) {
   // if session don't contain user data
   if (!req.session.userData?.user) {
-    req.session.userData = { user: null }
+    await initSesion(req)
   }
 
-  if (!req.session.theme?.name) {
-    req.session.theme = {
-      name: ThemeController.defaultTheme,
-    }
+  const theme = {
+    name: req.session.theme!.name,
+    defTheme: ThemeController.defaultTheme,
   }
 
-  req.session.theme.defTheme = ThemeController.defaultTheme
-
-  return { userData: req.session.userData, theme: req.session.theme }
+  return { userData: req.session.userData, theme }
 }
 
 // convert the incoming Express request into a Fetch request
@@ -88,14 +87,13 @@ export function createFetchRequest(req: Request) {
 
 export const routes = [
   /^\/$/,
-  /^\/signin$/,
-  /^\/signup$/,
-  /^\/signout$/,
-  /^\/game$/,
-  /^\/game\/\d+$/,
-  /^\/profile$/,
-  /^\/leaders$/,
-  /^\/forum$/,
-  /^\/forum\/\d+$/,
+  /^\/signin\/?$/,
+  /^\/signup\/?$/,
+  /^\/signout\/?$/,
+  /^\/game\/?$/,
+  /^\/game\/\d+\/?$/,
+  /^\/profile\/?$/,
+  /^\/leaders\/?$/,
+  /^\/forum\/?$/,
+  /^\/forum\/\d+\/?$/,
 ]
-

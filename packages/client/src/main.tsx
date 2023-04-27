@@ -10,16 +10,12 @@ const hydrate = window.__staticRouterHydrationData
 typeof hydrate !== 'undefined'
   ? ReactDOM.hydrateRoot(
       root,
-      <React.StrictMode>
-        <Provider store={store} >
-          <Index />
-        </Provider>
-      </React.StrictMode>
+      <Provider store={store}>
+        <Index />
+      </Provider>
     )
   : ReactDOM.createRoot(root).render(
-      <React.StrictMode>
-        <Provider store={store}>
-          <Index />
-        </Provider>
-      </React.StrictMode>
+      <Provider store={store}>
+        <Index />
+      </Provider>
     )
