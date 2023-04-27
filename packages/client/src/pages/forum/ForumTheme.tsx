@@ -9,14 +9,17 @@ import { useForm } from 'react-hook-form'
 import { useAppSelector } from '../../hooks/useAppSelector'
 import { selectUser } from '../../store/selectors'
 import useGetForumMessages from '../../hooks/useGetForumMessages'
+import { useNavigate } from 'react-router-dom'
 // SVG
 import svgMore from '../../assets/msgToolbar/more.svg'
 import ReplyedMessage from './components/ReplyedMessage'
 
 const ForumTheme = () => {
 
-  const { themeContent, loading, update } = useGetForumTheme()
+  const { themeContent, loading, update, deleteTheme } = useGetForumTheme()
   const { messages, users, createComment, createReaction } = useGetForumMessages()
+
+  const navigate = useNavigate()
 
   const [replyMessage, setReplyMessage] = useState<CommentRecord | null>(null)
 
@@ -28,7 +31,11 @@ const ForumTheme = () => {
   const handleToggleEditMode = () => setEditMode(!editMode)
 
   const handleDeleteTheme = () => {
-    alert('delete')
+    if (themeContent?.theme?.id) {
+      deleteTheme(themeContent?.theme?.id)
+        .then(() => navigate('/forum'))
+        .catch((err) => console.log(err.message))
+    }
   }
 
   const handleSendComment = () => {
